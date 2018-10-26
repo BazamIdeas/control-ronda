@@ -125,7 +125,10 @@
         phone: '',
         worker: {
           first_name: '',
-          last_name: ''
+          last_name: '',
+          condos: {
+              id: ''
+          }
         }
       },
       defaultItem: {
@@ -134,7 +137,10 @@
         phone: '',
         worker: {
           first_name: '',
-          last_name: ''
+          last_name: '',
+          condos: {
+              id: ''
+          }
         }
       }
     }),
@@ -228,7 +234,7 @@
           })
         } else {
             if (this.users.length < this.condominio.user_limit ){
-               // this.editedItem.worker.condos.id = this.condominio.id
+                this.editedItem.worker.condos.id = this.condominio.id
               this.$axios.post('/supervisors/', this.editedItem)
               .then(resp => {
                 if(resp.status === 201){
