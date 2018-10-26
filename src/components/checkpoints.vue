@@ -120,9 +120,7 @@
     created () {
       this.initialize()
     },
-    updated () {
-      this.points = this.zone.points
-    },
+
 
     methods: {
       initialize () {

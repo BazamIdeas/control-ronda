@@ -4,7 +4,7 @@
     <v-flex xs4 offset-xs4>
       <v-toolbar color="blue lighten-1" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
-          <v-toolbar-title>Usuarios</v-toolbar-title>
+          <v-toolbar-title>Usuarios de la app</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
             <v-btn icon slot="activator">
@@ -119,7 +119,7 @@
         align: 'center', 
         width: '100'}
       ],
-      users: [],
+      users: ['',''],
       editedIndex: -1,
       editedItem: {
         email: '',
@@ -169,7 +169,13 @@
         this.$axios.get('/watchers/self')
         .then(resp => {
           if(resp.status === 200){
-            this.users = resp.data
+            if (resp.data !== null){
+              this.users = resp.data
+            }
+            else{
+              this.users = []
+            }
+            
           }
         })
         .catch(e => {
@@ -213,7 +219,9 @@
       },
 
       save () {
+       
         if (this.editedIndex > -1) {
+          
           if (this.editedItem.password === 'xxxxxxxx'){
             delete this.editedItem.password
           }

@@ -17,7 +17,7 @@
     <v-flex xs8 offset-xs2>
       <v-toolbar color="blue lighten-1" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
-          <v-toolbar-title>Empleados </v-toolbar-title>
+          <v-toolbar-title>Personas Registradas </v-toolbar-title>
         </v-toolbar>
 
       <v-toolbar flat color="white">
