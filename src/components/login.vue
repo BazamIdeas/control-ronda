@@ -18,8 +18,13 @@
                 <v-btn color="primary" @click="login()">ENTRAR</v-btn>
               </v-card-actions>
             </v-card>
+          <v-btn color="error" fab small dark absolute bottom left to="/administracion">
+              <v-icon>scatter_plot</v-icon>
+        </v-btn>
           </v-flex>
+         
         </v-layout>
+        
       </v-container>
 </template>
 
