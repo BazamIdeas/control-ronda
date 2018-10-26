@@ -80,6 +80,10 @@
               <v-icon  slot="activator" color="green darken-2" class="mr-2" @click="editItem(props.item)">edit</v-icon>
               <span>Editar</span>
             </v-tooltip>
+            <v-tooltip bottom>
+              <v-icon  slot="activator" color="red darken-2" @click="deleteItem(props.item)">delete</v-icon>
+              <span>Eliminar</span>
+            </v-tooltip>
           </td>
         </template>
         <template slot="no-data">
