@@ -34,8 +34,7 @@
       :headers="headers"
       :items="points"
       :search="search"
-      :pagination.sync="pagination"
-      hide-actions
+      rows-per-page-text= "Número de Filas"
       class="elevation-1"
     >
       <template slot="items" slot-scope="props">
@@ -45,11 +44,10 @@
             <v-icon  slot="activator" color="green darken-2" class="mr-2" @click="editItem(props.item)">edit</v-icon>
             <span>Editar</span>
           </v-tooltip>
-          <a :href="'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data='+props.item.id" target="_blank">
           <v-tooltip bottom>
-            <v-icon  slot="activator" color="yellow darken-2" class="mr-2" >cloud_download</v-icon>
+            <v-icon  slot="activator" color="yellow darken-2" class="mr-2" @click="qr(props.item)" >cloud_download</v-icon>
             <span>Descargar qr</span>
-          </v-tooltip></a>
+          </v-tooltip>
           <v-tooltip bottom>
             <v-icon  slot="activator" color="red darken-2" @click="deleteItem(props.item)">delete</v-icon>
             <span>Eliminar</span>
@@ -60,21 +58,21 @@
         <v-btn color="primary" @click="initialize">Reset</v-btn>
       </template>
     </v-data-table>
-    <div class="text-xs-center pt-2">
-      <v-pagination v-model="pagination.page" :length="pages"></v-pagination>
-    </div>
   </v-flex>
 </template>
 
 
 <script>
+  var jsPDF = require ('jspdf')
+  require('jspdf-autotable');
   export default {
+    
     props: ["zone"],
     data: () => ({
       search: '',
-      pagination: {rowsPerPage: 10},
       dialog: false,
       selected: 0,
+      points: [],
       headers: [
         {
           text: 'Nombre',
@@ -88,7 +86,6 @@
         align: 'left', 
         width: '180'}
       ],
-      points: [],
       editedIndex: -1,
       editedItem: {
         name: '',
@@ -114,6 +111,9 @@
     watch: {
       dialog (val) {
         val || this.close()
+      },
+      zone: function(newVal, oldVal) { 
+        this.initialize()
       }
     },
 
@@ -121,10 +121,24 @@
       this.initialize()
     },
 
-
     methods: {
       initialize () {
-        this.points = this.zone.points
+        this.$axios.get('/zones/self')
+        .then(resp => {
+          if(resp.status === 200){
+            resp.data.forEach(zona => {
+              if (zona.id === this.zone.id){
+                if (zona.points === undefined)
+                  this.points = []
+                else
+                  this.points = zona.points
+              }
+            });
+          }
+        })
+        .catch(e => {
+          console.log(e)
+        })
       },
 
       editItem (item) {
@@ -153,7 +167,7 @@
         setTimeout(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
-        }, 1000)
+        }, 3000)
       },
 
       save () {
@@ -166,7 +180,7 @@
           })
           .then(resp => {
             if(resp.status === 200){
-              Object.assign(this.zone.points[this.editedIndex], this.editedItem)
+              Object.assign(this.points[this.editedIndex], this.editedItem)
             }
           })
           .catch(e => {
@@ -188,6 +202,30 @@
           })
         }
         this.close()
+      },
+      qr2(punto) {
+
+          var img = new Image()
+          img.addEventListener('load', function() {
+            var doc = new jsPDF()
+            doc.setFontSize(20)
+            doc.text('Punto de control: '+punto.name, 50, 30)
+            const file = 'QR Punto de control: '+punto.name+'.pdf'
+            doc.addImage(img, 'png', 10, 50)
+            doc.save(file)
+            
+        })
+        img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=350x350&data='+punto.id
+      },
+
+      qr(punto){
+         var myWindow = window.open("", "MsgWindow", "width=500,height=700")
+         let img = 'https://api.qrserver.com/v1/create-qr-code/?size=450x450&data='+punto.id
+         let name= punto.name
+         let zona = this.zone.name
+         myWindow.document.write("<center><hr><img src="+img+"><hr><h3>Punto de control:</h3><h1>"+name+"</h1><h4>"+zona+"</h4></center>")
+         setTimeout(function(){ myWindow.print() }, 2000);
+         
       }
     }
   }

@@ -58,7 +58,7 @@
               <v-icon>list</v-icon><h3>Gestion de tareas</h3>
           </v-layout>
           <v-layout justify-space-around>
-          <h4 class="estado">Estado: <span class="proximamente">Proximamente</span></h4>
+            <h4 class="estado">Estado: <span v-html=gestion></span></h4>
           </v-layout>
         </v-container>
       </v-card>
@@ -70,7 +70,7 @@
               <v-icon>check_box</v-icon><h3>Control de entregas</h3>
           </v-layout>
           <v-layout justify-space-around>
-          <h4 class="estado">Estado: <span class="proximamente">Proximamente</span></h4>
+            <h4 class="estado">Estado: <span v-html=entrega></span></h4>
           </v-layout>
         </v-container>
       </v-card>
@@ -95,6 +95,12 @@
       ronda (){ 
         return this.estado(this.$store.state.sesion.routes_mod)
       },
+      gestion (){
+        return this.estado(this.$store.state.sesion.task_mod)
+      },
+      entrega (){
+        return this.estado(this.$store.state.sesion.delivery_mod)
+      },
       usuarios (){
         return this.$store.state.sesion.user_limit
       }, 
@@ -102,7 +108,7 @@
         return this.$store.state.sesion.zone_limit
       },
       nombre (){
-        return this.$store.state.admin.first_name + this.$store.state.admin.last_name
+        return this.$store.state.admin.first_name
       } 
     },
 

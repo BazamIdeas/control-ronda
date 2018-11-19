@@ -8,7 +8,10 @@ import Vuetify from 'vuetify'
 import store from './store'
 import 'vuetify/dist/vuetify.min.css'
 
-Vue.use(Vuetify)
+Vue.use(Vuetify, {
+  theme: {
+    primary: '#646466' }
+})
 
 // Add a request interceptor
 instance.interceptors.request.use(function (config) {

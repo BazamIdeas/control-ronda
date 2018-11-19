@@ -9,7 +9,7 @@
               </v-toolbar>
               <v-card-text>
                 <v-form>
-                  <v-text-field prepend-icon="person" name="email" label="Email" type="text" v-model="email"></v-text-field>
+                  <v-text-field prepend-icon="person" name="username" label="Usuario" type="text" v-model="username"></v-text-field>
                   <v-text-field id="password" prepend-icon="lock" name="password" label="Contraseña" type="password" v-model="pass"></v-text-field>
                 </v-form>
               </v-card-text>
@@ -32,7 +32,7 @@
   import axios from '../axios.js'
   export default {
     data: () => ({
-      email: null,
+      username: null,
       pass: null,
       drawer: null
     }),
@@ -42,7 +42,7 @@
     methods: {
       login(){
         axios.post('/supervisors/login', {
-          email : this.email,
+          username : this.username,
           password : this.pass
         })
         .then(resp => {

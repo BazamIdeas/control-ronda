@@ -13,7 +13,7 @@
         <v-icon>sync</v-icon>
       </v-btn>
     </v-speed-dial>
-    <v-flex xs4>
+    <v-flex xs3>
       <v-toolbar color="blue lighten-1" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>Usuarios</v-toolbar-title>
@@ -71,13 +71,11 @@
         :headers="headers"
         :items="users"
         :search="search"
-        :pagination.sync="pagination"
-        hide-actions
+        rows-per-page-text= "Número de Filas"
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
           <td :class="{actived:selected == props.item.id}" >{{ props.item.worker.first_name }} {{ props.item.worker.last_name }}</td>
-          <td :class="{actived:selected == props.item.id}" >{{ props.item.phone }}</td>
           <td class="justify-center" :class="{actived:selected == props.item.id}">
             <v-tooltip bottom>
               <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getRoute(props.item)">add_location</v-icon>
@@ -106,21 +104,14 @@
       fab: false,
       search: '',
       UserRoutes: 0,
-      pagination: {rowsPerPage: 10},
       dialog: false,
       selected: 0,
       headers: [
         {
-          text: 'Nombre y Apellido',
+          text: 'Nombre Completo',
           sortable: false,
           value: 'first_name',
           width: 100
-        },
-        {
-          text: 'Telefono',
-          sortable: false,
-          value: 'phone',
-          width: 80
         },
         { text: 'Reporte', 
         value: 'name', 

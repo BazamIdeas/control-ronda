@@ -1,7 +1,7 @@
 <template>
 <v-container grid-list-md >
   <v-layout row wrap>
-    <v-flex xs4 offset-xs4>
+    <v-flex xs12 >
       <v-toolbar color="blue lighten-1" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>Usuarios de la app</v-toolbar-title>
@@ -19,14 +19,11 @@
             <v-card-text>
               <v-container grid-list-md>
                 <v-layout wrap>
-                  <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.first_name" label="Nombre"></v-text-field>
+                  <v-flex xs12>
+                    <v-text-field v-model="editedItem.worker.first_name" label="Nombre completo"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.last_name" label="Apellido"></v-text-field>
-                  </v-flex>
-                  <v-flex xs6>
-                    <v-text-field v-model="editedItem.email" label="Email"></v-text-field>
+                    <v-text-field v-model="editedItem.username" label="Usario"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
                     <v-text-field v-model="editedItem.phone" label="Telefono"></v-text-field>
@@ -59,12 +56,37 @@
         :headers="headers"
         :items="users"
         :search="search"
-        :pagination.sync="pagination"
-        hide-actions
+        rows-per-page-text= "Número de Filas"
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
-          <td :class="{actived:selected == props.item.id}" >{{ props.item.worker.first_name }} {{ props.item.worker.last_name }}</td>
+          <td :class="{actived:selected == props.item.id}" >{{ props.item.worker.first_name }}</td>
+          <td :class="{actived:selected == props.item.id}" >{{ props.item.username }}</td>
+          <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
+           <v-switch v-if="!props.item.worker.approved" v-model="props.item.approved" @change="aprobar(props.item.worker)" >
+           </v-switch>
+           <v-icon v-if="props.item.worker.approved" v-model="props.item.approved">done</v-icon>
+          </td>
+          <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
+           <v-switch v-if="props.item.worker.condos.assistances_mod"  v-model="props.item.assistances_mod" @change="changeStatus(props.item)" >
+           </v-switch>
+           <span v-if="!props.item.worker.condos.assistances_mod">No habilitado</span>
+          </td>
+          <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
+           <v-switch v-if="props.item.worker.condos.routes_mod"  v-model="props.item.routes_mod" @change="changeStatus(props.item)" >
+           </v-switch>
+           <span v-if="!props.item.worker.condos.routes_mod">No habilitado</span>
+          </td>
+          <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
+           <v-switch v-if="props.item.worker.condos.delivery_mod"  v-model="props.item.delivery_mod" @change="changeStatus(props.item)" >
+           </v-switch>
+           <span v-if="!props.item.worker.condos.delivery_mod">No habilitado</span>
+          </td>
+          <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
+           <v-switch v-if="props.item.worker.condos.tasks_mod" v-model="props.item.tasks_mod" @change="changeStatus(props.item)" >
+           </v-switch>
+           <span v-if="!props.item.worker.condos.tasks_mod">No habilitado</span>
+          </td>
           <td :class="{actived:selected == props.item.id}" >{{ props.item.phone }}</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
             <v-tooltip bottom>
@@ -95,15 +117,53 @@
       fab: false,
       search: '',
       UserRoutes: 0,
-      pagination: {rowsPerPage: 10},
       dialog: false,
       selected: 0,
       headers: [
         {
-          text: 'Nombre y Apellido',
+          text: 'Nombre completo',
           align: 'center',
           sortable: false,
           value: 'first_name',
+          width: '50'
+        },
+        {
+          text: 'Usuario',
+          align: 'center',
+          sortable: false,
+          value: 'username',
+          width: '50'
+        },
+        {
+          text: 'Aprobado',
+          align: 'center',
+          sortable: false,
+          value: 'first_name',
+          width: '50'
+        },
+        {
+          text: 'Asistencia',
+          align: 'center',
+          sortable: false,
+          value: 'first_name',
+          width: '50'
+        },
+        {
+          text: 'Rondas',
+          align: 'center',
+          sortable: false,
+          width: '50'
+        },
+        {
+          text: 'Entrega',
+          align: 'center',
+          sortable: false,
+          width: '50'
+        },
+        {
+          text: 'Gestión',
+          align: 'center',
+          sortable: false,
           width: '50'
         },
         {
@@ -122,21 +182,19 @@
       users: ['',''],
       editedIndex: -1,
       editedItem: {
-        email: '',
+        username: '',
         password: '',
         phone: '',
         worker: {
-          first_name: '',
-          last_name: ''
+          first_name: ''
         }
       },
       defaultItem: {
-        email: '',
+        username: '',
         password: '',
         phone: '',
         worker: {
-          first_name: '',
-          last_name: ''
+          first_name: ''
         }
       }
     }),
@@ -145,13 +203,6 @@
       formTitle () {
         return this.editedIndex === -1 ? 'Nuevo Usuario' : 'Modificar usuario'
       },
-      pages () {
-        if (this.pagination.rowsPerPage == null ||
-          this.pagination.totalItems == null
-        ) return 0
-
-        return Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage)
-      }
     },
 
     watch: {
@@ -251,7 +302,31 @@
           }
         }
         this.close()
-      }
+      },
+
+      changeStatus(item){
+        delete item.password
+        this.$axios.put('/watchers/'+item.id, item)
+        .then(resp => {
+          if(resp.status === 200){
+           alert("Haz cambiado el permiso al usuario satisfactoriamente")
+          }
+        })
+        .catch(e => {
+          console.log(e)
+        })
+      },
+       aprobar (item) {
+        this.$axios.patch('/workers/'+item.id+'/approve')
+        .then(resp => {
+          if(resp.status === 200){
+            alert('Usuario aprobado')
+          }
+        })
+        .catch(e => {
+          console.log(e)
+        })
+      },
     }
   }
 </script>

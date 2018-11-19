@@ -8,23 +8,23 @@
           <v-toolbar-title>Reporte anual - {{ empleado.first_name }} {{ empleado.last_name }}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon>
-          <v-icon @click="printElem()">play_for_work</v-icon>
+          <v-icon @click="pdf()">play_for_work</v-icon>
         </v-btn>
         </v-toolbar>        
         <v-data-table
           :headers="headers"
           :items="assistances"
-          hide-actions
+          rows-per-page-text= "Número de Filas"
           class="elevation-1"
         >
           <template slot="items" slot-scope="props">
             <td >{{ props.item.mes }} </td>
-            <td >{{ dias(props.item) }} </td>
-            <td >{{ props.item.extra_worked_hours.toFixed(2) }} </td>
+            <td >{{ props.item.dias}} </td>
+            <td >{{ props.item.horas_extras }} </td>
             <td >{{ priceHour }} </td>
-            <td >{{ total(props.item) }} </td>
+            <td >{{ props.item.total }} </td>
             <td >{{ props.item.holidays }} </td>
-            <td >{{ feriados(props.item) }} </td>
+            <td >{{ props.item.total_dias }} </td>
           </template>
           <template slot="no-data">
             <v-btn color="primary" @click="initialize">Recargar</v-btn>
@@ -41,6 +41,8 @@
   let meses= new Array ("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
   let d= new Date()
   var moment = require ('moment')
+  var jsPDF = require ('jspdf')
+  require('jspdf-autotable');
   moment.locale('es')
   export default {
     props: ['empleado'],
@@ -93,6 +95,15 @@
         }
       ],
       assistances: [],
+      columns : [
+        {title: 'MES', dataKey: 'mes'}, 
+        {title: 'DIAS', dataKey: 'dias'}, 
+        {title: 'HORAS EXTRAS', dataKey: 'horas_extras'}, 
+        {title:'VALOR HORA EXTRA', dataKey: 'precio_hora'},
+        {title: 'PAGO ADICIONAL', dataKey: 'total'}, 
+        {title: 'FERIADOS', dataKey:'feriados'}, 
+        {title:'TOTAL DIAS', dataKey: 'total_dias'}
+        ],
     }),
 
     watch: { 
@@ -106,7 +117,7 @@
         let vh= parseFloat(this.$store.state.sesion.hour_value)
         let percent= parseFloat(this.$store.state.sesion.extra_hour_increase)
         return parseFloat(( vh * (percent / 100)) + vh)
-      },
+      }
     },
 
     created () {
@@ -121,8 +132,15 @@
             let mesesA = []           
             // Obteniendo todas las claves del JSON
              for (var mes in resp.data.year_data){
-              resp.data.year_data[mes].mes = meses[mes - 1]
-              mesesA.push(resp.data.year_data[mes] )
+              let  m = resp.data.year_data[mes]
+               m.mes = meses[mes - 1]
+               m.dias = this.dias(m) 
+               m.horas_extras = m.extra_worked_hours.toFixed(2)
+               m.precio_hora = this.priceHour
+               m.total = this.total(m)
+               m.feriados= m.holidays
+               m.total_dias = this.totalDias(m)
+              mesesA.push(m)
             }
              this.assistances = mesesA
           }
@@ -146,11 +164,11 @@
       },
 
       dias(item) {
-        return Object.keys(item.days).length
+        return Object.keys(item.days).length - item.holidays
       },
 
-      feriados(item) {
-        return Object.keys(item.days).length + item.holidays
+      totalDias(item) {
+        return Object.keys(item.days).length
       },
 
 
@@ -175,6 +193,14 @@
           console.log(e)
         }) 
       },
+
+      pdf(){
+        var doc = new jsPDF('landscape')
+        doc.text('Reporte Anual: '+this.empleado.first_name +"-"+this.anio, 15, 30)
+        const file = 'Reporte Anual: '+this.empleado.first_name +"-"+this.anio+'.pdf'
+        doc.autoTable(this.columns, this.assistances, {margin: {top: 40}})
+        doc.save(file)
+      }
     }
   }
 </script>

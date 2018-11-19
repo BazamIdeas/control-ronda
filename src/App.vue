@@ -1,6 +1,7 @@
 <template>
   <v-app >
     <v-toolbar>
+      <img style="width: 45px;" src="./assets/logo.jpeg">
       <v-spacer></v-spacer>
       <v-toolbar-items v-if="sesion">
         <v-btn flat v-for="m in menu" :key="m.id" :to="m.route">{{m.name}}</v-btn>
@@ -21,9 +22,10 @@ export default {
       menu : [
         {name: 'ASISTENCIA', route: 'asistencia', id : 1},
         {name: 'RONDA',  route: 'ronda', id : 2},
-        {name: 'USUARIOS',  route: 'usuarios', id : 3},
-        {name: 'MI CUENTA',  route: 'cuenta', id : 4},
-        {name: 'SALIR',  route: 'logout', id : 5}
+        {name: 'GESTION',  route: 'gestion', id : 3},
+        {name: 'USUARIOS',  route: 'usuarios', id : 4},
+        {name: 'MI CUENTA',  route: 'cuenta', id : 5},
+        {name: 'SALIR',  route: 'logout', id : 6}
       ]
       
     }

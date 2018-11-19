@@ -80,7 +80,7 @@
               <v-data-table
               :headers="headers"
               :items="days"
-              hide-actions>
+              rows-per-page-text= "Número de Filas">
               <template slot="items" slot-scope="props">
                 <td >{{ moment(props.item.date).format('DD-MM-YYYY') }}</td>
                 <td class="justify-center px-0">

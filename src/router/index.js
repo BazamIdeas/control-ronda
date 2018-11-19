@@ -12,6 +12,7 @@ import Logout from '@/components/logout'
 import Cuenta from '@/components/cuenta'
 import Restringida from '@/components/restringida'
 import LoginAdmin from '@/components/administrador'
+import Gestion from '@/components/tareas'
 import Panel from '@/components/panel'
 
 Vue.use(Router)
@@ -82,6 +83,21 @@ export default new Router({
           next({
             name: 'restringida'
           })
+        }
+      }
+    },
+    {
+      path: '/gestion',
+      name: 'gestion',
+      component: Gestion,
+      meta: {
+        requiresAuth: true
+      },
+      beforeEnter: (to, from, next) => {
+        if (store.state.sesion.task_mod) {
+          next()
+        } else {
+          next()
         }
       }
     },

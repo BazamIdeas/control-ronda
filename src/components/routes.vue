@@ -1,5 +1,5 @@
 <template>
-  <v-flex xs8>
+  <v-flex xs9>
     <v-layout row wrap>
       <v-flex xs6>
         <v-toolbar color="blue lighten-1" dark>
@@ -24,12 +24,14 @@
           ></v-text-field>
           <v-date-picker v-model="date" locale="es-419" @input="$refs.menu.save(date)" @change="initialize"></v-date-picker>
           </v-menu>
+          <v-btn icon>
+          <v-icon @click="pdf()">play_for_work</v-icon>
+        </v-btn>
         </v-toolbar>
         <v-data-table
           :headers="headers"
           :items="verificaciones"
           :search="search"
-          :pagination.sync="pagination"
           hide-actions
           class="elevation-1"
         >
@@ -55,6 +57,7 @@
 <script>
   import BzMaps from "./maps.vue"
 var moment = require ('moment')
+  var jsPDF = require ('jspdf')
 moment.locale('es')
   export default {
    components: { BzMaps },
@@ -66,9 +69,16 @@ moment.locale('es')
       menu: false,
       date: null,
       veri: false,
-      pagination: {rowsPerPage: 10},
       dialog: false,
       selected: 0,
+      columns : [
+        {title: 'ZONA', dataKey: 'zona'}, 
+        {title: 'PUNTO', dataKey: 'punto'}, 
+        {title: 'HORA', dataKey: 'hora'}, 
+        {title:'LATITUD', dataKey: 'latitud'},
+        {title: 'LONGITUD', dataKey: 'longitud'}, 
+        ],
+
       headers: [
         {
           text: 'Zona',
@@ -138,6 +148,21 @@ moment.locale('es')
           alert('No hay recorridos en esta fecha')
           console.log(e)
         }) 
+      },
+      pdf(){
+        var doc = new jsPDF()
+        doc.text(this.user.worker.first_name +" - "+moment().format('DD/MM/YYYY'), 15, 30)
+        const file = 'Ronda-'+this.user.worker.first_name +"-"+moment().format('DD/MM/YYYY')+'.pdf'
+        let tabla = []
+        this.verificaciones.forEach(verificacion => {
+          tabla.push({'zona':verificacion.point.zones.name, 
+          'punto': verificacion.point.name, 
+          'hora': moment(verificacion.date).format('HH:mm'), 
+          'latitud': verificacion.latitude,
+          'longitud': verificacion.longitude})
+        });
+        doc.autoTable(this.columns, tabla, {margin: {top: 40}})
+        doc.save(file)
       }
     }
   }

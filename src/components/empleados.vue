@@ -38,10 +38,7 @@
               <v-container grid-list-md>
                 <v-layout wrap>
                   <v-flex xs12>
-                    <v-text-field v-model="editedItem.first_name" label="Nombre"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12>
-                    <v-text-field v-model="editedItem.last_name" label="Apellido"></v-text-field>
+                    <v-text-field v-model="editedItem.first_name" label="Nombre Completo"></v-text-field>
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -59,16 +56,16 @@
         :headers="headers"
         :items="employees"
         :search="search"
-        :pagination.sync="pagination"
-        hide-actions
+        rows-per-page-text= "Número de Filas"
+        
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
-          <td :class="{actived:selected == props.item.id}" >{{ props.item.first_name }} {{ props.item.last_name }}</td>
+          <td :class="{actived:selected == props.item.id}" >{{ props.item.first_name }}</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
            <v-switch v-if="!props.item.approved" v-model="props.item.approved" @change="changeStatus(props.item)" >
            </v-switch>
-           <v-icon v-if="props.item.approved" v-model="props.item.approved">thumb_up_alt</v-icon>
+           <v-icon v-if="props.item.approved" v-model="props.item.approved">done</v-icon>
           </td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
             <v-tooltip bottom>
@@ -122,13 +119,12 @@
       search: '',
       employeesReport: 0,
       employeesResume: 0,
-      pagination: {rowsPerPage: 1000},
       dialog: false,
       selected: 0,
       ventana: false,
       headers: [
         {
-          text: 'Nombre y Apellido',
+          text: 'Nombre Completo',
           sortable: true,
           value: 'first_name',
           width: '140'
@@ -147,11 +143,9 @@
       editedIndex: -1,
       editedItem: {
         first_name: '',
-        last_name: ''
       },
       defaultItem: {
         first_name: '',
-        last_name: ''
       }
     }),
 
@@ -203,7 +197,7 @@
         this.$axios.patch('/workers/'+item.id+'/approve')
         .then(resp => {
           if(resp.status === 200){
-            alert('Empleado aprobado')
+            alert('Persona aprobada')
           }
         })
         .catch(e => {

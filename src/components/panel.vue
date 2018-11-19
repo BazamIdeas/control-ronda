@@ -52,8 +52,7 @@
       <v-data-table
         :headers="headers"
         :items="condominios"
-        :pagination.sync="pagination"
-        hide-actions
+        rows-per-page-text= "Número de Filas"
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
@@ -119,7 +118,6 @@
       fab: false,
       search: '',
       condominio: 0,
-      pagination: {rowsPerPage: 10},
       dialog: false,
       selected: 0,
       headers: [

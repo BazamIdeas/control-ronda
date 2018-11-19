@@ -59,8 +59,7 @@
         :headers="headers"
         :items="zones"
         :search="search"
-        :pagination.sync="pagination"
-        hide-actions
+        rows-per-page-text= "Número de Filas"
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
@@ -104,7 +103,6 @@
       info: null,
       search: '',
       checkpoints: 0,
-      pagination: {rowsPerPage: 10},
       dialog: false,
       selected: 0,
       headers: [

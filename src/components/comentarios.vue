@@ -1,12 +1,12 @@
 <template>
     <div>
-        {{tarea}}
+        {{subtarea.description}}
     </div>
 </template>
 
 <script>
 export default {
-    props: ['tarea']
+    props: ['subtarea']
         
 }
 </script>
