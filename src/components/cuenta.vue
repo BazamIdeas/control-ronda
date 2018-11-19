@@ -96,7 +96,7 @@
         return this.estado(this.$store.state.sesion.routes_mod)
       },
       gestion (){
-        return this.estado(this.$store.state.sesion.task_mod)
+        return this.estado(this.$store.state.sesion.tasks_mod)
       },
       entrega (){
         return this.estado(this.$store.state.sesion.delivery_mod)

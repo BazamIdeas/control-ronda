@@ -19,18 +19,15 @@
               <v-container grid-list-md>
                 <v-layout wrap>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.first_name" label="Nombre"></v-text-field>
+                    <v-text-field v-model="editedItem.worker.first_name" label="Nombre completo"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.last_name" label="Apellido"></v-text-field>
-                  </v-flex>
-                  <v-flex xs6>
-                    <v-text-field v-model="editedItem.email" label="Email"></v-text-field>
+                    <v-text-field v-model="editedItem.usuaio" label="Usuario"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
                     <v-text-field v-model="editedItem.phone" label="Telefono"></v-text-field>
                   </v-flex>
-                  <v-flex xs12>
+                  <v-flex xs6>
                     <v-text-field v-model="editedItem.password" label="Contraseña"></v-text-field>
                   </v-flex>
                 </v-layout>
@@ -62,7 +59,7 @@
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
-          <td :class="{actived:selected == props.item.id}" >{{ props.item.worker.first_name }} {{ props.item.worker.last_name }}</td>
+          <td :class="{actived:selected == props.item.id}" >{{ props.item.worker.first_name }}</td>
           <td :class="{actived:selected == props.item.id}" >{{ props.item.phone }}</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
             <v-tooltip bottom>
@@ -96,7 +93,7 @@
       selected: 0,
       headers: [
         {
-          text: 'Nombre y Apellido',
+          text: 'Nombre completo',
           align: 'center',
           sortable: false,
           value: 'first_name',
@@ -118,24 +115,22 @@
       users: [],
       editedIndex: -1,
       editedItem: {
-        email: '',
+        usuaio: '',
         password: '',
         phone: '',
         worker: {
           first_name: '',
-          last_name: '',
           condos: {
               id: ''
           }
         }
       },
       defaultItem: {
-        email: '',
+        usuaio: '',
         password: '',
         phone: '',
         worker: {
           first_name: '',
-          last_name: '',
           condos: {
               id: ''
           }
@@ -147,13 +142,6 @@
       formTitle () {
         return this.editedIndex === -1 ? 'Nuevo Supervisor' : 'Modificar supervisor'
       },
-      pages () {
-        if (this.pagination.rowsPerPage == null ||
-          this.pagination.totalItems == null
-        ) return 0
-
-        return Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage)
-      }
     },
 
     watch: {
@@ -244,7 +232,7 @@
               })
           }
           else{
-            alert('Haz excedido el limite de usuarios de tu plan')
+            alert('Ha excedido el limite de usuarios permitidos para el condominio')
           }
         }
         this.close()

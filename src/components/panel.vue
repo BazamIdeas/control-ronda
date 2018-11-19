@@ -23,18 +23,21 @@
                     <v-text-field v-model="editedItem.name" label="Nombre"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
+                    <v-text-field v-model= editedItem.rut  label="RUT"></v-text-field>
+                  </v-flex>
+                  <v-flex xs6>
                     <v-text-field v-model.number= editedItem.user_limit type="number" label="Limite de empleados"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
                     <v-text-field v-model.number= editedItem.zone_limit type="number" label="Limite de zonas"></v-text-field>
                   </v-flex>
-                  <v-flex xs6>
+                  <v-flex xs4>
                     <v-text-field v-model.number= editedItem.hour_value type="number" label="Valor hora"></v-text-field>
                   </v-flex>
-                  <v-flex xs6>
+                  <v-flex xs4>
                     <v-text-field v-model.number= editedItem.extra_hour_increase type="number" label="Porcentaje hora extra"></v-text-field>
                   </v-flex>
-                  <v-flex xs6>
+                  <v-flex xs4>
                     <v-text-field v-model.number= editedItem.working_hours type="number" label="Jornada Laboral"></v-text-field>
                   </v-flex>
                 </v-layout>
@@ -57,11 +60,14 @@
       >
         <template slot="items" slot-scope="props">
           <td :class="{actived:selected == props.item.id}" >{{ props.item.name }} </td>
-          <td :class="{actived:selected == props.item.id}" >{{ props.item.user_limit }}</td>
-          <td :class="{actived:selected == props.item.id}" >{{ props.item.zone_limit }}</td>
+          <td :class="{actived:selected == props.item.id}" >{{ props.item.rut }}</td>
+          <td :class="{actived:selected == props.item.id}" >{{ props.item.supervisors[0].worker.first_name }}
+          </td>
+<!--           <td :class="{actived:selected == props.item.id}" >{{ props.item.zone_limit }}</td>
           <td :class="{actived:selected == props.item.id}" >{{ props.item.hour_value }}$</td>
           <td :class="{actived:selected == props.item.id}" >{{ props.item.extra_hour_increase }}%</td>
-          <td :class="{actived:selected == props.item.id}" >{{ props.item.working_hours }}</td>
+          <td :class="{actived:selected == props.item.id}" >{{ props.item.working_hours }}</td> -->
+
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
            <v-switch v-model="props.item.assistances_mod" @change="changeModulo(props.item)" >
            </v-switch>
@@ -71,10 +77,18 @@
            </v-switch>
           </td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
+           <v-switch  v-model="props.item.tasks_mod" @change="changeModulo(props.item)" >
+           </v-switch>
+          </td>
+          <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
+           <v-switch  v-model="props.item.delivery_mod" @change="changeModulo(props.item)" >
+           </v-switch>
+          </td>
+          <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
             <v-tooltip bottom>
-              <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getSupervisores(props.item)">person</v-icon>
-              <span>Usuarios</span>
-            </v-tooltip>
+            <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getSupervisores(props.item)">person</v-icon>
+            <span>Todos los supervisores</span>
+          </v-tooltip>
             <v-tooltip bottom>
               <v-icon  slot="activator" color="green darken-2" class="mr-2" @click="editItem(props.item)">edit</v-icon>
               <span>Editar</span>
@@ -126,23 +140,11 @@
           sortable: false,
         },
         {
-          text: 'Empleados (Max)',
+          text: 'RUT',
           sortable: false,
         },
-        { text: 'Zonas (Max)', 
-        sortable: false, 
-        },
-
         { 
-        text: '$ Hora', 
-        sortable: false, 
-        },
-        { 
-        text: '% hora extra', 
-        sortable: false, 
-        },
-        { 
-        text: 'Jornada (Hrs)', 
+        text: 'Supervisor', 
         sortable: false, 
         },
         { 
@@ -154,7 +156,15 @@
         sortable: false, 
         },
         { 
-        text: 'Supervisores', 
+        text: 'Gestión', 
+        sortable: false, 
+        },
+        { 
+        text: 'Entrega', 
+        sortable: false, 
+        },
+        { 
+        text: 'Acciones', 
         sortable: false, 
         }
       ],
@@ -169,6 +179,9 @@
         working_hours: '',
         assistances_mod: false,
         routes_mod: false,
+        delivery_mod: false,
+        tasks_mod: false,
+        rut: ''
       },
       defaultItem: {
         name: '',
@@ -179,19 +192,15 @@
         working_hours: '',
         assistances_mod: false,
         routes_mod: false,
+        delivery_mod: false,
+        tasks_mod: false,
+        rut: ''
       },
     }),
 
     computed: {
       formTitle () {
         return this.editedIndex === -1 ? 'Nuevo Condominio' : 'Modificar condominio'
-      },
-      pages () {
-        if (this.pagination.rowsPerPage == null ||
-          this.pagination.totalItems == null
-        ) return 0
-
-        return Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage)
       }
     },
 
