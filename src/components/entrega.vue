@@ -7,9 +7,9 @@
           <v-toolbar-title>Listas de entrega </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
-            <!-- <v-btn icon slot="activator">
+           <v-btn icon slot="activator">
             <v-icon >plus_one</v-icon>
-            </v-btn> -->
+            </v-btn>
             <v-card>
               <v-card-title>
                 <span class="headline">{{ formTitle }}</span>
@@ -20,6 +20,17 @@
                   <v-layout wrap>
                     <v-flex xs12>
                       <v-text-field v-model="editedItem.name" label="Nombre"></v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                    <v-select
+                        :items="usuarios"
+                        v-model="selectUsuarios"
+                        item-text="first_name"
+                        item-value="id"
+                        label="Usuario responsable"
+                        return-object
+                        single-line
+                        ></v-select>
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -55,14 +66,14 @@
           <td :class="{actived:selected == props.item.id}" >{{ props.item.name }}</td>
            <td :class="{actived:selected == props.item.id}" >{{ props.item.worker.first_name }}</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
-            <!-- <v-tooltip bottom>
+            <v-tooltip bottom>
               <v-icon  slot="activator" color="green darken-2" class="mr-2" @click="editItem(props.item)">edit</v-icon>
               <span>Editar</span>
-            </v-tooltip> -->
-            <!-- <v-tooltip bottom>
-              <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getCheckpoints(props.item)">add_location</v-icon>
+            </v-tooltip> 
+             <v-tooltip bottom>
+              <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getCheckpoints(props.item)">assignment_turned_in</v-icon>
               <span>Items</span>
-            </v-tooltip> -->
+            </v-tooltip>
             <v-tooltip bottom>
               <v-icon  slot="activator" color="red darken-2" @click="deleteItem(props.item)">delete</v-icon>
               <span>Eliminar</span>
@@ -76,7 +87,7 @@
       <div class="text-xs-center pt-2">
       </div>
     </v-flex>
-    <bz-checkpoints v-if= "checkpoints" v-bind:zone="checkpoints"> </bz-checkpoints>
+    <bz-items v-if= "items" v-bind:zone="items"> </bz-items>
   </v-layout>
 </v-container>
 </template>
@@ -85,17 +96,19 @@
 <script>
 var moment = require ('moment')
   moment.locale('es')
-  import BzCheckpoints from "./checkpoints.vue"
+  //import BzCheckpoints from "./items.vue"
   import axios from '../axios.js'
 
   export default {
-    components: {BzCheckpoints},
+    //components: {BzCheckpoints},
     data: () => ({
       moment: moment,
       fab: true,
       info: null,
       search: '',
-      checkpoints: 0,
+      items: 0,
+      usuarios: 0,
+      selectUsuarios: { id: '', first_name: '' },
       dialog: false,
       selected: 0,
       headers: [
@@ -147,6 +160,7 @@ var moment = require ('moment')
 
     created () {
       this.initialize()
+      this.getUsuarios()
     },
 
     methods: {
@@ -171,7 +185,28 @@ var moment = require ('moment')
 
       getCheckpoints(item){
         this.selected = item.id
-        this.checkpoints = item
+        this.items = item
+      },
+
+       getUsuarios () {
+        this.$axios.get('/watchers/self')
+        .then(resp => {
+          if(resp.status === 200){
+            if (resp.data !== null){
+                let workers = []
+                resp.data.forEach(element => {
+                    workers.push(element.worker)
+                })
+              this.usuarios = workers
+            }
+            else{
+              this.users = []
+            }
+          }
+        })
+        .catch(e => {
+          console.log(e)
+        })
       },
 
       deleteItem (item) {
@@ -200,9 +235,9 @@ var moment = require ('moment')
         if (this.editedIndex > -1) {
           this.$axios.put('/deliveries/'+this.editedItem.id, {
             name : this.editedItem.name,
-            condos: {
-              id: this.$store.state.sesion.id
-            }
+              worker: {
+                id: this.selectUsuarios.id
+              }
           })
           .then(resp => {
             if(resp.status === 200){
@@ -214,11 +249,15 @@ var moment = require ('moment')
           })
         } else {
             axios.post('/deliveries/', {
-            name : this.editedItem.name
+            name : this.editedItem.name,
+              worker: {
+                id: this.selectUsuarios.id
+                }
           })
           .then(resp => {
             if(resp.status === 201){
-              this.listas.push(resp.data)
+               resp.data.worker.first_name = this.selectUsuarios.first_name
+                this.listas.push(resp.data)
             }
           })
           .catch(e => {

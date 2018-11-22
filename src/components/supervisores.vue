@@ -22,7 +22,7 @@
                     <v-text-field v-model="editedItem.worker.first_name" label="Nombre completo"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.usuaio" label="Usuario"></v-text-field>
+                    <v-text-field v-model="editedItem.username" label="Usuario"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
                     <v-text-field v-model="editedItem.phone" label="Telefono"></v-text-field>
@@ -115,7 +115,7 @@
       users: [],
       editedIndex: -1,
       editedItem: {
-        usuaio: '',
+        username: '',
         password: '',
         phone: '',
         worker: {
@@ -126,7 +126,7 @@
         }
       },
       defaultItem: {
-        usuaio: '',
+        username: '',
         password: '',
         phone: '',
         worker: {

@@ -23,7 +23,7 @@
                     <v-text-field v-model="editedItem.worker.first_name" label="Nombre completo"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.username" label="Usario"></v-text-field>
+                    <v-text-field v-model="editedItem.username" label="Usuario"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
                     <v-text-field v-model="editedItem.phone" label="Telefono"></v-text-field>
@@ -90,6 +90,7 @@
           <td :class="{actived:selected == props.item.id}" >{{ props.item.phone }}</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
             <v-tooltip bottom>
+              
               <v-icon  slot="activator" color="green darken-2" class="mr-2" @click="editItem(props.item)">edit</v-icon>
               <span>Editar</span>
             </v-tooltip>
@@ -138,14 +139,12 @@
           text: 'Aprobado',
           align: 'center',
           sortable: false,
-          value: 'first_name',
           width: '50'
         },
         {
           text: 'Asistencia',
           align: 'center',
           sortable: false,
-          value: 'first_name',
           width: '50'
         },
         {
@@ -294,6 +293,9 @@
                 }
               })
               .catch(e => {
+                if(e.code === 409){
+                  alert("Ha excedido el limite de usuarios de su cuenta")
+                }
                 console.log(e)
               })
           }
