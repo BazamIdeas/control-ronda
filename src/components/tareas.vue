@@ -1,6 +1,18 @@
 <template>
 <v-container grid-list-md >
   <v-layout row wrap>
+    <!-- <v-speed-dial v-model="fab" left  absolute direction='bottom' transition='slide-y-reverse-transition'>
+      <v-btn slot="activator" v-model="fab" color="blue darken-2" dark fab >
+        <v-icon>toggle_off</v-icon>
+        <v-icon>toggle_on</v-icon>
+      </v-btn>
+      <v-btn to="/notificaciones" fab dark small color="green" >
+        <v-icon>notifications_active</v-icon>
+      </v-btn>
+      <v-btn to="/gestion" fab dark small color="indigo">
+        <v-icon>list</v-icon>
+      </v-btn>
+    </v-speed-dial> -->
     <v-flex xs12>
       <v-toolbar color="blue lighten-1" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
@@ -120,7 +132,7 @@ import BzComentarios from "./comentarios.vue"
     components: {BzSubtareas},
     data: () => ({
       moment: moment,
-      fab: false,
+      fab: true,
       info: null,
       search: '',
       selectUsuarios: { id: '', first_name: '' },

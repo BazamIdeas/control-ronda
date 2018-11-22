@@ -115,7 +115,7 @@
   export default {
     components: {BzReport, BzResume},
     data: () => ({
-      fab: false,
+      fab: true,
       search: '',
       employeesReport: 0,
       employeesResume: 0,

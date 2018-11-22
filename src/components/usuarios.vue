@@ -114,7 +114,7 @@
 
   export default {
     data: () => ({
-      fab: false,
+      fab: true,
       search: '',
       UserRoutes: 0,
       dialog: false,

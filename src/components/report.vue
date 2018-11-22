@@ -8,7 +8,7 @@
           <v-toolbar-title>Reporte mensual - {{ empleado.first_name }} {{ empleado.last_name }}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon>
-          <v-icon @click="printElem()">play_for_work</v-icon>
+          <v-icon @click="pdf()">play_for_work</v-icon>
         </v-btn>
         </v-toolbar>
         <v-container grid-list-md >
@@ -55,7 +55,7 @@
         <v-data-table
           :headers="headers"
           :items="assistances"
-          rows-per-page-text= "Número de Filas"
+          hide-actions
           class="elevation-1"
         >
           <template slot="items" slot-scope="props">
@@ -66,7 +66,7 @@
             <td >{{ moment(props.item.exit.date).format('HH:mm') }} </td>
             <td >{{ parseFloat(props.item.total_worked_hours).toFixed(2) }} </td>
             <td >{{ diferencial(props.item.total_worked_hours) }} </td>
-            <td ><v-icon v-if= props.item.is_holiday large color="green darken-2">business</v-icon> </td>
+            <td ><v-icon v-if= props.item.is_holiday large color="green darken-2">done</v-icon> </td>
           </template>
           <template slot="no-data">
             <v-btn color="primary" @click="initialize">Recargar</v-btn>
@@ -85,6 +85,8 @@
   let m= d.getMonth()
   var moment = require ('moment')
   moment.locale('es')
+    var jsPDF = require ('jspdf')
+  require('jspdf-autotable');
   export default {
     props: ['empleado'],
     data: () => ({
@@ -141,6 +143,16 @@
           value: 'name', 
         }
       ],
+      columns : [
+        {title: 'DIA', dataKey: 'dia'}, 
+        {title: 'ENTRADA', dataKey: 'entrada'}, 
+        {title: 'INICIO COLACION', dataKey: 'inicio_colacion'}, 
+        {title:'TERMINO COLACION', dataKey: 'final_colacion'},
+        {title: 'SALIDA', dataKey: 'salida'}, 
+        {title: 'HORAS', dataKey:'horas'}, 
+        {title:'DIFERENCIAL', dataKey: 'diferencial'},
+        {title:'FESTIVO', dataKey: 'festivo'}
+        ],
       assistances: [],
     }),
 
@@ -181,6 +193,7 @@
 
     methods: {
       initialize (m,y) {
+        console.log(m)
         this.$axios.get('/workers/'+this.empleado.id+'/data/'+y+'/'+m)
         .then(resp => {
           if(resp.status === 200){
@@ -260,6 +273,30 @@
       },
       diferencial(horas){
         return (parseFloat(horas) - parseFloat(this.$store.state.sesion.working_hours)).toFixed(2) 
+      },
+
+      pdf(){
+        var doc = new jsPDF('landscape')
+        doc.text('Reporte Mensual: '+this.empleado.first_name +"-"+this.mes+"-"+this.anio, 15, 30)
+        const file = 'Reporte Mensual: '+this.empleado.first_name +"-"+this.mes+"-"+this.anio+'.pdf'
+        let tabla = []
+        let festivo = 'NO'
+        this.assistances.forEach(asistencia => {
+          if (asistencia.is_holiday)
+            festivo = 'SI'
+          tabla.push({
+            'dia': asistencia.day,
+            'entrada' : moment(asistencia.entry.date).format('HH:mm'),
+            'inicio_colacion' : moment(asistencia.break.date).format('HH:mm'),
+            'final_colacion' : moment(asistencia.finish_break.date).format('HH:mm'),
+            'salida' : moment(asistencia.exit.date).format('HH:mm'),
+            'horas': parseFloat(asistencia.total_worked_hours).toFixed(2) ,
+            'diferencial': parseFloat(asistencia.extra_worked_hours).toFixed(2) ,
+            'festivo' : festivo
+          })
+        });
+        doc.autoTable(this.columns, tabla, {margin: {top: 40}})
+        doc.save(file)
       }
     }
   }

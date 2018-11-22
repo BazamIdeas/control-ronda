@@ -23,9 +23,10 @@ export default {
         {name: 'ASISTENCIA', route: 'asistencia', id : 1},
         {name: 'RONDA',  route: 'ronda', id : 2},
         {name: 'GESTION',  route: 'gestion', id : 3},
-        {name: 'USUARIOS',  route: 'usuarios', id : 4},
-        {name: 'MI CUENTA',  route: 'cuenta', id : 5},
-        {name: 'SALIR',  route: 'logout', id : 6}
+        {name: 'ENTREGA',  route: 'entrega', id : 4},
+        {name: 'USUARIOS',  route: 'usuarios', id :5},
+        {name: 'MI CUENTA',  route: 'cuenta', id : 6},
+        {name: 'SALIR',  route: 'logout', id : 7}
       ]
       
     }

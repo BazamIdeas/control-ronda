@@ -1,27 +1,15 @@
 <template>
 <v-container grid-list-md >
   <v-layout row wrap>
-    <v-speed-dial v-model="fab" left  absolute direction='bottom' transition='slide-y-reverse-transition'>
-      <v-btn slot="activator" v-model="fab" color="pink" dark fab >
-        <v-icon>toggle_off</v-icon>
-        <v-icon>toggle_on</v-icon>
-      </v-btn>
-      <v-btn to="/zonas" fab dark small color="green" >
-        <v-icon>location_on</v-icon>
-      </v-btn>
-      <v-btn to="/ronda" fab dark small color="indigo">
-        <v-icon>sync</v-icon>
-      </v-btn>
-    </v-speed-dial>
-    <v-flex xs6>
+    <v-flex xs10 offset-xs1>
       <v-toolbar color="blue lighten-1" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
-          <v-toolbar-title>Zonas </v-toolbar-title>
+          <v-toolbar-title>Listas de entrega </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
-            <v-btn icon slot="activator">
+            <!-- <v-btn icon slot="activator">
             <v-icon >plus_one</v-icon>
-            </v-btn>
+            </v-btn> -->
             <v-card>
               <v-card-title>
                 <span class="headline">{{ formTitle }}</span>
@@ -57,22 +45,24 @@
       </v-toolbar>
       <v-data-table
         :headers="headers"
-        :items="zones"
+        :items="listas"
         :search="search"
         rows-per-page-text= "Número de Filas"
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
+          <td :class="{actived:selected == props.item.id}" >{{ moment(props.item.date).format('DD-MM-YYYY') }}</td>
           <td :class="{actived:selected == props.item.id}" >{{ props.item.name }}</td>
+           <td :class="{actived:selected == props.item.id}" >{{ props.item.worker.first_name }}</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
-            <v-tooltip bottom>
+            <!-- <v-tooltip bottom>
               <v-icon  slot="activator" color="green darken-2" class="mr-2" @click="editItem(props.item)">edit</v-icon>
               <span>Editar</span>
-            </v-tooltip>
-            <v-tooltip bottom>
+            </v-tooltip> -->
+            <!-- <v-tooltip bottom>
               <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getCheckpoints(props.item)">add_location</v-icon>
-              <span>Puntos de control</span>
-            </v-tooltip>
+              <span>Items</span>
+            </v-tooltip> -->
             <v-tooltip bottom>
               <v-icon  slot="activator" color="red darken-2" @click="deleteItem(props.item)">delete</v-icon>
               <span>Eliminar</span>
@@ -93,12 +83,15 @@
 
 
 <script>
+var moment = require ('moment')
+  moment.locale('es')
   import BzCheckpoints from "./checkpoints.vue"
   import axios from '../axios.js'
 
   export default {
     components: {BzCheckpoints},
     data: () => ({
+      moment: moment,
       fab: true,
       info: null,
       search: '',
@@ -107,10 +100,22 @@
       selected: 0,
       headers: [
         {
-          text: 'Nombre',
+          text: 'Fecha',
+          align: 'left',
+          sortable: true,
+          value: 'date'
+        },
+        {
+          text: 'Lista',
           align: 'left',
           sortable: true,
           value: 'name'
+        },
+        {
+          text: 'Responsable',
+          align: 'left',
+          sortable: true,
+          value: 'first_name'
         },
         { text: 'Acciones', 
         value: 'name', 
@@ -118,7 +123,7 @@
         align: 'left', 
         width: '180'}
       ],
-      zones: [],
+      listas: [],
       editedIndex: -1,
       editedItem: {
         name: '',
@@ -130,15 +135,8 @@
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nueva zona' : 'Modificar zona'
+        return this.editedIndex === -1 ? 'Nueva Lista de entrega' : 'Modificar Lista'
       },
-      pages () {
-        if (this.pagination.rowsPerPage == null ||
-          this.pagination.totalItems == null
-        ) return 0
-
-        return Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage)
-      }
     },
 
     watch: {
@@ -153,10 +151,10 @@
 
     methods: {
       initialize () {
-        axios.get('/zones/self')
+        axios.get('/deliveries/condos/self')
         .then(resp => {
           if(resp.status === 200){
-            this.zones = resp.data
+            this.listas = resp.data
           }
         })
         .catch(e => {
@@ -166,7 +164,7 @@
 
       editItem (item) {
         this.selected = item.id
-        this.editedIndex = this.zones.indexOf(item)
+        this.editedIndex = this.listas.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialog = true
       },
@@ -177,11 +175,11 @@
       },
 
       deleteItem (item) {
-        this.$axios.delete('/zones/'+item.id+'?trash=true')
+        this.$axios.delete('/deliveries/'+item.id+'?trash=true')
           .then(resp => {
             if(resp.status === 200){
-              const index = this.zones.indexOf(item)
-              this.zones.splice(index, 1)
+              const index = this.listas.indexOf(item)
+              this.listas.splice(index, 1)
             }
           })
           .catch(e => {
@@ -200,7 +198,7 @@
 
       save () {
         if (this.editedIndex > -1) {
-          this.$axios.put('/zones/'+this.editedItem.id, {
+          this.$axios.put('/deliveries/'+this.editedItem.id, {
             name : this.editedItem.name,
             condos: {
               id: this.$store.state.sesion.id
@@ -208,29 +206,24 @@
           })
           .then(resp => {
             if(resp.status === 200){
-              Object.assign(this.zones[this.editedIndex], this.editedItem)
+              Object.assign(this.listas[this.editedIndex], this.editedItem)
             }
           })
           .catch(e => {
             console.log(e)
           })
         } else {
-            if (this.zones.length < this.$store.state.sesion.zone_limit ){
-              axios.post('/zones/', {
-              name : this.editedItem.name
-            })
-            .then(resp => {
-              if(resp.status === 201){
-                this.zones.push(resp.data)
-              }
-            })
-            .catch(e => {
-              console.log(e)
-            })
-          }
-          else{
-            alert('Haz excedido el limite de zonas de tu plan')
-          }
+            axios.post('/deliveries/', {
+            name : this.editedItem.name
+          })
+          .then(resp => {
+            if(resp.status === 201){
+              this.listas.push(resp.data)
+            }
+          })
+          .catch(e => {
+            console.log(e)
+          })
         }
         this.close()
       }

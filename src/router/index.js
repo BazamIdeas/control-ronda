@@ -14,6 +14,8 @@ import Restringida from '@/components/restringida'
 import LoginAdmin from '@/components/administrador'
 import Gestion from '@/components/tareas'
 import Panel from '@/components/panel'
+import Notificaciones from '@/components/notificaciones'
+import Entrega from '@/components/entrega'
 
 Vue.use(Router)
 
@@ -94,7 +96,37 @@ export default new Router({
         requiresAuth: true
       },
       beforeEnter: (to, from, next) => {
-        if (store.state.sesion.task_mod) {
+        if (store.state.sesion.tasks_mod) {
+          next()
+        } else {
+          next()
+        }
+      }
+    },
+    {
+      path: '/notificaciones',
+      name: 'notificaciones',
+      component: Notificaciones,
+      meta: {
+        requiresAuth: true
+      },
+      beforeEnter: (to, from, next) => {
+        if (store.state.sesion.tasks_mod) {
+          next()
+        } else {
+          next()
+        }
+      }
+    },
+    {
+      path: '/entrega',
+      name: 'entrega',
+      component: Entrega,
+      meta: {
+        requiresAuth: true
+      },
+      beforeEnter: (to, from, next) => {
+        if (store.state.sesion.delivery_mod) {
           next()
         } else {
           next()

@@ -120,7 +120,7 @@
     props: ['tarea'],
     data: () => ({
       moment: moment,
-      fab: false,
+      fab: true,
       search: '',
       usuarios: [],
       ventanaComentarios: false,

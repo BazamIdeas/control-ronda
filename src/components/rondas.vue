@@ -101,7 +101,7 @@
   export default {
     components: {BzRoutes },
     data: () => ({
-      fab: false,
+      fab: true,
       search: '',
       UserRoutes: 0,
       dialog: false,
@@ -144,13 +144,6 @@
       formTitle () {
         return this.editedIndex === -1 ? 'Nuevo Usuario' : 'Modificar usuario'
       },
-      pages () {
-        if (this.pagination.rowsPerPage == null ||
-          this.pagination.totalItems == null
-        ) return 0
-
-        return Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage)
-      }
     },
 
     watch: {

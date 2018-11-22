@@ -14,7 +14,7 @@
         <v-data-table
           :headers="headers"
           :items="assistances"
-          rows-per-page-text= "Número de Filas"
+          hide-actions
           class="elevation-1"
         >
           <template slot="items" slot-scope="props">

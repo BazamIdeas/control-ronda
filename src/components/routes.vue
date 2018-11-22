@@ -32,23 +32,33 @@
           :headers="headers"
           :items="verificaciones"
           :search="search"
-          hide-actions
+          rows-per-page-text= "Número de Filas"
           class="elevation-1"
         >
           <template slot="items" slot-scope="props">
             <td :class="{actived:selected == props.item.id}" >{{ props.item.point.zones.name }}</td>
             <td :class="{actived:selected == props.item.id}" >{{ props.item.point.name }}</td>
-            <td :class="{actived:selected == props.item.id}" >{{ moment(props.item.date).format('HH:mm') }}</td>
+            <td :class="{actived:selected == props.item.id}" >
+             {{ moment(props.item.date).format('HH:mm') }}
+             <v-chip color="red" small text-color="white" v-if= "props.item.watcher_comment" @click="getComentarios(props.item)">!</v-chip>
+            </td>
           </template>
           <template slot="no-data">
             <v-btn color="primary" @click="initialize">Recargar</v-btn>
           </template>
         </v-data-table>
         <div class="text-xs-center pt-2">
-          <v-pagination v-model="pagination.page" :length="pages"></v-pagination>
         </div>
       </v-flex>
       <bz-maps v-if= "veri" v-bind:verificaciones="verificaciones"> </bz-maps>
+      <v-dialog v-model="ventanaComentarios" fullscreen hide-overlay transition="dialog-bottom-transition">
+      <v-card>
+        <v-layout justify-end>
+            <v-btn flat @click.native="ventanaComentarios = false">Cerrar</v-btn>
+        </v-layout >
+        <bz-comentarios-veri v-if= "comentarios" v-bind:verificacion="comentarios"> </bz-comentarios-veri>
+      </v-card>
+    </v-dialog>
     </v-layout >
   </v-flex>
 </template>
@@ -56,11 +66,12 @@
 
 <script>
   import BzMaps from "./maps.vue"
-var moment = require ('moment')
+  import BzComentariosVeri from "./comentarios_verificacion.vue"
+  var moment = require ('moment')
   var jsPDF = require ('jspdf')
-moment.locale('es')
+  moment.locale('es')
   export default {
-   components: { BzMaps },
+   components: { BzMaps, BzComentariosVeri },
     props: ["user"],
     data: () => ({
       moment: moment,
@@ -69,6 +80,8 @@ moment.locale('es')
       menu: false,
       date: null,
       veri: false,
+      comentarios: '',
+      ventanaComentarios: false,
       dialog: false,
       selected: 0,
       columns : [
@@ -103,13 +116,6 @@ moment.locale('es')
     }),
 
     computed: {
-      pages () {
-        if (this.pagination.rowsPerPage == null ||
-          this.pagination.totalItems == null
-        ) return 0
-
-        return Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage)
-      },
       fecha: function (){
         if (!this.date){
           return this.fechaActual
@@ -163,7 +169,12 @@ moment.locale('es')
         });
         doc.autoTable(this.columns, tabla, {margin: {top: 40}})
         doc.save(file)
-      }
+      },
+
+      getComentarios(item){
+        this.comentarios = item
+        this.ventanaComentarios = true
+      },
     }
   }
 </script>

@@ -145,7 +145,7 @@
       menu: false,
       date: null,
       dialog: false,
-      fab: false,
+      fab: true,
       pass: null,
       jornada: null,
       valorHora: null,

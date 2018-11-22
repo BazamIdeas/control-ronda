@@ -2,10 +2,13 @@
 <v-container grid-list-md >
   <v-layout row wrap>
     <v-flex xs4>
+      <v-flex xs12>
+            <v-text-field label="Tarea" readonly box :value= 'comentarios.task.name'></v-text-field>
+        </v-flex>
         <v-flex xs12>
             <v-text-field label="Subtarea" readonly box :value= 'subtarea.name'></v-text-field>
         </v-flex>
-        <v-textarea label="Descripción" v-model= subtarea.description readonly></v-textarea>
+        <v-textarea box label="Descripción" v-model= subtarea.description readonly></v-textarea>
     </v-flex>
     <v-flex xs8>
       <v-toolbar color="indigo" dark>
@@ -15,12 +18,34 @@
       </v-toolbar>
 
       <v-card>
-        <v-container fluid grid-list-md>
+        <v-container fluid grid-list-md class="caja">
           <v-layout row wrap>
-            
+            <ul>
+              <li v-for="(comentario, index) in comentarios.comments" :key="index" v-bind:class="{commentRight: isSupervisor(comentario.worker.id) }"> 
+                <div class="comentario">
+                  <img v-if="comentario.attachment" :src = getImage(comentario.attachment) class="img-comment" >  
+                  <div>{{ comentario.description }}</div>
+                  <div class="nombre">
+                    {{comentario.worker.first_name}}
+                  </div>
+                </div>  
+              </li>
+            </ul>
           </v-layout>
         </v-container>
       </v-card>
+      <v-layout row wrap>
+       <v-flex xs10>
+          <v-text-field
+            v-model="mensaje"
+            label="Mensaje"
+            type="text"
+          ></v-text-field>
+        </v-flex>
+        <v-flex xs1 v-if="mensaje">
+          <v-btn  dark @click="enviar()">Enviar</v-btn>
+        </v-flex>
+      </v-layout>
     </v-flex>
   </v-layout>
 </v-container>
@@ -28,8 +53,122 @@
 
 <script>
 export default {
-    props: ['subtarea']
-        
+    props: ['subtarea'],
+    data: () => ({
+      comentarios: [],
+      mensaje: '',
+      api: 'http://apicc.bazamdev.com/v1'
+    }),
+
+    computed: {
+      idSupervisor (){
+        return this.$store.state.admin.id
+      },
+    },
+
+    watch: {
+
+      subtarea: function(newVal, oldVal) { 
+        this.initialize()
+      },
+      /* comentarios: function(newVal, oldVal) { 
+        this.initialize()
+      }, */
+    },
+    created () {
+      this.initialize()
+    },
+
+    methods: {
+      initialize () {
+        this.$axios.get('/goals/'+this.subtarea.id)
+        .then(resp => {
+          if(resp.status === 200){
+            this.comentarios = resp.data
+          }
+        })
+        .catch(e => {
+          console.log(e)
+        })          
+      },
+
+      isSupervisor(id) {
+        if (id === this.idSupervisor)
+          return true
+        else
+          return false
+      },
+    
+    getImage (uid) { return this.api+'/goals-comments/attachment/'+uid },
+
+    enviar(){
+      let mensaje = {
+        goal_id: this.subtarea.id,
+        description: this.mensaje,
+      }
+      let formData = new FormData()
+      formData.append('goal_id', this.subtarea.id)
+      formData.append('description', this.mensaje)
+
+      fetch(this.api+'/goals-comments/', {
+        method: 'POST',
+        body: formData,
+        headers: { "Authorization": "Bearer " + localStorage.getItem('bazam-token-control')}
+      })
+      .then(function(resp) {
+          if(resp.status === 201){
+            return resp.json();
+          }
+        })
+      .then(resp => {
+        this.comentarios.comments.push(resp)
+        this.mensaje = ''
+      })
+      .catch(e => {
+          console.log(e)
+        })    
+    },
+  }
 }
 </script>
+<style>
+
+li {
+  list-style: none;
+  max-width: 90%;
+  display: flex;
+  
+}
+.commentRight{
+flex-direction: row-reverse;
+}
+
+.commentRight div {
+ background: #90cbfa;
+}
+
+.nombre {
+  font-size: 7pt;
+}
+
+.comentario {
+  background: #d6d6d6;
+  border-radius: 17px;
+  padding: 10px;
+  MARGIN-BOTTOM: 15px;
+}
+
+.caja{
+  max-height: 400px;
+    OVERFLOW-Y: auto;
+}
+
+ul {
+  width: 100%
+}
+
+.img-comment{
+  max-width: 400px;
+}
+</style>
 
