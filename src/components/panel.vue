@@ -61,8 +61,9 @@
         <template slot="items" slot-scope="props">
           <td :class="{actived:selected == props.item.id}" >{{ props.item.name }} </td>
           <td :class="{actived:selected == props.item.id}" >{{ props.item.rut }}</td>
-          <td :class="{actived:selected == props.item.id}" >{{ props.item.supervisors[0].worker.first_name }}
+          <td v-if= props.item.supervisors :class="{actived:selected == props.item.id}" >{{ props.item.supervisors[0].worker.first_name }}
           </td>
+           <td v-if= !props.item.supervisors :class="{actived:selected == props.item.id}" >- </td>
 <!--           <td :class="{actived:selected == props.item.id}" >{{ props.item.zone_limit }}</td>
           <td :class="{actived:selected == props.item.id}" >{{ props.item.hour_value }}$</td>
           <td :class="{actived:selected == props.item.id}" >{{ props.item.extra_hour_increase }}%</td>
