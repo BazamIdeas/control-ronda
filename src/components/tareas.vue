@@ -1,18 +1,20 @@
 <template>
 <v-container grid-list-md >
   <v-layout row wrap>
-    <!-- <v-speed-dial v-model="fab" left  absolute direction='bottom' transition='slide-y-reverse-transition'>
+    <v-speed-dial v-model="fab" left  absolute direction='bottom' transition='slide-y-reverse-transition'>
       <v-btn slot="activator" v-model="fab" color="blue darken-2" dark fab >
         <v-icon>toggle_off</v-icon>
         <v-icon>toggle_on</v-icon>
       </v-btn>
-      <v-btn to="/notificaciones" fab dark small color="green" >
-        <v-icon>notifications_active</v-icon>
+       
+      <v-btn to="/notificaciones" fab dark small color="red" >
+        {{numeroNotificaciones}}
       </v-btn>
+      
       <v-btn to="/gestion" fab dark small color="indigo">
         <v-icon>list</v-icon>
       </v-btn>
-    </v-speed-dial> -->
+    </v-speed-dial>
     <v-flex xs12>
       <v-toolbar color="blue lighten-1" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
@@ -141,6 +143,7 @@ import BzComentarios from "./comentarios.vue"
       ventana: false,
       dialog: false,
       selected: 0,
+      numeroNotificaciones: 0,
       headers: [
         {
           text: 'Fecha',
@@ -198,6 +201,7 @@ import BzComentarios from "./comentarios.vue"
     created () {
       this.initialize()
       this.getUsuarios()
+      this.notificacionesSinVer()
     },
 
     methods: {
@@ -205,12 +209,11 @@ import BzComentarios from "./comentarios.vue"
         axios.get('/tasks/condos/self')
         .then(resp => {
           if(resp.status === 200){
-            let i = 0
             this.tareas = resp.data
             for (let x = 0; x < this.tareas.length; x++) {
+              let i = 0
               if (this.tareas[x].goals) {
                for (let y = 0; y < Object.keys(this.tareas[x].goals).length; y++) {
-
                 if (this.tareas[x].goals[y].completed)
                   i += 1
               }
@@ -218,7 +221,9 @@ import BzComentarios from "./comentarios.vue"
                 this.tareas[x].completa = true
               else
                 this.tareas[x].completa = false       
-              }   
+              }
+              else
+                this.tareas[x].completa = false  
             }        
           }
         })
@@ -248,6 +253,22 @@ import BzComentarios from "./comentarios.vue"
         })
       },
 
+      notificacionesSinVer () {
+			axios.get('/notifications/condos/self')
+			.then(resp => {
+				if(resp.status === 200){
+          if (resp.data.length > 0)
+					  resp.data.forEach(element => {
+							if (!element.view)
+								this.numeroNotificaciones += 1
+						})    
+				}
+			})
+			.catch(e => {
+				console.log(e)
+			})
+		},
+
       
 
     editItem (item) {
@@ -265,12 +286,12 @@ import BzComentarios from "./comentarios.vue"
       },
 
       estado(tarea,tipo){
-        if (tarea.completa){
-          let estado = {color:'orange', icono: 'done', texto:'Completa' }
-          return estado[tipo]
-        }
         if (tarea.approved){
           let estado = {color:'green', icono: 'done_all', texto:'Aprobada' }
+          return estado[tipo]
+        }
+        else if (tarea.completa){
+          let estado = {color:'orange', icono: 'done', texto:'Completa' }
           return estado[tipo]
         }
         else {

@@ -25,7 +25,7 @@
           <v-toolbar-title>Listado de Subtareas </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
-            <v-btn icon slot="activator">
+            <v-btn icon slot="activator" v-if="!tarea.approved">
             <v-icon >plus_one</v-icon>
             </v-btn>
             <v-card>
@@ -233,12 +233,12 @@
       },
 
       estado(tarea,tipo){
-        if (tarea.completa){
-          let estado = {color:'orange', icono: 'done', texto:'Completa' }
-          return estado[tipo]
-        }
         if (tarea.approved){
           let estado = {color:'green', icono: 'done_all', texto:'Aprobada' }
+          return estado[tipo]
+        }
+        else if (tarea.completa){
+          let estado = {color:'orange', icono: 'done', texto:'Completa' }
           return estado[tipo]
         }
         else {

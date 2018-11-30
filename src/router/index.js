@@ -99,7 +99,7 @@ export default new Router({
         if (store.state.sesion.tasks_mod) {
           next()
         } else {
-          next()
+          next({name: 'restringida'})
         }
       }
     },
@@ -114,7 +114,7 @@ export default new Router({
         if (store.state.sesion.tasks_mod) {
           next()
         } else {
-          next()
+          next({name: 'restringida'})
         }
       }
     },
@@ -129,7 +129,7 @@ export default new Router({
         if (store.state.sesion.delivery_mod) {
           next()
         } else {
-          next()
+          next({name: 'restringida'})
         }
       }
     },

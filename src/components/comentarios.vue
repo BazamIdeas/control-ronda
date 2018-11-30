@@ -3,10 +3,10 @@
   <v-layout row wrap>
     <v-flex xs4>
       <v-flex xs12>
-            <v-text-field label="Tarea" readonly box :value= 'comentarios.task.name'></v-text-field>
+            <v-text-field label="Tarea" readonly box v-model= 'nombreTarea'></v-text-field>
         </v-flex>
         <v-flex xs12>
-            <v-text-field label="Subtarea" readonly box :value= 'subtarea.name'></v-text-field>
+            <v-text-field label="Subtarea" readonly box v-model= 'subtarea.name'></v-text-field>
         </v-flex>
         <v-textarea box label="Descripción" v-model= subtarea.description readonly></v-textarea>
     </v-flex>
@@ -21,7 +21,7 @@
         <v-container fluid grid-list-md class="caja">
           <v-layout row wrap>
             <ul>
-              <li v-for="(comentario, index) in comentarios.comments" :key="index" v-bind:class="{commentRight: isSupervisor(comentario.worker.id) }"> 
+              <li v-for="(comentario, index) in comentarios" :key="index" v-bind:class="{commentRight: isSupervisor(comentario.worker.id) }"> 
                 <div class="comentario">
                   <img v-if="comentario.attachment" :src = getImage(comentario.attachment) class="img-comment" >  
                   <div>{{ comentario.description }}</div>
@@ -57,6 +57,7 @@ export default {
     data: () => ({
       comentarios: [],
       mensaje: '',
+      nombreTarea: '',
       api: 'http://apicc.bazamdev.com/v1'
     }),
 
@@ -84,7 +85,11 @@ export default {
         this.$axios.get('/goals/'+this.subtarea.id)
         .then(resp => {
           if(resp.status === 200){
-            this.comentarios = resp.data
+            this.nombreTarea = resp.data.task.name
+            this.comentarios = []
+            if (resp.data.comments){
+              this.comentarios = resp.data.comments
+            }
           }
         })
         .catch(e => {
@@ -121,7 +126,7 @@ export default {
           }
         })
       .then(resp => {
-        this.comentarios.comments.push(resp)
+        this.comentarios.push(resp)
         this.mensaje = ''
       })
       .catch(e => {

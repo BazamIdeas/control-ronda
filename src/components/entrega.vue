@@ -71,8 +71,8 @@
               <span>Editar</span>
             </v-tooltip> 
              <v-tooltip bottom>
-              <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getCheckpoints(props.item)">assignment_turned_in</v-icon>
-              <span>Items</span>
+              <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getItems(props.item)">assignment_turned_in</v-icon>
+              <span>Items</span>|
             </v-tooltip>
             <v-tooltip bottom>
               <v-icon  slot="activator" color="red darken-2" @click="deleteItem(props.item)">delete</v-icon>
@@ -87,7 +87,14 @@
       <div class="text-xs-center pt-2">
       </div>
     </v-flex>
-    <bz-items v-if= "items" v-bind:zone="items"> </bz-items>
+    <v-dialog v-model="ventana" fullscreen hide-overlay transition="dialog-bottom-transition">
+      <v-card>
+        <v-layout justify-end>
+            <v-btn flat @click.native="ventana = false">Cerrar</v-btn>
+        </v-layout >
+        <bz-items v-if= "itemsLista" v-bind:lista="itemsLista"> </bz-items>
+      </v-card>
+    </v-dialog>
   </v-layout>
 </v-container>
 </template>
@@ -96,18 +103,19 @@
 <script>
 var moment = require ('moment')
   moment.locale('es')
-  //import BzCheckpoints from "./items.vue"
+  import BzItems from "./items.vue"
   import axios from '../axios.js'
 
   export default {
-    //components: {BzCheckpoints},
+    components: {BzItems},
     data: () => ({
       moment: moment,
       fab: true,
       info: null,
+      ventana: false,
       search: '',
-      items: 0,
-      usuarios: 0,
+      itemsLista: 0,
+      usuarios: [],
       selectUsuarios: { id: '', first_name: '' },
       dialog: false,
       selected: 0,
@@ -183,9 +191,10 @@ var moment = require ('moment')
         this.dialog = true
       },
 
-      getCheckpoints(item){
+      getItems(item){
         this.selected = item.id
-        this.items = item
+        this.itemsLista = item
+        this.ventana = true
       },
 
        getUsuarios () {

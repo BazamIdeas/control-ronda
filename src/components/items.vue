@@ -2,27 +2,18 @@
 <v-container grid-list-md >
   <v-layout row wrap>
     <v-flex xs1>
-      <v-text-field label="Fecha" readonly box :value= 'moment(tarea.date).format("DD-MM-YYYY")'></v-text-field>
+      <v-text-field label="Fecha" readonly box :value= 'moment(lista.date).format("DD-MM-YYYY")'></v-text-field>
     </v-flex>
     <v-flex xs6>
-        <v-text-field label="Tarea" readonly box :value= 'tarea.name'></v-text-field>
+        <v-text-field label="Lista de entregas" readonly box :value= 'lista.name'></v-text-field>
     </v-flex>
     <v-flex xs2>
-      <v-text-field label="Responsable" readonly box :value= 'tarea.worker.first_name'></v-text-field>
-    </v-flex>
-   <v-flex xs2 v-if="tarea.completa">
-    <v-switch  label="Aprobar" v-model="tarea.approved" @change="changeStatus(tarea)" >
-      </v-switch>
-    </v-flex>
-    <v-flex xs1 >
-      <v-chip v-bind:color="estado(tarea,'color')"  text-color="white">
-        {{estado(tarea,'texto')}}
-      </v-chip>
+      <v-text-field label="Responsable" readonly box :value= 'lista.worker.first_name'></v-text-field>
     </v-flex>
     <v-flex xs12>
       <v-toolbar color="blue lighten-1" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
-          <v-toolbar-title>Listado de Subtareas </v-toolbar-title>
+          <v-toolbar-title>Listado de Entregas </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
             <v-btn icon slot="activator">
@@ -37,7 +28,7 @@
                 <v-container grid-list-md>
                   <v-layout wrap>
                     <v-flex xs12>
-                      <v-text-field v-model="editedItem.name" label="Nombre"></v-text-field>
+                      <v-text-field v-model="editedItem.address" label="Direccion"></v-text-field>
                     </v-flex>
                     <v-flex xs12>
                       <v-textarea v-model="editedItem.description" label="Descripción"></v-textarea>
@@ -56,30 +47,30 @@
         </v-toolbar>
       <v-data-table
         :headers="headers"
-        :items="subtareas"
+        :items="itemsLista"
         :search="search"
         rows-per-page-text= "Número de Filas"
         :pagination.sync="pagination"
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
-          <td>{{ moment(props.item.date).format('DD-MM-YYYY') }} </td>
-          <td>{{ props.item.name }}</td>
+          <td>{{ props.item.address }} </td>
+          <td>{{ props.item.description }}</td>
           <td>
-            <v-chip v-bind:color="estadoSub(props.item,'color')" small text-color="white">
+            <v-chip v-bind:color="estadoEntrega(props.item,'color')" small text-color="white">
                 <v-avatar>
-                  <v-icon>{{estadoSub(props.item,'icono')}}</v-icon>
+                  <v-icon>{{estadoEntrega(props.item,'icono')}}</v-icon>
                 </v-avatar>
-                {{estadoSub(props.item,'texto')}}
+                {{estadoEntrega(props.item,'texto')}}
             </v-chip>
           </td>
           <td v-if="props.item.date_end">{{ moment(props.item.date_end).format('DD-MM-YYYY') }}</td>
           <td v-else>-</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
-            <v-tooltip bottom>
+            <!-- <v-tooltip bottom>
               <v-icon  slot="activator" color="green darken-2" class="mr-2" @click="editItem(props.item)">edit</v-icon>
               <span>Editar</span>
-            </v-tooltip>
+            </v-tooltip> -->
             <v-tooltip bottom>
               <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getComentarios(props.item)">comment</v-icon>
               <span>Comentarios</span>
@@ -97,12 +88,22 @@
       <div class="text-xs-center pt-2">
       </div>
     </v-flex>
-    <v-dialog v-model="ventanaComentarios" fullscreen hide-overlay transition="dialog-bottom-transition">
+     <v-dialog v-model="dialogComment" width="500">
       <v-card>
-        <v-layout justify-end>
-            <v-btn flat @click.native="ventanaComentarios = false">Cerrar</v-btn>
-        </v-layout >
-        <bz-comentarios v-if= "comentarios" v-bind:subtarea="comentarios"> </bz-comentarios>
+        <v-card-title class="headline grey lighten-2" primary-title>
+         Comentario
+        </v-card-title>
+        <v-card-text>
+          {{comentario.comment}}
+        </v-card-text>
+        <img v-if="comentario.image_uuid" :src = getImage(comentario.image_uuid) class="img-comment" >  
+        <v-divider></v-divider>
+
+        <v-card-actions><v-spacer></v-spacer>
+          <v-btn color="primary" flat  @click="dialogComment = false">
+            Cerrar
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-layout>
@@ -111,33 +112,30 @@
 
 
 <script>
-  import BzComentarios from "./comentarios.vue"
   import axios from '../axios.js'
   var moment = require ('moment')
   moment.locale('es')
   export default {
-    components: {BzComentarios},
-    props: ['tarea'],
+    props: ['lista'],
     data: () => ({
       moment: moment,
       fab: true,
       search: '',
-      usuarios: [],
-      ventanaComentarios: false,
       pagination: {descending: true},
       dialog: false,
       selected: 0,
-      comentarios: false,
+      comentario: '',
+      dialogComment : false,
+      api: 'http://apicc.bazamdev.com/v1',
       headers: [
         {
-          text: 'Fecha',
+          text: 'Direccion',
           align: 'left',
           sortable: true,
-          isDescending: true,
           value: 'date'
         },
         {
-          text: 'Subtareas',
+          text: 'Descripción',
           align: 'left',
           sortable: false,
           value: 'name'
@@ -149,7 +147,7 @@
           value: 'name'
         },
         {
-          text: 'Finalizada',
+          text: 'Entregada',
           align: 'left',
           sortable: false,
           value: 'name'
@@ -160,21 +158,21 @@
         align: 'left', 
         width: '180'}
       ],
-      subtareas: [],
+      itemsLista: [],
       editedIndex: -1,
       editedItem: {
-        name: '',
+        address: '',
         description: ''
       },
       defaultItem: {
-        name: '',
+        address: '',
         description: ''
       }
     }),
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nueva subtarea' : 'Modificar subtarea'
+        return this.editedIndex === -1 ? 'Nueva Entrega' : 'Modificar Entrega'
       },
     },
 
@@ -182,7 +180,7 @@
       dialog (val) {
         val || this.close()
       },
-      tarea: function(newVal, oldVal) { 
+      lista: function(newVal, oldVal) { 
         this.initialize()
       }
     },
@@ -193,63 +191,20 @@
 
     methods: {
       initialize () {
-        this.$axios.get('/tasks/condos/self')
-        .then(resp => {
-          if(resp.status === 200){
-            resp.data.forEach(tarea => {
-              if (tarea.id === this.tarea.id){
-                if (tarea.goals === undefined)
-                  this.subtareas = []
-                else
-                  this.subtareas = tarea.goals
-              }
-            });
-          }
-        })
-        .catch(e => {
-          console.log(e)
-        })          
+        this.itemsLista = this.lista.items         
       },
     
 
     editItem (item) {
         this.selected = item.id
-        this.editedIndex = this.subtareas.indexOf(item)
+        this.editedIndex = this.itemsLista.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialog = true
       },
 
-      changeStatus (item){
-        let status = item.approved
-       this.$axios.put('/tasks/'+item.id+'/status/'+status)
-        .then(resp => {
-          if(resp.status === 200){
-            alert('Cambio realizado')
-          }
-        })
-        .catch(e => {
-          console.log(e)
-        })
-      },
-
-      estado(tarea,tipo){
-        if (tarea.completa){
-          let estado = {color:'orange', icono: 'done', texto:'Completa' }
-          return estado[tipo]
-        }
-        if (tarea.approved){
-          let estado = {color:'green', icono: 'done_all', texto:'Aprobada' }
-          return estado[tipo]
-        }
-        else {
-          let estado = {color:'red', icono: 'hourglass_empty', texto:'Pendiente' }
-          return estado[tipo]
-        }
-      },
-
-      estadoSub(subtarea,tipo){
-        if (subtarea.completed){
-          let estado = {color:'orange', icono: 'done', texto:'Completa' }
+      estadoEntrega(item,tipo){
+        if (item.delivered){
+          let estado = {color:'orange', icono: 'done', texto:'Entregada' }
           return estado[tipo]
         }
           
@@ -261,17 +216,19 @@
       },
 
       getComentarios(item){
-        this.comentarios = item
+        this.comentario = item
         this.selected = item.id
-        this.ventanaComentarios = true
+        this.dialogComment = true
       },
 
+       getImage (uid) { return this.api+'/items/image/'+uid },
+
       deleteItem (item) {
-        this.$axios.delete('/goals/'+item.id+'?trash=true')
+        this.$axios.delete('/items/'+item.id+'?trash=true')
           .then(resp => {
             if(resp.status === 200){
-              const index = this.subtareas.indexOf(item)
-              this.subtareas.splice(index, 1)
+              const index = this.itemsLista.indexOf(item)
+              this.itemsLista.splice(index, 1)
             }
           })
           .catch(e => {
@@ -290,32 +247,34 @@
 
       save () {
         if (this.editedIndex > -1) {
-          this.$axios.put('/goals/'+this.editedItem.id, {
-            name : this.editedItem.name,
+          this.$axios.put('/items/'+this.editedItem.id, {
+            address : this.editedItem.address,
             description : this.editedItem.description,
-            task: {
-              id: this.tarea.id
+            delivery: {
+              id: this.lista.id
             }
           })
           .then(resp => {
             if(resp.status === 200){
-              Object.assign(this.subtareas[this.editedIndex], this.editedItem)
+              Object.assign(this.itemsLista[this.editedIndex], this.editedItem)
             }
           })
           .catch(e => {
             console.log(e)
           })
         } else {
-            axios.post('/goals/', {
-                name : this.editedItem.name,
+            axios.post('/items/', {
+                address : this.editedItem.address,
                 description : this.editedItem.description,
-                task: {
-                id: this.tarea.id
-                }
+                delivery: {
+                id: this.lista.id
+                 }
             })
             .then(resp => {
                 if(resp.status === 201){
-                this.subtareas.push(resp.data)
+                  resp.data.address = this.editedItem.address
+                  resp.data.description = this.editedItem.description
+                  this.itemsLista.push(resp.data)
                 }
             })
             .catch(e => {
@@ -331,5 +290,9 @@
 <style>
 .actived{
   background: #f7f0b2;
+}
+
+.img-comment{
+  max-width: 400px;
 }
 </style>
