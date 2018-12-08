@@ -247,7 +247,7 @@
       },
 
       deleteItem (item) {
-        this.$axios.delete('/watchers/'+item.id)
+        this.$axios.delete('/watchers/'+item.id+'?trash=true')
           .then(resp => {
             if(resp.status === 200){
               const index = this.users.indexOf(item)
