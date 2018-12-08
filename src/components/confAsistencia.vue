@@ -190,7 +190,8 @@
         axios.get('/condos/self')
         .then(resp => {
           if(resp.status === 200){
-            this.days = resp.data.holidays
+            if (resp.data.holidays)
+              this.days = resp.data.holidays
           }
         })
         .catch(e => {

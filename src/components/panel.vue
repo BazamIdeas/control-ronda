@@ -242,7 +242,7 @@
       },
 
       deleteItem (item) {
-        this.$axios.delete('/condos/'+item.id)
+        this.$axios.delete('/condos/'+item.id+"?trash=true")
           .then(resp => {
             if(resp.status === 200){
               const index = this.condominios.indexOf(item)

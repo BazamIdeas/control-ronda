@@ -191,7 +191,10 @@
 
     methods: {
       initialize () {
-        this.itemsLista = this.lista.items         
+        if (this.lista.items )
+          this.itemsLista = this.lista.items
+        else
+          this.itemsLista = []
       },
     
 
@@ -293,6 +296,7 @@
 }
 
 .img-comment{
-  max-width: 400px;
+      max-width: 420px;
+    padding-left: 10%;
 }
 </style>
