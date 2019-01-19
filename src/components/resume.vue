@@ -3,13 +3,22 @@
   <v-layout row wrap>
     <v-flex xs8 class="white" offset-xs2>
       <v-card>
-        <v-toolbar color="blue lighten-1" dark>
+        <v-toolbar color="grey" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
-          <v-toolbar-title>Reporte anual - {{ empleado.first_name }} {{ empleado.last_name }}</v-toolbar-title>
+          <v-toolbar-title>Reporte anual de asistencia - {{ empleado.first_name }} {{ empleado.last_name }}</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn icon>
-          <v-icon @click="pdf()">play_for_work</v-icon>
-        </v-btn>
+          <v-chip @click="excel()" small>
+            <v-avatar>
+              <v-icon>arrow_downward</v-icon>
+            </v-avatar>
+            Excel
+          </v-chip>
+          <v-chip @click="pdf()" small>
+            <v-avatar>
+              <v-icon>arrow_downward</v-icon>
+            </v-avatar>
+            Pdf
+          </v-chip>
         </v-toolbar>        
         <v-data-table
           :headers="headers"
@@ -42,6 +51,8 @@
   let d= new Date()
   var moment = require ('moment')
   var jsPDF = require ('jspdf')
+  var fileSaver = require ('file-saver')
+  var xlsx = require ('xlsx')
   require('jspdf-autotable');
   moment.locale('es')
   export default {
@@ -196,10 +207,35 @@
 
       pdf(){
         var doc = new jsPDF('landscape')
-        doc.text('Reporte Anual: '+this.empleado.first_name +"-"+this.anio, 15, 30)
+        doc.text('Reporte Anual', 15, 20)
+        doc.setFontSize(12)
+        doc.text('Año: '+this.anio+" | Empleado: "+this.empleado.first_name, 15, 25)
         const file = 'Reporte Anual: '+this.empleado.first_name +"-"+this.anio+'.pdf'
-        doc.autoTable(this.columns, this.assistances, {margin: {top: 40}})
+        doc.autoTable(this.columns, this.assistances, {margin: {top: 35}})
         doc.save(file)
+      },
+
+      excel(){
+        var wb = xlsx.utils.book_new()
+        wb.Props = {
+          Title: "Reporte anual",
+        }
+        wb.SheetNames.push("Informe")
+        var ws_data = [['Reporte Anual'],['Año: '+this.anio,"Empleado: "+this.empleado.first_name],['MES','ASISTENCIA','HORAS ADICIONALES','VALOR HORA EXTRA','PAGO ADCIONAL','FESTIVOS','TOTAL DIAS']]
+        this.assistances.forEach(fila => {
+          ws_data.push([fila.mes,fila.dias,fila.horas_extras,fila.precio_hora,fila.total,fila.feriados,fila.total_dias])
+        })
+        var ws = xlsx.utils.aoa_to_sheet(ws_data)
+        wb.Sheets["Informe"] = ws
+        var wbout = xlsx.write(wb, {bookType:'xlsx',  type: 'binary'})
+        function s2ab(s) {
+          var buf = new ArrayBuffer(s.length)
+          var view = new Uint8Array(buf)
+          for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF
+          return buf
+        }
+        const file = 'Reporte Anual: '+this.empleado.first_name +"-"+this.anio+'.xlsx'
+        saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), file);
       }
     }
   }

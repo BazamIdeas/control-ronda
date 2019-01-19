@@ -2,7 +2,7 @@
 <v-container grid-list-md >
   <v-layout row wrap>
     <v-flex xs12 >
-      <v-toolbar color="blue lighten-1" dark>
+      <v-toolbar color="grey" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>Usuarios de la app</v-toolbar-title>
           <v-spacer></v-spacer>
@@ -19,7 +19,7 @@
             <v-card-text>
               <v-container grid-list-md>
                 <v-layout wrap>
-                  <v-flex xs12>
+                  <v-flex xs6>
                     <v-text-field v-model="editedItem.worker.first_name" label="Nombre completo"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
@@ -27,6 +27,21 @@
                   </v-flex>
                   <v-flex xs6>
                     <v-text-field v-model="editedItem.phone" label="Telefono"></v-text-field>
+                  </v-flex>
+                  <v-flex xs6>
+                    <v-text-field v-model="editedItem.worker.email" label="Email"></v-text-field>
+                  </v-flex>
+                  <v-flex xs6>
+                    <v-text-field v-model="editedItem.worker.address" label="Dirección"></v-text-field>
+                  </v-flex>
+                  <v-flex xs6>
+                    <v-text-field v-model="editedItem.worker.city" label="Ciudad"></v-text-field>
+                  </v-flex>
+                  <v-flex xs6>
+                    <v-text-field v-model="editedItem.worker.community" label="Comuna"></v-text-field>
+                  </v-flex>
+                  <v-flex xs6>
+                    <v-text-field v-model="editedItem.worker.country" label="Pais"></v-text-field>
                   </v-flex>
                   <v-flex xs12>
                     <v-text-field v-model="editedItem.password" label="Contraseña"></v-text-field>
@@ -47,7 +62,7 @@
         <v-text-field
         v-model="search"
         append-icon="search"
-        label="Buscar"
+        label="Buscar por nombre, usuario, rut, email o teléfono"
         single-line
         hide-details
       ></v-text-field>
@@ -60,39 +75,28 @@
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
-          <td :class="{actived:selected == props.item.id}" >{{ props.item.worker.first_name }}</td>
-          <td :class="{actived:selected == props.item.id}" >{{ props.item.username }}</td>
-          <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
+          <td  >{{ props.item.worker.first_name }}</td>
+          <td  >{{ props.item.username }}</td>
+          <td  >{{ props.item.worker.rut }}</td>
+          <td  >{{ props.item.worker.email }}</td>
+          <td  >{{ props.item.phone }}</td>
+          <td class="justify-center px-0" >
            <v-switch v-if="!props.item.worker.approved" v-model="props.item.approved" @change="aprobar(props.item.worker)" >
            </v-switch>
            <v-icon v-if="props.item.worker.approved" v-model="props.item.approved">done</v-icon>
           </td>
-          <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
-           <v-switch v-if="props.item.worker.condos.assistances_mod"  v-model="props.item.assistances_mod" @change="changeStatus(props.item)" >
-           </v-switch>
-           <span v-if="!props.item.worker.condos.assistances_mod">No habilitado</span>
-          </td>
-          <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
-           <v-switch v-if="props.item.worker.condos.routes_mod"  v-model="props.item.routes_mod" @change="changeStatus(props.item)" >
-           </v-switch>
-           <span v-if="!props.item.worker.condos.routes_mod">No habilitado</span>
-          </td>
-          <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
-           <v-switch v-if="props.item.worker.condos.delivery_mod"  v-model="props.item.delivery_mod" @change="changeStatus(props.item)" >
-           </v-switch>
-           <span v-if="!props.item.worker.condos.delivery_mod">No habilitado</span>
-          </td>
-          <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
-           <v-switch v-if="props.item.worker.condos.tasks_mod" v-model="props.item.tasks_mod" @change="changeStatus(props.item)" >
-           </v-switch>
-           <span v-if="!props.item.worker.condos.tasks_mod">No habilitado</span>
-          </td>
-          <td :class="{actived:selected == props.item.id}" >{{ props.item.phone }}</td>
-          <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
+          <td class="justify-center px-0" >
             <v-tooltip bottom>
-              
+              <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getFicha(props.item)">visibility</v-icon>
+              <span>Detalles</span>
+            </v-tooltip>
+            <v-tooltip bottom>
               <v-icon  slot="activator" color="green darken-2" class="mr-2" @click="editItem(props.item)">edit</v-icon>
               <span>Editar</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="props.expanded = !props.expanded">https</v-icon>
+              <span>Permisos</span>
             </v-tooltip>
             <v-tooltip bottom>
               <v-icon  slot="activator" color="red darken-2" @click="deleteItem(props.item)">delete</v-icon>
@@ -100,11 +104,46 @@
             </v-tooltip>
           </td>
         </template>
+        <template slot="expand" slot-scope="props">
+            <v-container grid-list-md>
+                <v-layout wrap>
+                  <v-flex xs3>
+                    <v-switch v-if="props.item.worker.condos.assistances_mod" label="Asistencia" v-model="props.item.assistances_mod" @change="changeStatus(props.item)" >
+                    </v-switch>
+                    <span v-if="!props.item.worker.condos.assistances_mod">No habilitado</span>
+                  </v-flex>
+                  <v-flex xs3>
+                  <v-switch v-if="props.item.worker.condos.routes_mod"  label="Rondas"  v-model="props.item.routes_mod" @change="changeStatus(props.item)" >
+                  </v-switch>
+                  <span v-if="!props.item.worker.condos.routes_mod">No habilitado</span>
+                  </v-flex>
+                  <v-flex xs3>
+                  <v-switch v-if="props.item.worker.condos.delivery_mod" label="Entregas"  v-model="props.item.delivery_mod" @change="changeStatus(props.item)" >
+                  </v-switch>
+                  <span v-if="!props.item.worker.condos.delivery_mod">No habilitado</span>
+                  </v-flex>
+                  <v-flex xs3>
+                  <v-switch v-if="props.item.worker.condos.tasks_mod" label="Gestión" v-model="props.item.tasks_mod" @change="changeStatus(props.item)" >
+                  </v-switch>
+                  <span v-if="!props.item.worker.condos.tasks_mod">No habilitado</span>
+                  </v-flex>
+                  <v-btn small color="primary" @click="getSubtareas(props.item)" >Subtareas</v-btn>
+                </v-layout>
+            </v-container>
+          </template>
         <template slot="no-data">
           <v-btn color="primary" @click="initialize">Recargar</v-btn>
         </template>
       </v-data-table>
     </v-flex>
+    <v-dialog v-model="ficha" fullscreen hide-overlay transition="dialog-bottom-transition">
+      <v-card>
+        <v-layout justify-end>
+            <v-btn flat @click.native="ficha = false">Cerrar</v-btn>
+        </v-layout >
+        <bz-usuario v-if= "usuario" v-bind:usuario="usuario"> </bz-usuario>
+      </v-card>
+    </v-dialog>
   </v-layout>
 </v-container>
 </template>
@@ -112,57 +151,43 @@
 
 <script>
 
-
+import BzUsuario from "./usuario.vue"
   export default {
+    components: {BzUsuario},
     data: () => ({
       fab: true,
       search: '',
       UserRoutes: 0,
       dialog: false,
+      usuario: '',
       selected: 0,
+      ficha: false,
       headers: [
         {
           text: 'Nombre completo',
           align: 'center',
-          sortable: false,
-          value: 'first_name',
+          sortable: true,
+          value: 'worker.first_name',
           width: '50'
         },
         {
           text: 'Usuario',
           align: 'center',
-          sortable: false,
+          sortable: true,
           value: 'username',
           width: '50'
         },
         {
-          text: 'Aprobado',
+          text: 'RUT',
           align: 'center',
-          sortable: false,
+          sortable: true,
+          value: 'worker.rut',
           width: '50'
         },
         {
-          text: 'Asistencia',
+          text: 'Email',
           align: 'center',
-          sortable: false,
-          width: '50'
-        },
-        {
-          text: 'Rondas',
-          align: 'center',
-          sortable: false,
-          width: '50'
-        },
-        {
-          text: 'Entrega',
-          align: 'center',
-          sortable: false,
-          width: '50'
-        },
-        {
-          text: 'Gestión',
-          align: 'center',
-          sortable: false,
+           value: 'worker.email',
           width: '50'
         },
         {
@@ -172,8 +197,13 @@
           value: 'phone',
           width: '80'
         },
+        {
+          text: 'Aprobado',
+          align: 'center',
+          sortable: false,
+          width: '80'
+        },
         { text: 'Acciones', 
-        value: 'name', 
         sortable: false, 
         align: 'center', 
         width: '100'}
@@ -185,7 +215,13 @@
         password: '',
         phone: '',
         worker: {
-          first_name: ''
+          first_name: '',
+          rut: '',
+          email: '',
+          country: '',
+          community: '',
+          city: '',
+          address: ''
         }
       },
       defaultItem: {
@@ -193,7 +229,13 @@
         password: '',
         phone: '',
         worker: {
-          first_name: ''
+          first_name: '',
+          rut: '',
+          email: '',
+          country: '',
+          community: '',
+          city: '',
+          address: ''
         }
       }
     }),
@@ -328,6 +370,12 @@
         .catch(e => {
           console.log(e)
         })
+      },
+
+      getFicha(item){
+        this.usuario = item
+        this.selected = item.id
+        this.ficha = true
       },
     }
   }

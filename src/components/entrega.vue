@@ -1,8 +1,8 @@
 <template>
 <v-container grid-list-md >
   <v-layout row wrap>
-    <v-flex xs10 offset-xs1>
-      <v-toolbar color="blue lighten-1" dark>
+    <v-flex xs12 >
+      <v-toolbar color="grey" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>Listas de entrega </v-toolbar-title>
           <v-spacer></v-spacer>
@@ -48,7 +48,7 @@
         <v-text-field
         v-model="search"
         append-icon="search"
-        label="Buscar"
+        label="Buscar por fecha, nombre de lista o responsable"
         single-line
         hide-details
       ></v-text-field>
@@ -58,11 +58,13 @@
         :headers="headers"
         :items="listas"
         :search="search"
+        :pagination.sync="pagination"
         rows-per-page-text= "Número de Filas"
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
           <td :class="{actived:selected == props.item.id}" >{{ moment(props.item.date).format('DD-MM-YYYY') }}</td>
+          <td :class="{actived:selected == props.item.id}" >{{ moment(props.item.date).format('HH:mm') }}</td>
           <td :class="{actived:selected == props.item.id}" >{{ props.item.name }}</td>
            <td :class="{actived:selected == props.item.id}" >{{ props.item.worker.first_name }}</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
@@ -113,6 +115,7 @@ var moment = require ('moment')
       fab: true,
       info: null,
       ventana: false,
+      pagination: {descending: true},
       search: '',
       itemsLista: 0,
       usuarios: [],
@@ -124,7 +127,15 @@ var moment = require ('moment')
           text: 'Fecha',
           align: 'left',
           sortable: true,
-          value: 'date'
+          value: 'date',
+          isDescending: true
+        },
+         {
+          text: 'Hora',
+          align: 'left',
+          sortable: true,
+          value: 'date',
+          isDescending: true
         },
         {
           text: 'Lista',
@@ -136,7 +147,7 @@ var moment = require ('moment')
           text: 'Responsable',
           align: 'left',
           sortable: true,
-          value: 'first_name'
+          value: 'worker.first_name'
         },
         { text: 'Acciones', 
         value: 'name', 

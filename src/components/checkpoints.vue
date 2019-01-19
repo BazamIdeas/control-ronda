@@ -1,12 +1,12 @@
 <template>
-  <v-flex xs6>
-    <v-toolbar color="blue lighten-1" dark>
-      <v-toolbar-title>Puntos de control - {{zone.name}}</v-toolbar-title>
+  <v-flex xs6  mt-3>
+    <v-toolbar color="grey" dark>
+      <v-toolbar-title> Puntos de control - {{zone.name}}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog" max-width="500px">
         <v-btn icon slot="activator">
-            <v-icon >plus_one</v-icon>
-            </v-btn>
+          <v-icon >plus_one</v-icon>
+        </v-btn>
         <v-card>
           <v-card-title>
             <span class="headline">{{ formTitle }}</span>
@@ -215,12 +215,12 @@
             doc.save(file)
             
         })
-        img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=350x350&data='+punto.id
+        img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+punto.id
       },
 
       qr(punto){
          var myWindow = window.open("", "MsgWindow", "width=500,height=700")
-         let img = 'https://api.qrserver.com/v1/create-qr-code/?size=450x450&data='+punto.id
+         let img = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+punto.id
          let name= punto.name
          let zona = this.zone.name
          myWindow.document.write("<center><hr><img src="+img+"><hr><h3>Punto de control:</h3><h1>"+name+"</h1><h4>"+zona+"</h4></center>")

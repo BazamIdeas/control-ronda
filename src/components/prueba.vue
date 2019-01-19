@@ -1,12 +1,12 @@
 <template>
     <div>
-        {{tarea}}
+        {{usuario}}
     </div>
 </template>
 
 <script>
 export default {
-    props: ['tarea']
+    props: ['usuario']
         
 }
 </script>

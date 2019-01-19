@@ -57,8 +57,7 @@ export default {
       moment: moment,
       comentarios: [],
       nota: '',
-      mensaje: '',
-      api: 'http://apicc.bazamdev.com/v1'
+      mensaje: ''
     }),
 
     computed: {
@@ -105,7 +104,7 @@ export default {
           return false
       },
     
-    getImage (uid) { return this.api+'/verifications/image/'+uid },
+    getImage (uid) { return this.$store.state.conf.api+'/verifications/image/'+uid },
   }
 }
 </script>

@@ -1,93 +1,25 @@
 <template>
 <v-container grid-list-md >
-  <v-layout row wrap>
-    <v-speed-dial v-model="fab" left  absolute direction='bottom' transition='slide-y-reverse-transition'>
-      <v-btn slot="activator" v-model="fab" color="pink" dark fab >
-        <v-icon>toggle_off</v-icon>
-        <v-icon>toggle_on</v-icon>
-      </v-btn>
-      <v-btn to="/zonas" fab dark small color="green" >
-        <v-icon>location_on</v-icon>
-      </v-btn>
-      <v-btn to="/ronda" fab dark small color="indigo">
-        <v-icon>sync</v-icon>
-      </v-btn>
-    </v-speed-dial>
-    <v-flex xs3>
-      <v-toolbar color="blue lighten-1" dark>
-          <v-toolbar-side-icon></v-toolbar-side-icon>
-          <v-toolbar-title>Usuarios</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="500px">
-           <!--  <v-btn icon slot="activator">
-            <v-icon >plus_one</v-icon>
-          </v-btn> -->
-          
-          <v-card>
-            <v-card-title>
-              <span class="headline">{{ formTitle }}</span>
-            </v-card-title>
-
-            <v-card-text>
-              <v-container grid-list-md>
-                <v-layout wrap>
-                  <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.first_name" label="Nombre"></v-text-field>
-                  </v-flex>
-                  <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.last_name" label="Apellido"></v-text-field>
-                  </v-flex>
-                  <v-flex xs6>
-                    <v-text-field v-model="editedItem.email" label="Email"></v-text-field>
-                  </v-flex>
-                  <v-flex xs6>
-                    <v-text-field v-model="editedItem.phone" label="Telefono"></v-text-field>
-                  </v-flex>
-                  <v-flex xs12>
-                    <v-text-field v-model="editedItem.password" label="Contraseña"></v-text-field>
-                  </v-flex>
-                </v-layout>
-              </v-container>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" flat @click.native="close">Cancelar</v-btn>
-              <v-btn color="blue darken-1" flat @click.native="save">Guardar</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        </v-toolbar>
-      <v-toolbar flat color="white">
-        <v-text-field
-        v-model="search"
-        append-icon="search"
-        label="Buscar"
-        single-line
-        hide-details
-      ></v-text-field>
-      </v-toolbar>
-      <v-data-table
-        :headers="headers"
-        :items="users"
-        :search="search"
-        rows-per-page-text= "Número de Filas"
-        class="elevation-1"
-      >
-        <template slot="items" slot-scope="props">
-          <td :class="{actived:selected == props.item.id}" >{{ props.item.worker.first_name }} {{ props.item.worker.last_name }}</td>
-          <td class="justify-center" :class="{actived:selected == props.item.id}">
-            <v-tooltip bottom>
-              <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getRoute(props.item)">add_location</v-icon>
-              <span>Recorridos</span>
-            </v-tooltip>
-          </td>
-        </template>
-        <template slot="no-data">
-          <v-btn color="primary" @click="initialize">Recargar</v-btn>
-        </template>
-      </v-data-table>
+  <v-toolbar absolute>
+    <v-layout>
+    <v-flex xs3 offset-xs3 mt-3>
+      <v-select
+          :items="users"
+          label="Empleados de ronda"
+          item-text="worker.first_name"
+          v-model= "UserRoutes"
+          return-object
+        ></v-select>
     </v-flex>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn flat to='/zonas'>PUNTOS DE CONTROL</v-btn>
+        <v-btn flat to='/ronda'>REPORTE DE RONDAS</v-btn>
+        <v-btn flat to='/eventos'>EVENTOS</v-btn>
+      </v-toolbar-items>
+      </v-layout>
+  </v-toolbar>
+  <v-layout row wrap mt-5>
     <bz-routes v-if= "UserRoutes" v-bind:user="UserRoutes"> </bz-routes>
   </v-layout>
 </v-container>
@@ -97,60 +29,14 @@
 <script>
   import BzRoutes from "./routes.vue"
 
-
   export default {
     components: {BzRoutes },
     data: () => ({
-      fab: true,
       search: '',
       UserRoutes: 0,
-      dialog: false,
       selected: 0,
-      headers: [
-        {
-          text: 'Nombre Completo',
-          sortable: false,
-          value: 'first_name',
-          width: 100
-        },
-        { text: 'Reporte', 
-        value: 'name', 
-        sortable: false, 
-        width:20}
-      ],
-      users: [],
-      editedIndex: -1,
-      editedItem: {
-        email: '',
-        password: '',
-        phone: '',
-        worker: {
-          first_name: '',
-          last_name: ''
-        }
-      },
-      defaultItem: {
-        email: '',
-        password: '',
-        phone: '',
-        worker: {
-          first_name: '',
-          last_name: ''
-        }
-      }
+      users: []
     }),
-
-    computed: {
-      formTitle () {
-        return this.editedIndex === -1 ? 'Nuevo Usuario' : 'Modificar usuario'
-      },
-    },
-
-    watch: {
-      dialog (val) {
-        val || this.close()
-      }
-    },
 
     created () {
       this.initialize()
@@ -169,73 +55,11 @@
         })
       },
 
-      editItem (item) {
-        this.selected = item.id
-        this.editedIndex = this.users.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.editedItem.password = 'xxxxxxxx'
-        this.dialog = true
-      },
-
       getRoute(item){
         this.selected = item.id
         this.UserRoutes = item
-      },
-
-      deleteItem (item) {
-        this.$axios.delete('/watchers/'+item.id)
-          .then(resp => {
-            if(resp.status === 200){
-              const index = this.users.indexOf(item)
-              this.users.splice(index, 1)
-            }
-          })
-          .catch(e => {
-            console.log(e)
-          })
-      },
-
-      close () {
-        this.selected = 0
-        this.dialog = false
-        setTimeout(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        }, 500)
-      },
-
-      save () {
-        if (this.editedIndex > -1) {
-          if (this.editedItem.password === 'xxxxxxxx'){
-            delete this.editedItem.password
-          }
-          this.$axios.put('/watchers/'+this.editedItem.id, this.editedItem)
-          .then(resp => {
-            if(resp.status === 200){
-              Object.assign(this.users[this.editedIndex], this.editedItem)
-            }
-          })
-          .catch(e => {
-            console.log(e)
-          })
-        } else {
-            if (this.users.length < this.$store.state.sesion.user_limit ){
-              this.$axios.post('/watchers/', this.editedItem)
-              .then(resp => {
-                if(resp.status === 201){
-                  this.users.push(resp.data)
-                }
-              })
-              .catch(e => {
-                console.log(e)
-              })
-          }
-          else{
-            alert('Haz excedido el limite de usuarios de tu plan')
-          }
-        }
-        this.close()
       }
+
     }
   }
 </script>

@@ -6,7 +6,7 @@
         <v-container >
           <h2>{{nombre}}</h2>
           <v-layout row wrap>
-            <v-flex xs8>
+            <v-flex xs8 >
               <v-text-field
                 label="Cambiar contraseña"
                 v-model="pass"

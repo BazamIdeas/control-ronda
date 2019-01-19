@@ -1,21 +1,16 @@
 <template>
 <v-container grid-list-md >
-  <v-layout row wrap>
-    <v-speed-dial v-model="fab" left  absolute direction='bottom' transition='slide-y-reverse-transition'>
-      <v-btn slot="activator" v-model="fab" color="blue darken-2" dark fab >
-        <v-icon>toggle_off</v-icon>
-        <v-icon>toggle_on</v-icon>
-      </v-btn>
-      <v-btn to="/asistencia" fab dark small color="green" >
-        <v-icon>account_circle</v-icon>
-      </v-btn>
-      <v-btn to="/configuracion-asistencia" fab dark small color="indigo">
-        <v-icon>settings</v-icon>
-      </v-btn>
-    </v-speed-dial>
-    <v-flex xs4 offset-xs2>
+    <v-toolbar absolute>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn flat to='/asistencia'>EMPLEADOS</v-btn>
+        <v-btn flat to='/configuracion-asistencia'>CONFIGURACIÓN</v-btn>
+      </v-toolbar-items>
+  </v-toolbar>
+  <v-layout row wrap  mt-5>
+    <v-flex xs5>
       <v-card>
-        <v-toolbar color="blue lighten-1" dark>
+        <v-toolbar color="grey" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>Parametros</v-toolbar-title>
           <v-spacer></v-spacer>
@@ -67,9 +62,9 @@
         </v-container>
       </v-card>
     </v-flex>
-    <v-flex xs4 offset-xs1 >
+    <v-flex xs5 >
       <v-card>
-        <v-toolbar color="blue lighten-1" dark>
+        <v-toolbar color="grey" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>Feriados</v-toolbar-title>
           <v-spacer></v-spacer>

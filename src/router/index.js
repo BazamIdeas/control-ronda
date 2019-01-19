@@ -16,6 +16,7 @@ import Gestion from '@/components/tareas'
 import Panel from '@/components/panel'
 import Notificaciones from '@/components/notificaciones'
 import Entrega from '@/components/entrega'
+import Eventos from '@/components/eventos'
 
 Vue.use(Router)
 
@@ -75,6 +76,23 @@ export default new Router({
       path: '/ronda',
       name: 'ronda',
       component: Rondas,
+      meta: {
+        requiresAuth: true
+      },
+      beforeEnter: (to, from, next) => {
+        if (store.state.sesion.routes_mod) {
+          next()
+        } else {
+          next({
+            name: 'restringida'
+          })
+        }
+      }
+    },
+    {
+      path: '/eventos',
+      name: 'eventos',
+      component: Eventos,
       meta: {
         requiresAuth: true
       },

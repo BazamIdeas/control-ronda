@@ -1,6 +1,6 @@
 <template>
   <v-app >
-    <v-toolbar>
+    <!-- <v-toolbar>
       <img style="width: 45px;" src="./assets/logo.jpeg">
       <v-spacer></v-spacer>
       <v-toolbar-items v-if="sesion">
@@ -8,10 +8,45 @@
         
       </v-toolbar-items>
       <v-btn v-if="status" flat @click="salir()">SALIR</v-btn>
-  </v-toolbar>
-  <v-container >
-    <router-view/>
-  </v-container>
+  </v-toolbar> -->
+    <v-layout row wrap >
+      <v-flex xs2  v-if="sesion">
+
+      <v-navigation-drawer
+        dark
+        absolute
+        width = 200
+      >
+      <v-flex mt-2 mb-2 pl-4>
+      <v-avatar
+          :size="120"
+          color="grey lighten-4"
+        >
+          <img src="./assets/logo.jpeg" alt="avatar">
+        </v-avatar>
+        </v-flex>
+        <v-divider></v-divider>
+        <v-list>
+          <v-list-tile
+            v-for="item in menu"
+            :key="item.title"
+            :to="item.route"
+          >
+            <v-list-tile-action>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title >{{ item.name }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+      </v-navigation-drawer>
+      </v-flex>
+      <v-flex xs10>
+        <router-view/>
+      </v-flex>
+    </v-layout>
   </v-app>
 </template>
 
@@ -20,13 +55,13 @@ export default {
   data () {
     return {
       menu : [
-        {name: 'ASISTENCIA', route: 'asistencia', id : 1},
-        {name: 'RONDA',  route: 'ronda', id : 2},
-        {name: 'GESTION',  route: 'gestion', id : 3},
-        {name: 'ENTREGA',  route: 'entrega', id : 4},
-        {name: 'USUARIOS',  route: 'usuarios', id :5},
-        {name: 'MI CUENTA',  route: 'cuenta', id : 6},
-        {name: 'SALIR',  route: 'logout', id : 7}
+        {name: 'DASHBOARD', route: 'cuenta', id : 6, icon: 'dashboard'},
+        {name: 'ASISTENCIA', route: 'asistencia', id : 1, icon: 'assignment'},
+        {name: 'RONDA',  route: 'ronda', id : 2, icon: 'autorenew'},
+        {name: 'GESTION',  route: 'gestion', id : 3, icon: 'event'},
+        {name: 'ENTREGA',  route: 'entrega', id : 4, icon: 'airport_shuttle'},
+        {name: 'USUARIOS',  route: 'usuarios', id :5, icon: 'group'},
+        {name: 'SALIR',  route: 'logout', id : 7, icon: 'exit_to_app'}
       ]
       
     }

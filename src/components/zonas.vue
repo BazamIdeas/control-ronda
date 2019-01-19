@@ -1,25 +1,20 @@
 <template>
 <v-container grid-list-md >
-  <v-layout row wrap>
-    <v-speed-dial v-model="fab" left  absolute direction='bottom' transition='slide-y-reverse-transition'>
-      <v-btn slot="activator" v-model="fab" color="pink" dark fab >
-        <v-icon>toggle_off</v-icon>
-        <v-icon>toggle_on</v-icon>
-      </v-btn>
-      <v-btn to="/zonas" fab dark small color="green" >
-        <v-icon>location_on</v-icon>
-      </v-btn>
-      <v-btn to="/ronda" fab dark small color="indigo">
-        <v-icon>sync</v-icon>
-      </v-btn>
-    </v-speed-dial>
-    <v-flex xs6>
-      <v-toolbar color="blue lighten-1" dark>
-          <v-toolbar-side-icon></v-toolbar-side-icon>
-          <v-toolbar-title>Zonas </v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="500px">
-            <v-btn icon slot="activator">
+  <v-toolbar absolute>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn flat to='/zonas'>PUNTOS DE CONTROL</v-btn>
+        <v-btn flat to='/ronda'>REPORTE DE RONDAS</v-btn>
+        <v-btn flat to='/eventos'>EVENTOS</v-btn>
+      </v-toolbar-items>
+  </v-toolbar>
+  <v-layout row wrap mt-5>
+    <v-flex xs6  mt-3>
+      <v-toolbar color="grey " dark>
+        <v-toolbar-title> Zonas</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-dialog v-model="dialog" max-width="500px">
+            <v-btn icon slot="activator" >
             <v-icon >plus_one</v-icon>
             </v-btn>
             <v-card>
@@ -44,8 +39,8 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-        </v-toolbar>
-      <v-toolbar flat color="white">
+      </v-toolbar>
+      <!-- <v-toolbar flat color="white">
         <v-text-field
         v-model="search"
         append-icon="search"
@@ -53,14 +48,14 @@
         single-line
         hide-details
       ></v-text-field>
-        
-      </v-toolbar>
+      </v-toolbar> -->
       <v-data-table
         :headers="headers"
         :items="zones"
         :search="search"
         rows-per-page-text= "Número de Filas"
         class="elevation-1"
+        hide-actions
       >
         <template slot="items" slot-scope="props">
           <td :class="{actived:selected == props.item.id}" >{{ props.item.name }}</td>

@@ -1,22 +1,15 @@
 <template>
 <v-container grid-list-md >
-  <v-layout row wrap>
-      <v-speed-dial v-model="fab" left  absolute direction='bottom' transition='slide-y-reverse-transition'>
-      <v-btn slot="activator" v-model="fab" color="blue darken-2" dark fab >
-        <v-icon>toggle_off</v-icon>
-        <v-icon>toggle_on</v-icon>
-      </v-btn>
-      <v-btn to="/asistencia" fab dark small color="green" >
-        <v-icon>account_circle</v-icon>
-      </v-btn>
-      <v-btn to="/configuracion-asistencia" fab dark small color="indigo">
-        <v-icon>settings</v-icon>
-      </v-btn>
-    </v-speed-dial>
-
-    <v-flex xs8 offset-xs2>
-      <v-toolbar color="blue lighten-1" dark>
-          <v-toolbar-side-icon></v-toolbar-side-icon>
+  <v-toolbar absolute>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn flat to='/asistencia'>EMPLEADOS</v-btn>
+        <v-btn flat to='/configuracion-asistencia'>CONFIGURACIÓN</v-btn>
+      </v-toolbar-items>
+  </v-toolbar>
+  <v-layout row wrap mt-5>
+    <v-flex xs12>
+      <v-toolbar color="grey" dark>
           <v-toolbar-title>Personas Registradas </v-toolbar-title>
         </v-toolbar>
 
@@ -24,7 +17,7 @@
         <v-text-field
         v-model="search"
         append-icon="search"
-        label="Buscar"
+        label="Buscar por nombre o RUT"
         single-line
         hide-details
       ></v-text-field>
@@ -62,6 +55,7 @@
       >
         <template slot="items" slot-scope="props">
           <td :class="{actived:selected == props.item.id}" >{{ props.item.first_name }}</td>
+          <td :class="{actived:selected == props.item.id}" >{{ props.item.rut }}</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
            <v-switch v-if="!props.item.approved" v-model="props.item.approved" @change="changeStatus(props.item)" >
            </v-switch>
@@ -129,14 +123,16 @@
           value: 'first_name',
           width: '140'
         },
+        {
+          text: 'RUT',
+          sortable: true,
+          value: 'rut',
+          width: '140'
+        },
         { text: 'Aprobado', 
-        value: 'approved', 
-        sortable: true, 
         width: '10'},
 
         { text: 'Acciones', 
-        value: 'name', 
-        sortable: false, 
         width: '100'}
       ],
       employees: [],

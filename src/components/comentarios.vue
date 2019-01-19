@@ -6,7 +6,13 @@
             <v-text-field label="Tarea" readonly box v-model= 'nombreTarea'></v-text-field>
         </v-flex>
         <v-flex xs12>
+            <v-text-field label="Fecha de asignación de la tarea" readonly box :value= 'moment(fechaTarea).format("DD-MM-YYYY")'></v-text-field>
+        </v-flex>
+        <v-flex xs12>
             <v-text-field label="Subtarea" readonly box v-model= 'subtarea.name'></v-text-field>
+        </v-flex>
+        <v-flex xs12>
+            <v-text-field label="Fecha de asignación de la subtarea" readonly box :value= 'moment(subtarea.date).format("DD-MM-YYYY")'></v-text-field>
         </v-flex>
         <v-textarea box label="Descripción" v-model= subtarea.description readonly></v-textarea>
     </v-flex>
@@ -52,13 +58,16 @@
 </template>
 
 <script>
+var moment = require ('moment')
+  moment.locale('es')
 export default {
     props: ['subtarea'],
     data: () => ({
+      moment: moment,
       comentarios: [],
       mensaje: '',
       nombreTarea: '',
-      api: 'http://apicc.bazamdev.com/v1'
+      fechaTarea: ''
     }),
 
     computed: {
@@ -86,6 +95,7 @@ export default {
         .then(resp => {
           if(resp.status === 200){
             this.nombreTarea = resp.data.task.name
+            this.fechaTarea = resp.data.task.date
             this.comentarios = []
             if (resp.data.comments){
               this.comentarios = resp.data.comments
@@ -104,7 +114,7 @@ export default {
           return false
       },
     
-    getImage (uid) { return this.api+'/goals-comments/attachment/'+uid },
+    getImage (uid) { return this.$store.state.conf.api+'/goals-comments/attachment/'+uid },
 
     enviar(){
       let mensaje = {
@@ -115,7 +125,7 @@ export default {
       formData.append('goal_id', this.subtarea.id)
       formData.append('description', this.mensaje)
 
-      fetch(this.api+'/goals-comments/', {
+      fetch(this.$store.state.conf.api+'/goals-comments/', {
         method: 'POST',
         body: formData,
         headers: { "Authorization": "Bearer " + localStorage.getItem('bazam-token-control')}

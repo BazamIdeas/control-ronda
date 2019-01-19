@@ -1,24 +1,35 @@
 <template>
 	<v-container grid-list-md >
-		<v-layout row wrap>
-			<v-speed-dial v-model="fab" left  absolute direction='bottom' transition='slide-y-reverse-transition'>
-				<v-btn slot="activator" v-model="fab" color="blue darken-2" dark fab >
-					<v-icon>toggle_off</v-icon>
-					<v-icon>toggle_on</v-icon>
-				</v-btn>
-				<v-btn to="/notificaciones" fab dark small color="red" >
-        {{numeroNotificaciones}}
-      	</v-btn>
-				<v-btn to="/gestion" fab dark small color="indigo">
-					<v-icon>list</v-icon>
-				</v-btn>
-			</v-speed-dial>
-			<v-flex xs6>
-      <v-toolbar color="blue lighten-1" dark>
+		<v-toolbar absolute>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn flat to='/notificaciones'>
+         <v-badge left>
+          <span slot="badge">{{numeroNotificaciones}}</span>
+          NOTIFICACIONES 
+        </v-badge>
+        </v-btn>
+        
+        <v-btn flat to='/gestion'>TAREAS</v-btn>
+      </v-toolbar-items>
+  </v-toolbar>
+		<v-layout row wrap mt-5>
+			<v-flex xs12>
+      <v-toolbar color="grey" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>Listado de Notificaciones </v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
+				<v-toolbar flat color="white">
+        <v-text-field
+        v-model="search"
+        append-icon="search"
+        label="Buscar por fecha, notificacion o responsable"
+        single-line
+      
+      ></v-text-field>
+        
+      </v-toolbar>
       <v-data-table
         :headers="headers"
         :items="notificaciones"
@@ -29,6 +40,7 @@
       >
         <template slot="items" slot-scope="props">
           <td>{{ moment(props.item.date).format('DD-MM-YYYY') }}</td>
+					<td>{{ moment(props.item.date).format('HH:mm') }}</td>
           <td>{{ props.item.name }}</td>
 					<td>{{ props.item.worker.first_name }}</td>
 					<td  :class="{actived:selected == props.item.id}">
@@ -47,21 +59,23 @@
       <div class="text-xs-center pt-2">
       </div>
     </v-flex>
-		<v-flex xs6 v-if="vistaDescripcion">
-			<v-layout row wrap> 
-				<v-flex xs12>
-					<v-textarea
-          box
-          label="Descripción"
-					v-model="descripcion.description"
-					readonly
-        ></v-textarea>
-				</v-flex>
-				<v-flex xs12>
-					<img v-if="descripcion.image_uuid" :src = getImage(descripcion.image_uuid) class="img-comment" >  
-				</v-flex>
-			</v-layout>
-		</v-flex>
+		<v-dialog v-model="vistaDescripcion" width="500">
+			<v-card>
+        <v-card-title class="headline grey lighten-2" primary-title>
+         Comentario
+        </v-card-title>
+        <v-card-text>
+          {{descripcion.description}}
+        </v-card-text>
+        <img v-if="descripcion.image_uuid" :src = getImage(descripcion.image_uuid) class="img-comment" > 
+        <v-divider></v-divider>
+			<v-card-actions><v-spacer></v-spacer>
+          <v-btn color="primary" flat  @click="vistaDescripcion = false">
+            Cerrar
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+		</v-dialog>
 		</v-layout>
 	</v-container>
 </template>
@@ -73,7 +87,6 @@ moment.locale('es')
 export default {
 	data: () => ({
 		moment: moment,
-		api: 'http://apicc.bazamdev.com/v1',
 	  fab: true,
 	  info: null,
 	  search: '',
@@ -91,18 +104,25 @@ export default {
 		  value: 'date'
 		},
 		{
+		  text: 'Hora',
+		  align: 'left',
+		  sortable: true,
+		  isDescending: true,
+		  value: 'date'
+		},
+		{
 		  text: 'Notificación',
 		  align: 'left',
-		  sortable: false,
-		  value: 'name'
+		  sortable: true,
+		  value: 'worker.first_name'
 		},
 		{
 		  text: 'Responsable',
 		  align: 'left',
-		  sortable: false,
+		  sortable: true,
 		  value: 'name'
 		},
-		{ text: 'Descripción', 
+		{ text: 'Detalles', 
 		value: 'name', 
 		sortable: false, 
 		align: 'left', }
@@ -150,13 +170,14 @@ export default {
 			this.vistaDescripcion = true
 		},
 			
-		getImage (uid) { return this.api+'/notifications/image/'+uid },
+		getImage (uid) { return this.$store.state.conf.api+'/notifications/image/'+uid },
 	}
 }
 </script>
 
 <style>
 .img-comment{
-  max-width: 400px;
+      max-width: 420px;
+    padding-left: 10%;
 }
 </style>

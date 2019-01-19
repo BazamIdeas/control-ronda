@@ -4,8 +4,11 @@
     <v-flex xs1>
       <v-text-field label="Fecha" readonly box :value= 'moment(tarea.date).format("DD-MM-YYYY")'></v-text-field>
     </v-flex>
-    <v-flex xs6>
-        <v-text-field label="Tarea" readonly box :value= 'tarea.name'></v-text-field>
+    <v-flex xs4>
+        <v-text-field label="Dirección" readonly box :value= 'tarea.address'></v-text-field>
+    </v-flex>
+    <v-flex xs2>
+        <v-text-field label="Teléfono" readonly box :value= 'tarea.phone'></v-text-field>
     </v-flex>
     <v-flex xs2>
       <v-text-field label="Responsable" readonly box :value= 'tarea.worker.first_name'></v-text-field>
@@ -20,9 +23,9 @@
       </v-chip>
     </v-flex>
     <v-flex xs12>
-      <v-toolbar color="blue lighten-1" dark>
+      <v-toolbar color="grey" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
-          <v-toolbar-title>Listado de Subtareas </v-toolbar-title>
+          <v-toolbar-title>{{tarea.name}} </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
             <v-btn icon slot="activator" v-if="!tarea.approved">
@@ -65,6 +68,7 @@
         <template slot="items" slot-scope="props">
           <td>{{ moment(props.item.date).format('DD-MM-YYYY') }} </td>
           <td>{{ props.item.name }}</td>
+          <td>{{props.item.description}}</td>
           <td>
             <v-chip v-bind:color="estadoSub(props.item,'color')" small text-color="white">
                 <v-avatar>
@@ -137,22 +141,28 @@
           value: 'date'
         },
         {
-          text: 'Subtareas',
+          text: 'Subtarea',
           align: 'left',
           sortable: false,
           value: 'name'
         },
          {
+          text: 'Descripción',
+          align: 'left',
+          sortable: false,
+          value: 'description'
+        },
+        {
           text: 'Estado',
           align: 'left',
           sortable: false,
           value: 'name'
         },
         {
-          text: 'Finalizada',
+          text: 'Fecha de Finalización',
           align: 'left',
-          sortable: false,
-          value: 'name'
+          sortable: true,
+          value: 'date_end'
         },
         { text: 'Acciones', 
         value: 'name', 

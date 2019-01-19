@@ -4,14 +4,17 @@
     <v-flex xs1>
       <v-text-field label="Fecha" readonly box :value= 'moment(lista.date).format("DD-MM-YYYY")'></v-text-field>
     </v-flex>
+    <v-flex xs1>
+      <v-text-field label="Hora" readonly box :value= 'moment(lista.date).format("HH:mm")'></v-text-field>
+    </v-flex>
     <v-flex xs6>
-        <v-text-field label="Lista de entregas" readonly box :value= 'lista.name'></v-text-field>
+        <v-text-field label="Nombre de lista" readonly box :value= 'lista.name'></v-text-field>
     </v-flex>
     <v-flex xs2>
       <v-text-field label="Responsable" readonly box :value= 'lista.worker.first_name'></v-text-field>
     </v-flex>
     <v-flex xs12>
-      <v-toolbar color="blue lighten-1" dark>
+      <v-toolbar color="grey" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>Listado de Entregas </v-toolbar-title>
           <v-spacer></v-spacer>
@@ -65,6 +68,8 @@
             </v-chip>
           </td>
           <td v-if="props.item.date_end">{{ moment(props.item.date_end).format('DD-MM-YYYY') }}</td>
+          <td v-else>-</td>
+          <td v-if="props.item.date_end">{{ moment(props.item.date_end).format('HH-mm') }}</td>
           <td v-else>-</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
             <!-- <v-tooltip bottom>
@@ -126,12 +131,11 @@
       selected: 0,
       comentario: '',
       dialogComment : false,
-      api: 'http://apicc.bazamdev.com/v1',
       headers: [
         {
           text: 'Direccion',
           align: 'left',
-          sortable: true,
+          sortable: false,
           value: 'date'
         },
         {
@@ -147,10 +151,16 @@
           value: 'name'
         },
         {
-          text: 'Entregada',
+          text: 'Fecha de Entregada',
           align: 'left',
-          sortable: false,
-          value: 'name'
+          sortable: true,
+          value: 'date_end'
+        },
+        {
+          text: 'Hora de Entregada',
+          align: 'left',
+          sortable: true,
+          value: 'date_end'
         },
         { text: 'Acciones', 
         value: 'name', 
@@ -224,7 +234,7 @@
         this.dialogComment = true
       },
 
-       getImage (uid) { return this.api+'/items/image/'+uid },
+       getImage (uid) { return this.$store.state.conf.api+'/items/image/'+uid },
 
       deleteItem (item) {
         this.$axios.delete('/items/'+item.id+'?trash=true')

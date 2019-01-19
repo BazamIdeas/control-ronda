@@ -7,7 +7,10 @@ export default new Vuex.Store({
   state: {
     sesion: null,
     admin: null,
-    status: null
+    status: null,
+    conf: {
+      api: 'http://apicc.bazamdev.com/v1'
+    }
   },
   mutations: {
     SET_SESION: function (state, payload) {

@@ -1,22 +1,21 @@
 <template>
 <v-container grid-list-md >
-  <v-layout row wrap>
-    <v-speed-dial v-model="fab" left  absolute direction='bottom' transition='slide-y-reverse-transition'>
-      <v-btn slot="activator" v-model="fab" color="blue darken-2" dark fab >
-        <v-icon>toggle_off</v-icon>
-        <v-icon>toggle_on</v-icon>
-      </v-btn>
-       
-      <v-btn to="/notificaciones" fab dark small color="red" >
-        {{numeroNotificaciones}}
-      </v-btn>
-      
-      <v-btn to="/gestion" fab dark small color="indigo">
-        <v-icon>list</v-icon>
-      </v-btn>
-    </v-speed-dial>
+  <v-toolbar absolute>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn flat to='/notificaciones'>
+         <v-badge left>
+          <span slot="badge">{{numeroNotificaciones}}</span>
+          NOTIFICACIONES 
+        </v-badge>
+        </v-btn>
+        
+        <v-btn flat to='/gestion'>TAREAS</v-btn>
+      </v-toolbar-items>
+  </v-toolbar>
+  <v-layout row wrap mt-5>
     <v-flex xs12>
-      <v-toolbar color="blue lighten-1" dark>
+      <v-toolbar color="grey" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>Listado de Tareas </v-toolbar-title>
           <v-spacer></v-spacer>
@@ -34,6 +33,12 @@
                   <v-layout wrap>
                     <v-flex xs12>
                       <v-text-field v-model="editedItem.name" label="Nombre"></v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                      <v-text-field v-model="editedItem.address" label="Dirección"></v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                      <v-text-field v-model="editedItem.phone" label="Teléfono de contacto"></v-text-field>
                     </v-flex>
                     <v-flex xs12>
                     <v-select
@@ -62,9 +67,9 @@
         <v-text-field
         v-model="search"
         append-icon="search"
-        label="Buscar"
+        label="Buscar por fecha, tarea o responsable"
         single-line
-        hide-details
+      
       ></v-text-field>
         
       </v-toolbar>
@@ -94,7 +99,7 @@
               <span>Editar</span>
             </v-tooltip>
             <v-tooltip bottom>
-              <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getSubtareas(props.item)">visibility</v-icon>
+              <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="props.expanded = !props.expanded">visibility</v-icon>
               <span>Detalles</span>
             </v-tooltip>
             <v-tooltip bottom>
@@ -103,6 +108,13 @@
             </v-tooltip>
           </td>
         </template>
+        <template slot="expand" slot-scope="props">
+            <v-card flat>
+              <v-card-text>Dirección: {{props.item.address}}</v-card-text>
+              <v-card-text>Teléfono de contacto: {{props.item.phone}}</v-card-text>
+              <v-btn small color="primary" @click="getSubtareas(props.item)" >Subtareas</v-btn>
+            </v-card>
+          </template>
         <template slot="no-data">
           <v-btn color="primary" @click="initialize">Recargar</v-btn>
         </template>
@@ -162,7 +174,7 @@ import BzComentarios from "./comentarios.vue"
           text: 'Responsable',
           align: 'left',
           sortable: false,
-          value: 'name'
+          value: 'worker.first_name'
         },
          {
           text: 'Estado',
@@ -179,10 +191,14 @@ import BzComentarios from "./comentarios.vue"
       tareas: [],
       editedIndex: -1,
       editedItem: {
-        name: ''
+        name: '',
+        phone:'',
+        address: ''
       },
       defaultItem: {
-        name: ''
+        name: '',
+        phone:'',
+        address: ''
       }
     }),
 
@@ -281,7 +297,6 @@ import BzComentarios from "./comentarios.vue"
 
       getSubtareas(item){
         this.subtareas = item
-        this.selected = item.id
         this.ventana = true
       },
 
@@ -327,6 +342,8 @@ import BzComentarios from "./comentarios.vue"
         if (this.editedIndex > -1) {
           this.$axios.put('/tasks/'+this.editedItem.id, {
             name : this.editedItem.name,
+            phone : this.editedItem.phone,
+            address : this.editedItem.address,
             worker: {
               id: this.selectUsuarios.id
             }
@@ -342,6 +359,8 @@ import BzComentarios from "./comentarios.vue"
         } else {
             axios.post('/tasks/', {
                 name : this.editedItem.name,
+                phone : this.editedItem.phone,
+                address : this.editedItem.address,
                 worker: {
                 id: this.selectUsuarios.id
                 }
