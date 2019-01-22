@@ -3,15 +3,13 @@
   <v-toolbar absolute>
       <v-spacer></v-spacer>
       <v-toolbar-items>
-        <v-btn flat to='/zonas'>PUNTOS DE CONTROL</v-btn>
-        <v-btn flat to='/ronda'>REPORTE DE RONDAS</v-btn>
-        <v-btn flat to='/eventos'>EVENTOS</v-btn>
+        <v-btn flat to='/productos'>ITEMS DE INVENTARIO</v-btn>
       </v-toolbar-items>
   </v-toolbar>
   <v-layout row wrap mt-5>
-    <v-flex xs6  mt-3>
+    <v-flex xs12  mt-3>
       <v-toolbar color="grey " dark>
-        <v-toolbar-title> Zonas</v-toolbar-title>
+        <v-toolbar-title> ITEMS</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="500px">
             <v-btn icon slot="activator" >
@@ -51,22 +49,21 @@
       </v-toolbar> -->
       <v-data-table
         :headers="headers"
-        :items="zones"
+        :items="productos"
         :search="search"
         rows-per-page-text= "Número de Filas"
         class="elevation-1"
         hide-actions
       >
         <template slot="items" slot-scope="props">
+          <td :class="{actived:selected == props.item.id}" >{{ props.item.code }}</td>
           <td :class="{actived:selected == props.item.id}" >{{ props.item.name }}</td>
+          <td :class="{actived:selected == props.item.id}" >{{ props.item.cant }}</td>
+          <td :class="{actived:selected == props.item.id}" >{{ props.item.description }}</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
             <v-tooltip bottom>
               <v-icon  slot="activator" color="green darken-2" class="mr-2" @click="editItem(props.item)">edit</v-icon>
               <span>Editar</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getCheckpoints(props.item)">add_location</v-icon>
-              <span>Puntos de control</span>
             </v-tooltip>
             <v-tooltip bottom>
               <v-icon  slot="activator" color="red darken-2" @click="deleteItem(props.item)">delete</v-icon>
@@ -81,39 +78,47 @@
       <div class="text-xs-center pt-2">
       </div>
     </v-flex>
-    <bz-checkpoints v-if= "checkpoints" v-bind:zone="checkpoints"> </bz-checkpoints>
   </v-layout>
 </v-container>
 </template>
 
 
 <script>
-  import BzCheckpoints from "./checkpoints.vue"
   import axios from '../axios.js'
 
   export default {
-    components: {BzCheckpoints},
     data: () => ({
-      fab: true,
       info: null,
       search: '',
-      checkpoints: 0,
       dialog: false,
       selected: 0,
       headers: [
         {
+          text: 'Codigo',
+          sortable: true,
+          value: 'code'
+        },
+        {
           text: 'Nombre',
-          align: 'left',
           sortable: true,
           value: 'name'
         },
+         {
+          text: 'Cantidad',
+          sortable: true,
+          value: 'cant'
+        },
+        {
+          text: 'Descripcion',
+          sortable: false,
+          value: 'description'
+        },
         { text: 'Acciones', 
-        value: 'name', 
         sortable: false, 
         align: 'left', 
         width: '180'}
       ],
-      zones: [],
+      productos: [{code: '001', name: 'Producto xxx', cant: 3, description: 'Lorem ipsu'}],
       editedIndex: -1,
       editedItem: {
         name: '',
@@ -125,7 +130,7 @@
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nueva zona' : 'Modificar zona'
+        return this.editedIndex === -1 ? 'Nuevo producto' : 'Modificar producto'
       },
       pages () {
         if (this.pagination.rowsPerPage == null ||
@@ -142,16 +147,16 @@
       }
     },
 
-    created () {
+    /* created () {
       this.initialize()
-    },
+    }, */
 
     methods: {
       initialize () {
-        axios.get('/zones/self')
+        axios.get('/productos/self')
         .then(resp => {
           if(resp.status === 200){
-            this.zones = resp.data
+            this.productos = resp.data
           }
         })
         .catch(e => {
@@ -161,22 +166,17 @@
 
       editItem (item) {
         this.selected = item.id
-        this.editedIndex = this.zones.indexOf(item)
+        this.editedIndex = this.productos.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialog = true
       },
 
-      getCheckpoints(item){
-        this.selected = item.id
-        this.checkpoints = item
-      },
-
       deleteItem (item) {
-        this.$axios.delete('/zones/'+item.id+'?trash=true')
+        this.$axios.delete('/productos/'+item.id+'?trash=true')
           .then(resp => {
             if(resp.status === 200){
-              const index = this.zones.indexOf(item)
-              this.zones.splice(index, 1)
+              const index = this.productos.indexOf(item)
+              this.productos.splice(index, 1)
             }
           })
           .catch(e => {
@@ -195,7 +195,7 @@
 
       save () {
         if (this.editedIndex > -1) {
-          this.$axios.put('/zones/'+this.editedItem.id, {
+          this.$axios.put('/productos/'+this.editedItem.id, {
             name : this.editedItem.name,
             condos: {
               id: this.$store.state.sesion.id
@@ -203,29 +203,24 @@
           })
           .then(resp => {
             if(resp.status === 200){
-              Object.assign(this.zones[this.editedIndex], this.editedItem)
+              Object.assign(this.productos[this.editedIndex], this.editedItem)
             }
           })
           .catch(e => {
             console.log(e)
           })
         } else {
-            if (this.zones.length < this.$store.state.sesion.zone_limit ){
-              axios.post('/zones/', {
-              name : this.editedItem.name
-            })
-            .then(resp => {
-              if(resp.status === 201){
-                this.zones.push(resp.data)
-              }
-            })
-            .catch(e => {
-              console.log(e)
-            })
+          axios.post('/productos/', {
+          name : this.editedItem.name
+        })
+        .then(resp => {
+          if(resp.status === 201){
+            this.productos.push(resp.data)
           }
-          else{
-            alert('Haz excedido el limite de zonas de tu plan')
-          }
+        })
+        .catch(e => {
+          console.log(e)
+        })
         }
         this.close()
       }
