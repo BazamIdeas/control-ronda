@@ -17,6 +17,7 @@ import Panel from '@/components/panel'
 import Notificaciones from '@/components/notificaciones'
 import Entrega from '@/components/entrega'
 import Eventos from '@/components/eventos'
+import Productos from '@/components/productos'
 
 Vue.use(Router)
 
@@ -155,6 +156,23 @@ export default new Router({
       path: '/zonas',
       name: 'zonas',
       component: Zonas,
+      meta: {
+        requiresAuth: true
+      },
+      beforeEnter: (to, from, next) => {
+        if (store.state.sesion.routes_mod) {
+          next()
+        } else {
+          next({
+            name: 'restringida'
+          })
+        }
+      }
+    },
+    {
+      path: '/productos',
+      name: 'productos',
+      component: Productos,
       meta: {
         requiresAuth: true
       },
