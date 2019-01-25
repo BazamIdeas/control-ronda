@@ -43,7 +43,10 @@
         </v-list>
       </v-navigation-drawer>
       </v-flex>
-      <v-flex xs10>
+      <v-flex xs10 v-if="sesion">
+        <router-view/>
+      </v-flex>
+      <v-flex xs12 v-if="!sesion">
         <router-view/>
       </v-flex>
     </v-layout>
@@ -60,6 +63,7 @@ export default {
         {name: 'RONDA',  route: 'ronda', id : 2, icon: 'autorenew'},
         {name: 'GESTION',  route: 'gestion', id : 3, icon: 'event'},
         {name: 'ENTREGA',  route: 'entrega', id : 4, icon: 'airport_shuttle'},
+        /* {name: 'INVENTARIO',  route: 'productos', id : 4, icon: 'view_list'}, */
         {name: 'USUARIOS',  route: 'usuarios', id :5, icon: 'group'},
         {name: 'SALIR',  route: 'logout', id : 7, icon: 'exit_to_app'}
       ]

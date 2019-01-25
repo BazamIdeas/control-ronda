@@ -10,7 +10,7 @@
   <v-layout row wrap mt-5>
     <v-flex xs12>
       <v-toolbar color="grey" dark>
-          <v-toolbar-title>Personas Registradas </v-toolbar-title>
+          <v-toolbar-title>EMPLEADOS</v-toolbar-title>
         </v-toolbar>
 
       <v-toolbar flat color="white">
@@ -62,22 +62,16 @@
            <v-icon v-if="props.item.approved" v-model="props.item.approved">done</v-icon>
           </td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
-            <v-tooltip bottom>
+            <!-- <v-tooltip bottom>
               <v-icon  slot="activator" color="green darken-2" class="small" @click="editItem(props.item)">edit</v-icon>
               <span>Editar</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <v-icon  slot="activator" color="blue darken-2" class="small" @click="getReport(props.item)">alarm</v-icon>
-              <span>Reporte mensual</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <v-icon  slot="activator" color="orange darken-2" class="small" @click="getResume(props.item)">calendar_today</v-icon>
-              <span>Reporte anual</span>
-            </v-tooltip>
-            <v-tooltip bottom>
+            </v-tooltip> -->
+              <v-chip class="text-xs-center" slot="activator" @click="getReport(props.item)">Mensual</v-chip>
+              <v-chip class="text-xs-center" slot="activator" @click="getResume(props.item)">Anual</v-chip>
+            <!-- <v-tooltip bottom>
               <v-icon  slot="activator" color="red darken-2" class="small" @click="deleteItem(props.item)">delete</v-icon>
               <span>Eliminar</span>
-            </v-tooltip>
+            </v-tooltip> -->
             </td>
         </template>
         <template slot="no-data">
@@ -132,7 +126,7 @@
         { text: 'Aprobado', 
         width: '10'},
 
-        { text: 'Acciones', 
+        { text: 'Reportes', 
         width: '100'}
       ],
       employees: [],

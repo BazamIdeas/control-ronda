@@ -1,5 +1,11 @@
 <template>
-<v-container grid-list-md >
+<v-container grid-list-md mt-5 >
+    <v-toolbar absolute>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn flat @click="salir()">SALIR</v-btn>
+      </v-toolbar-items>
+  </v-toolbar>
   <v-layout row wrap>
     <v-flex xs12>
       <v-toolbar color="blue lighten-1" dark>
@@ -104,8 +110,7 @@
           <v-btn color="primary" @click="initialize">Recargar</v-btn>
         </template>
       </v-data-table>
-    </v-flex>
-    <v-dialog v-model="ventana" fullscreen hide-overlay transition="dialog-bottom-transition">
+      <v-dialog v-model="ventana" fullscreen hide-overlay transition="dialog-bottom-transition">
       <v-card>
         <v-toolbar >
           <v-spacer></v-spacer>
@@ -116,6 +121,8 @@
         <bz-supervisor v-if= "condominio" v-bind:condominio="condominio"> </bz-supervisor>
       </v-card>
     </v-dialog>
+    </v-flex>
+    
     
   </v-layout>
 </v-container>
@@ -135,6 +142,7 @@
       condominio: 0,
       dialog: false,
       selected: 0,
+      ruts: [],
       headers: [
         {
           text: 'Condominio',
@@ -221,6 +229,9 @@
         .then(resp => {
           if(resp.status === 200){
             this.condominios = resp.data
+            this.ruts = this.condominios.map(function (condominio, index, array) {
+            return condominio.rut
+            })  
           }
         })
         .catch(e => {
@@ -264,29 +275,34 @@
       },
 
       save () {
-        if (this.editedIndex > -1) {
-          this.$axios.put('/condos/'+this.editedItem.id, this.editedItem)
-          .then(resp => {
-            if(resp.status === 200){
-              Object.assign(this.condominios[this.editedIndex], this.editedItem)
-            }
-          })
-          .catch(e => {
-            console.log(e)
-          })
-        } else {
-            this.$axios.post('/condos/', this.editedItem)
+          if (this.ruts.indexOf(this.editedItem.rut) > -1) {
+            alert("El rut de la empresa ya esta registrado")
+          }
+          else{
+            if (this.editedIndex > -1) {
+            this.$axios.put('/condos/'+this.editedItem.id, this.editedItem)
             .then(resp => {
-            if(resp.status === 201){
-                this.condominios.push(resp.data)
-                alert("condominio creado, no olvide crear un usuario")
-                }
+              if(resp.status === 200){
+                Object.assign(this.condominios[this.editedIndex], this.editedItem)
+              }
             })
             .catch(e => {
-            console.log(e)
+              console.log(e)
             })
+          } else {
+              this.$axios.post('/condos/', this.editedItem)
+              .then(resp => {
+              if(resp.status === 201){
+                  this.condominios.push(resp.data)
+                  alert("condominio creado, no olvide crear un usuario")
+                  }
+              })
+              .catch(e => {
+              console.log(e)
+              })
+          }
+          this.close()
         }
-        this.close()
       },
 
       changeModulo(item){
@@ -301,6 +317,13 @@
           console.log(e)
         })
       },
+
+      salir (){
+      this.$store.commit('FINISH_SESION')
+      localStorage.removeItem('bazam-token-control')
+      this.$router.push('/')
+      }
+      
     }
   }
 </script>

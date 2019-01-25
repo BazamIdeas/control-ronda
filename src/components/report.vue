@@ -297,11 +297,14 @@
         this.assistances.forEach(asistencia => {
           if (asistencia.is_holiday)
             festivo = 'SI'
+
+          let ini_break = asistencia.hasOwnProperty('break') ? moment(asistencia.break.date).format('HH:mm') : '-'
+          let finish_break = asistencia.hasOwnProperty('finish_break') ? moment(asistencia.finish_break.date).format('HH:mm') : '-'
           tabla.push({
             'dia': asistencia.day,
             'entrada' : moment(asistencia.entry.date).format('HH:mm'),
-            'inicio_colacion' : moment(asistencia.break.date).format('HH:mm'),
-            'final_colacion' : moment(asistencia.finish_break.date).format('HH:mm'),
+            'inicio_colacion' : ini_break,
+            'final_colacion' : finish_break,
             'salida' : moment(asistencia.exit.date).format('HH:mm'),
             'horas': parseFloat(asistencia.total_worked_hours).toFixed(2) ,
             'diferencial': parseFloat(asistencia.extra_worked_hours).toFixed(2) ,
@@ -323,11 +326,14 @@
         this.assistances.forEach(asistencia => {
           if (asistencia.is_holiday)
             festivo = 'SI'
+          
+          let ini_break = asistencia.hasOwnProperty('break') ? moment(asistencia.break.date).format('HH:mm') : '-'
+          let finish_break = asistencia.hasOwnProperty('finish_break') ? moment(asistencia.finish_break.date).format('HH:mm') : '-'
           ws_data.push([
             asistencia.day,
             moment(asistencia.entry.date).format('HH:mm'),
-            moment(asistencia.break.date).format('HH:mm'),
-            moment(asistencia.finish_break.date).format('HH:mm'),
+            ini_break,
+            finish_break,
             moment(asistencia.exit.date).format('HH:mm'),
             parseFloat(asistencia.total_worked_hours).toFixed(2) ,
             parseFloat(asistencia.extra_worked_hours).toFixed(2) ,
