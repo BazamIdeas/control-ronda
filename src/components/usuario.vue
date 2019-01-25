@@ -19,7 +19,7 @@
                   <v-text-field label="Email" box readonly :value= usuario.worker.email></v-text-field>
                 </v-flex>
                 <v-flex xs6 >
-                  <v-text-field label="Teléfono" box readonly :value= usuario.worker.phone></v-text-field>
+                  <v-text-field label="Teléfono" box readonly :value= usuario.phone></v-text-field>
                 </v-flex>
                 <v-flex xs6 >
                   <v-text-field label="RUT" box readonly :value= usuario.worker.rut></v-text-field>

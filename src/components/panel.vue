@@ -1,5 +1,5 @@
 <template>
-<v-container grid-list-md mt-5>
+<v-container grid-list-md mt-5 >
     <v-toolbar absolute>
       <v-spacer></v-spacer>
       <v-toolbar-items>
@@ -7,7 +7,7 @@
       </v-toolbar-items>
   </v-toolbar>
   <v-layout row wrap>
-    <v-flex xs10 offset-xs2>
+    <v-flex xs12>
       <v-toolbar color="blue lighten-1" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>Condominios</v-toolbar-title>
@@ -110,8 +110,7 @@
           <v-btn color="primary" @click="initialize">Recargar</v-btn>
         </template>
       </v-data-table>
-    </v-flex>
-    <v-dialog v-model="ventana" fullscreen hide-overlay transition="dialog-bottom-transition">
+      <v-dialog v-model="ventana" fullscreen hide-overlay transition="dialog-bottom-transition">
       <v-card>
         <v-toolbar >
           <v-spacer></v-spacer>
@@ -122,6 +121,8 @@
         <bz-supervisor v-if= "condominio" v-bind:condominio="condominio"> </bz-supervisor>
       </v-card>
     </v-dialog>
+    </v-flex>
+    
     
   </v-layout>
 </v-container>

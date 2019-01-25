@@ -19,16 +19,16 @@
               <v-container grid-list-md>
                 <v-layout wrap>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.first_name" label="Nombre completo"></v-text-field>
+                    <v-text-field v-model="editedItem.worker.first_name" label="Nombre completo" :rules="[rules.required]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.username" label="Usuario"></v-text-field>
+                    <v-text-field v-model="editedItem.phone" label="Telefono" :rules="[rules.required]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.phone" label="Telefono"></v-text-field>
+                    <v-text-field v-model="editedItem.worker.email" label="Email" :rules="[rules.required, rules.email]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.password" label="Contraseña"></v-text-field>
+                    <v-text-field v-model="editedItem.password" label="Contraseña" :rules="[rules.required]" ></v-text-field>
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -37,7 +37,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" flat @click.native="close">Cancelar</v-btn>
-              <v-btn color="blue darken-1" flat @click.native="save">Guardar</v-btn>
+              <v-btn color="blue darken-1" flat @click.native="save" v-if="editedItem.password">Guardar</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -120,6 +120,7 @@
         phone: '',
         worker: {
           first_name: '',
+          email: '',
           condos: {
               id: ''
           }
@@ -131,9 +132,18 @@
         phone: '',
         worker: {
           first_name: '',
+          email: '',
           condos: {
               id: ''
           }
+        }
+      },
+      rules: {
+        required: value => !!value || 'El campo es requerido.',
+        counter: value => value.length <= 20 || 'Max 20 characters',
+        email: value => {
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          return pattern.test(value) || 'Correo invalido'
         }
       }
     }),
@@ -169,7 +179,7 @@
           }
         })
         .catch(e => {
-             this.users = []
+          this.users = []
           console.log(e)
         })
       },
@@ -205,7 +215,9 @@
       },
 
       save () {
+        this.editedItem.username = this.editedItem.worker.email
         if (this.editedIndex > -1) {
+          
           if (this.editedItem.password === 'xxxxxxxx'){
             delete this.editedItem.password
           }
@@ -216,6 +228,9 @@
             }
           })
           .catch(e => {
+            if(e.response.data.code === 1062){
+                  alert("No se ha podido modificar al supervisor, El email ya esta en uso")
+              }
             console.log(e)
           })
         } else {
@@ -228,6 +243,9 @@
                 }
               })
               .catch(e => {
+                if(e.response.data.code === 1062){
+                  alert("No se ha podido registrar al supervisor, El email ya esta en uso")
+                }
                 console.log(e)
               })
           }

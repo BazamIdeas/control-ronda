@@ -20,19 +20,19 @@
               <v-container grid-list-md>
                 <v-layout wrap>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.first_name" label="Nombre completo"></v-text-field>
+                    <v-text-field v-model="editedItem.worker.first_name" label="Nombre completo" :rules="[rules.required]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.username" label="Usuario"></v-text-field>
+                    <v-text-field v-model="editedItem.username" label="Usuario" :rules="[rules.required]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.phone" label="Telefono"></v-text-field>
+                    <v-text-field v-model="editedItem.phone" label="Telefono" :rules="[rules.required]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.email" label="Email"></v-text-field>
+                    <v-text-field v-model="editedItem.worker.email" label="Email" :rules="[rules.required, rules.email]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.address" label="Dirección"></v-text-field>
+                    <v-text-field v-model="editedItem.worker.address" label="Dirección" :rules="[rules.required]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
                     <v-text-field v-model="editedItem.worker.city" label="Ciudad"></v-text-field>
@@ -43,8 +43,11 @@
                   <v-flex xs6>
                     <v-text-field v-model="editedItem.worker.country" label="Pais"></v-text-field>
                   </v-flex>
-                  <v-flex xs12>
-                    <v-text-field v-model="editedItem.password" label="Contraseña"></v-text-field>
+                  <v-flex xs6>
+                    <v-text-field v-model="editedItem.worker.rut" label="RUT" :rules="[rules.required]"></v-text-field>
+                  </v-flex>
+                  <v-flex xs6>
+                    <v-text-field v-model="editedItem.password" label="Contraseña" :rules="[rules.required]"></v-text-field>
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -53,7 +56,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" flat @click.native="close">Cancelar</v-btn>
-              <v-btn color="blue darken-1" flat @click.native="save">Guardar</v-btn>
+              <v-btn color="blue darken-1" flat @click.native="save" v-if="editedItem.password">Guardar</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -127,7 +130,6 @@
                   </v-switch>
                   <span v-if="!props.item.worker.condos.tasks_mod">No habilitado</span>
                   </v-flex>
-                  <v-btn small color="primary" @click="getSubtareas(props.item)" >Subtareas</v-btn>
                 </v-layout>
             </v-container>
           </template>
@@ -208,7 +210,7 @@ import BzUsuario from "./usuario.vue"
         align: 'center', 
         width: '100'}
       ],
-      users: ['',''],
+      users: [],
       editedIndex: -1,
       editedItem: {
         username: '',
@@ -237,7 +239,15 @@ import BzUsuario from "./usuario.vue"
           city: '',
           address: ''
         }
-      }
+      },
+      rules: {
+          required: value => !!value || 'El campo es requerido.',
+          counter: value => value.length <= 20 || 'Max 20 characters',
+          email: value => {
+            const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            return pattern.test(value) || 'Correo invalido'
+          }
+        }
     }),
 
     computed: {
@@ -310,42 +320,72 @@ import BzUsuario from "./usuario.vue"
         }, 500)
       },
 
-      save () {
-       
-        if (this.editedIndex > -1) {
-          
-          if (this.editedItem.password === 'xxxxxxxx'){
-            delete this.editedItem.password
+      userValidate () {
+        this.$axios.get('/watchers/username/'+this.editedItem.username)
+        .then(resp => {
+          if(resp.status === 200){
+            alert("El usuario esta en uso")         
           }
-          this.$axios.put('/watchers/'+this.editedItem.id, this.editedItem)
-          .then(resp => {
-            if(resp.status === 200){
-              Object.assign(this.users[this.editedIndex], this.editedItem)
+        })
+      },
+
+      save () {
+        this.$axios.get('/watchers/username/'+this.editedItem.username)
+        .then(resp => {
+          console.log(resp)
+          if(resp.status === 200 && this.editedItem.username != resp.data.username){
+            alert("El usuario esta en uso")
+            return false         
+          }
+          return true 
+        })
+        .catch(e => {
+          if(e.response.data.code === 8){
+            return true             
             }
-          })
-          .catch(e => {
-            console.log(e)
-          })
-        } else {
-            if (this.users.length < this.$store.state.sesion.user_limit ){
-              this.$axios.post('/watchers/', this.editedItem)
+          return false
+        })
+        .then(validacion => {
+          if (validacion){
+            if (this.editedIndex > -1) {
+              
+              if (this.editedItem.password === 'xxxxxxxx'){
+                delete this.editedItem.password
+              }
+              this.$axios.put('/watchers/'+this.editedItem.id, this.editedItem)
               .then(resp => {
-                if(resp.status === 201){
-                  this.users.push(resp.data)
+                if(resp.status === 200){
+                  Object.assign(this.users[this.editedIndex], this.editedItem)
                 }
               })
               .catch(e => {
-                if(e.code === 409){
-                  alert("Ha excedido el limite de usuarios de su cuenta")
-                }
+                if(e.response.data.code === 1062){
+                      alert("No se ha podido modificar al empleado, El usuario o email ya estan están siendo usados")
+                    }
                 console.log(e)
               })
+            } else {
+                if (this.users.length < this.$store.state.sesion.user_limit ){
+                  this.$axios.post('/watchers/', this.editedItem)
+                  .then(resp => {
+                    if(resp.status === 201){
+                      this.users.push(resp.data)
+                    }
+                  })
+                  .catch(e => {
+                    if(e.response.data.code === 1062){
+                      alert("No se ha podido registrar al empleado, El usuario o email ya estan están siendo usados")
+                    }
+                    console.log(e.response.data)
+                  })
+              }
+              else{
+                alert('Haz excedido el limite de usuarios de tu plan')
+              }
+            }
+            this.close()
           }
-          else{
-            alert('Haz excedido el limite de usuarios de tu plan')
-          }
-        }
-        this.close()
+        })
       },
 
       changeStatus(item){

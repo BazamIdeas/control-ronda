@@ -62,7 +62,7 @@
 		<v-dialog v-model="vistaDescripcion" width="500">
 			<v-card>
         <v-card-title class="headline grey lighten-2" primary-title>
-         Comentario
+         {{descripcion.name}}
         </v-card-title>
         <v-card-text>
           {{descripcion.description}}
