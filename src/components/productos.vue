@@ -3,7 +3,8 @@
   <v-toolbar absolute>
       <v-spacer></v-spacer>
       <v-toolbar-items>
-        <v-btn flat to='/productos'>ITEMS DE INVENTARIO</v-btn>
+        <v-btn flat to='/productos'>ITEMS</v-btn>
+        <v-btn flat to='/inventario'>INVENTARIO</v-btn>
       </v-toolbar-items>
   </v-toolbar>
   <v-layout row wrap mt-5>
@@ -24,7 +25,13 @@
                 <v-container grid-list-md>
                   <v-layout wrap>
                     <v-flex xs12>
-                      <v-text-field v-model="editedItem.name" label="Nombre"></v-text-field>
+                      <v-text-field v-model="editedItem.code" label="Codigo" :rules="[rules.required]"></v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                      <v-text-field v-model="editedItem.name" label="Nombre" :rules="[rules.required]"></v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                      <v-text-field v-model="editedItem.quantity" mask="######" label="Cantidad" :rules="[rules.required]"></v-text-field>
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -49,17 +56,16 @@
       </v-toolbar> -->
       <v-data-table
         :headers="headers"
-        :items="productos"
+        :items="objects"
         :search="search"
         rows-per-page-text= "Número de Filas"
         class="elevation-1"
-        hide-actions
+        
       >
         <template slot="items" slot-scope="props">
           <td :class="{actived:selected == props.item.id}" >{{ props.item.code }}</td>
           <td :class="{actived:selected == props.item.id}" >{{ props.item.name }}</td>
-          <td :class="{actived:selected == props.item.id}" >{{ props.item.cant }}</td>
-          <td :class="{actived:selected == props.item.id}" >{{ props.item.description }}</td>
+          <td :class="{actived:selected == props.item.id}" >{{ props.item.quantity }}</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
             <v-tooltip bottom>
               <v-icon  slot="activator" color="green darken-2" class="mr-2" @click="editItem(props.item)">edit</v-icon>
@@ -108,36 +114,36 @@
           sortable: true,
           value: 'cant'
         },
-        {
-          text: 'Descripcion',
-          sortable: false,
-          value: 'description'
-        },
         { text: 'Acciones', 
         sortable: false, 
         align: 'left', 
         width: '180'}
       ],
-      productos: [{code: '001', name: 'Producto xxx', cant: 3, description: 'Lorem ipsu'}],
+      objects: [{code: '001', name: 'Producto xxx', quantity: 3}],
       editedIndex: -1,
       editedItem: {
         name: '',
+        code: '',
+        quantity: ''
       },
       defaultItem: {
         name: '',
-      }
+        code: '',
+        quantity: ''
+      },
+      rules: {
+          required: value => !!value || 'El campo es requerido.',
+          counter: value => value.length <= 20 || 'Max 20 characters',
+          email: value => {
+            const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            return pattern.test(value) || 'Correo invalido'
+          }
+        }
     }),
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nuevo producto' : 'Modificar producto'
-      },
-      pages () {
-        if (this.pagination.rowsPerPage == null ||
-          this.pagination.totalItems == null
-        ) return 0
-
-        return Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage)
+        return this.editedIndex === -1 ? 'Nuevo Item' : 'Modificar item'
       }
     },
 
@@ -147,16 +153,16 @@
       }
     },
 
-    /* created () {
+     created () {
       this.initialize()
-    }, */
+    },  
 
     methods: {
       initialize () {
-        axios.get('/productos/self')
+        axios.get('/objects/self')
         .then(resp => {
           if(resp.status === 200){
-            this.productos = resp.data
+            this.objects = resp.data
           }
         })
         .catch(e => {
@@ -166,17 +172,17 @@
 
       editItem (item) {
         this.selected = item.id
-        this.editedIndex = this.productos.indexOf(item)
+        this.editedIndex = this.objects.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialog = true
       },
 
       deleteItem (item) {
-        this.$axios.delete('/productos/'+item.id+'?trash=true')
+        this.$axios.delete('/objects/'+item.id+'?trash=true')
           .then(resp => {
             if(resp.status === 200){
-              const index = this.productos.indexOf(item)
-              this.productos.splice(index, 1)
+              const index = this.objects.indexOf(item)
+              this.objects.splice(index, 1)
             }
           })
           .catch(e => {
@@ -195,27 +201,34 @@
 
       save () {
         if (this.editedIndex > -1) {
-          this.$axios.put('/productos/'+this.editedItem.id, {
+          this.$axios.put('/objects/'+this.editedItem.id, {
             name : this.editedItem.name,
+            code : this.editedItem.code,
+            quantity : parseInt(this.editedItem.quantity),
             condos: {
               id: this.$store.state.sesion.id
             }
           })
           .then(resp => {
             if(resp.status === 200){
-              Object.assign(this.productos[this.editedIndex], this.editedItem)
+              Object.assign(this.objects[this.editedIndex], this.editedItem)
             }
           })
           .catch(e => {
             console.log(e)
           })
         } else {
-          axios.post('/productos/', {
-          name : this.editedItem.name
+          axios.post('/objects/', {
+          name : this.editedItem.name,
+            code : this.editedItem.code,
+            quantity : parseInt(this.editedItem.quantity),
+            condos: {
+              id: this.$store.state.sesion.id
+            }
         })
         .then(resp => {
           if(resp.status === 201){
-            this.productos.push(resp.data)
+            this.objects.push(resp.data)
           }
         })
         .catch(e => {

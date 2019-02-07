@@ -283,7 +283,9 @@
         }
       },
       diferencial(horas){
-        return (parseFloat(horas) - parseFloat(this.$store.state.sesion.working_hours)).toFixed(2) 
+        let h= (parseFloat(horas) - parseFloat(this.$store.state.sesion.working_hours)).toFixed(2) 
+        let r = h < 0 ? 0 : h
+        return r
       },
 
       pdf(){
@@ -293,10 +295,10 @@
         doc.text('Mes: '+this.mes+" | Empleado: "+this.empleado.first_name, 15, 25)
         const file = 'Reporte Mensual de asistencia: '+this.empleado.first_name +"-"+this.mes+"-"+this.anio+'.pdf'
         let tabla = []
-        let festivo = 'NO'
+        
         this.assistances.forEach(asistencia => {
-          if (asistencia.is_holiday)
-            festivo = 'SI'
+
+          let festivo = asistencia.is_holiday ? 'SI' : 'NO'
 
           let ini_break = asistencia.hasOwnProperty('break') ? moment(asistencia.break.date).format('HH:mm') : '-'
           let finish_break = asistencia.hasOwnProperty('finish_break') ? moment(asistencia.finish_break.date).format('HH:mm') : '-'
@@ -322,10 +324,10 @@
         }
         wb.SheetNames.push("Informe")
         var ws_data = [['Reporte mensual de asistencia'],['Mes: '+this.mes,"Empleado: "+this.empleado.first_name],['DIA','INGRESO','INICIO COLACION','TERMINO COLACION','SALIDA','TIEMPO TRABAJADO','DIFERENCIAL']]
-        let festivo = 'NO'
+
         this.assistances.forEach(asistencia => {
-          if (asistencia.is_holiday)
-            festivo = 'SI'
+
+          let festivo = asistencia.is_holiday ? 'SI' : 'NO'
           
           let ini_break = asistencia.hasOwnProperty('break') ? moment(asistencia.break.date).format('HH:mm') : '-'
           let finish_break = asistencia.hasOwnProperty('finish_break') ? moment(asistencia.finish_break.date).format('HH:mm') : '-'

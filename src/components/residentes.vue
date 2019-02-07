@@ -1,12 +1,19 @@
 <template>
 <v-container grid-list-md >
-  <v-layout row wrap>
+  <v-toolbar absolute>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn flat to='/residentes'>RESIDENTES</v-btn>
+        <v-btn flat to='/encuestas'>ENCUESTAS</v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
+  <v-layout row wrap  mt-5>
     <v-flex xs12 >
       <v-toolbar color="grey" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
-          <v-toolbar-title>Usuarios de la app</v-toolbar-title>
+          <v-toolbar-title>RESIDENTES</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="500px">
+          <!-- <v-dialog v-model="dialog" max-width="500px">
             <v-btn icon slot="activator">
             <v-icon >plus_one</v-icon>
           </v-btn>
@@ -59,37 +66,38 @@
               <v-btn color="blue darken-1" flat @click.native="save" v-if="editedItem.password">Guardar</v-btn>
             </v-card-actions>
           </v-card>
-        </v-dialog>
+        </v-dialog> -->
         </v-toolbar>
       <v-toolbar flat color="white">
         <v-text-field
         v-model="search"
         append-icon="search"
-        label="Buscar por nombre, usuario, rut, email o teléfono"
+        label="Buscar por nombre, rut, email o teléfono"
         single-line
         hide-details
       ></v-text-field>
       </v-toolbar>
       <v-data-table
         :headers="headers"
-        :items="users"
+        :items="residentes"
         :search="search"
         rows-per-page-text= "Número de Filas"
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
-          <td  >{{ props.item.worker.first_name }}</td>
-          <td  >{{ props.item.username }}</td>
-          <td  >{{ props.item.worker.rut }}</td>
-          <td  >{{ props.item.worker.email }}</td>
+          <td  >{{ props.item.name }}</td>
+          <td  >{{ props.item.rut }}</td>
+          <td  >{{ props.item.email }}</td>
           <td  >{{ props.item.phone }}</td>
-          <td class="justify-center px-0" >
-           <v-switch v-if="!props.item.worker.approved" v-model="props.item.approved" @change="aprobar(props.item.worker)" >
+          <td  >{{ props.item.departament }}</td>
+          <td  >{{ props.item.percentage }}%</td>
+          <!-- <td class="justify-center px-0" >
+           <v-switch v-if="!props.item.worker.approved" v-model="props.item.approved" @change="aprobar(props.item)" >
            </v-switch>
            <v-icon v-if="props.item.worker.approved" v-model="props.item.approved">done</v-icon>
-          </td>
+          </td> -->
           <td class="justify-center px-0" >
-            <v-tooltip bottom>
+            <!-- <v-tooltip bottom>
               <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getFicha(props.item)">visibility</v-icon>
               <span>Detalles</span>
             </v-tooltip>
@@ -100,14 +108,14 @@
             <v-tooltip bottom>
               <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="props.expanded = !props.expanded">https</v-icon>
               <span>Permisos</span>
-            </v-tooltip>
+            </v-tooltip> -->
             <v-tooltip bottom>
               <v-icon  slot="activator" color="red darken-2" @click="deleteItem(props.item)">delete</v-icon>
               <span>Eliminar</span>
             </v-tooltip>
           </td>
         </template>
-        <template slot="expand" slot-scope="props">
+<!--         <template slot="expand" slot-scope="props">
             <v-container grid-list-md>
                 <v-layout wrap>
                   <v-flex xs3>
@@ -132,20 +140,20 @@
                   </v-flex>
                 </v-layout>
             </v-container>
-          </template>
+          </template> -->
         <template slot="no-data">
           <v-btn color="primary" @click="initialize">Recargar</v-btn>
         </template>
       </v-data-table>
     </v-flex>
-    <v-dialog v-model="ficha" fullscreen hide-overlay transition="dialog-bottom-transition">
+  <!--   <v-dialog v-model="ficha" fullscreen hide-overlay transition="dialog-bottom-transition">
       <v-card>
         <v-layout justify-end>
             <v-btn flat @click.native="ficha = false">Cerrar</v-btn>
         </v-layout >
         <bz-usuario v-if= "usuario" v-bind:usuario="usuario"> </bz-usuario>
       </v-card>
-    </v-dialog>
+    </v-dialog> -->
   </v-layout>
 </v-container>
 </template>
@@ -159,7 +167,6 @@ import BzUsuario from "./usuario.vue"
     data: () => ({
       fab: true,
       search: '',
-      UserRoutes: 0,
       dialog: false,
       usuario: '',
       selected: 0,
@@ -168,65 +175,55 @@ import BzUsuario from "./usuario.vue"
         {
           text: 'Nombre completo',
           sortable: true,
-          value: 'worker.first_name'
-        },
-        {
-          text: 'Usuario',
-          sortable: true,
-          value: 'username'
+          value: 'name'
         },
         {
           text: 'RUT',
-          align: 'center',
           sortable: true,
-          value: 'worker.rut'
+          value: 'rut'
         },
         {
           text: 'Email',
-           value: 'worker.email',
+          sortable: true,
+          value: 'email'
         },
         {
-          text: 'Telefono',
-          sortable: false,
-          value: 'phone',
+          text: 'Teléfono',
+           value: 'phone',
         },
         {
-          text: 'Aprobado',
-          sortable: false,
+          text: 'Departamento',
+          value: 'departament',
+        },
+        {
+          text: 'Alicuota (%)',
+          value: 'percentage',
         },
         { text: 'Acciones', 
         sortable: false, 
         }
       ],
-      users: [],
+      residentes: [],
       editedIndex: -1,
       editedItem: {
-        username: '',
+        name: '',
         password: '',
         phone: '',
-        worker: {
-          first_name: '',
-          rut: '',
-          email: '',
-          country: '',
-          community: '',
-          city: '',
-          address: ''
-        }
+        rut: '',
+        email: '',
+        departament: '',
+        percentage: '',
+        committee: ''
       },
       defaultItem: {
-        username: '',
+        name: '',
         password: '',
         phone: '',
-        worker: {
-          first_name: '',
-          rut: '',
-          email: '',
-          country: '',
-          community: '',
-          city: '',
-          address: ''
-        }
+        rut: '',
+        email: '',
+        departament: '',
+        percentage: '',
+        committee: ''
       },
       rules: {
           required: value => !!value || 'El campo es requerido.',
@@ -240,7 +237,7 @@ import BzUsuario from "./usuario.vue"
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nuevo Usuario' : 'Modificar usuario'
+        return this.editedIndex === -1 ? 'Nuevo Residente' : 'Modificar residente'
       },
     },
 
@@ -256,14 +253,14 @@ import BzUsuario from "./usuario.vue"
 
     methods: {
       initialize () {
-        this.$axios.get('/watchers/self')
+        this.$axios.get('/residents/self')
         .then(resp => {
           if(resp.status === 200){
             if (resp.data !== null){
-              this.users = resp.data
+              this.residentes = resp.data
             }
             else{
-              this.users = []
+              this.residentes = []
             }
             
           }
@@ -275,7 +272,7 @@ import BzUsuario from "./usuario.vue"
 
       editItem (item) {
         this.selected = item.id
-        this.editedIndex = this.users.indexOf(item)
+        this.editedIndex = this.residentes.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.editedItem.password = 'xxxxxxxx'
         this.dialog = true
@@ -287,11 +284,11 @@ import BzUsuario from "./usuario.vue"
       },
 
       deleteItem (item) {
-        this.$axios.delete('/watchers/'+item.id+'?trash=true')
+        this.$axios.delete('/residents/'+item.id+'?trash=true')
           .then(resp => {
             if(resp.status === 200){
-              const index = this.users.indexOf(item)
-              this.users.splice(index, 1)
+              const index = this.residentes.indexOf(item)
+              this.residentes.splice(index, 1)
             }
           })
           .catch(e => {
@@ -308,14 +305,14 @@ import BzUsuario from "./usuario.vue"
         }, 500)
       },
 
-      userValidate () {
+      /* userValidate () {
         this.$axios.get('/watchers/username/'+this.editedItem.username)
         .then(resp => {
           if(resp.status === 200){
             alert("El usuario esta en uso")         
           }
         })
-      },
+      }, */
 
       save () {
         this.$axios.get('/watchers/username/'+this.editedItem.username)
@@ -343,7 +340,7 @@ import BzUsuario from "./usuario.vue"
               this.$axios.put('/watchers/'+this.editedItem.id, this.editedItem)
               .then(resp => {
                 if(resp.status === 200){
-                  Object.assign(this.users[this.editedIndex], this.editedItem)
+                  Object.assign(this.residentes[this.editedIndex], this.editedItem)
                 }
               })
               .catch(e => {
@@ -353,11 +350,11 @@ import BzUsuario from "./usuario.vue"
                 console.log(e)
               })
             } else {
-                if (this.users.length < this.$store.state.sesion.user_limit ){
+                if (this.residentes.length < this.$store.state.sesion.user_limit ){
                   this.$axios.post('/watchers/', this.editedItem)
                   .then(resp => {
                     if(resp.status === 201){
-                      this.users.push(resp.data)
+                      this.residentes.push(resp.data)
                     }
                   })
                   .catch(e => {
