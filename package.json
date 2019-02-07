@@ -12,10 +12,12 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "echarts": "^4.2.0-rc.2",
     "file-saver": "^2.0.0",
     "jspdf": "^1.4.1",
     "jspdf-autotable": "^2.3.5",
     "moment": "^2.22.2",
+    "v-charts": "^1.19.0",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vuetify": "^1.0.0",

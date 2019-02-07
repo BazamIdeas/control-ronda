@@ -18,6 +18,9 @@ import Notificaciones from '@/components/notificaciones'
 import Entrega from '@/components/entrega'
 import Eventos from '@/components/eventos'
 import Productos from '@/components/productos'
+import Inventario from '@/components/inventario'
+import Encuestas from '@/components/encuestas'
+import Residentes from '@/components/residentes'
 
 Vue.use(Router)
 
@@ -173,6 +176,57 @@ export default new Router({
       path: '/productos',
       name: 'productos',
       component: Productos,
+      meta: {
+        requiresAuth: true
+      },
+      beforeEnter: (to, from, next) => {
+        if (store.state.sesion.routes_mod) {
+          next()
+        } else {
+          next({
+            name: 'restringida'
+          })
+        }
+      }
+    },
+    {
+      path: '/inventario',
+      name: 'inventario',
+      component: Inventario,
+      meta: {
+        requiresAuth: true
+      },
+      beforeEnter: (to, from, next) => {
+        if (store.state.sesion.routes_mod) {
+          next()
+        } else {
+          next({
+            name: 'restringida'
+          })
+        }
+      }
+    },
+    {
+      path: '/encuestas',
+      name: 'encuestas',
+      component: Encuestas,
+      meta: {
+        requiresAuth: true
+      },
+      beforeEnter: (to, from, next) => {
+        if (store.state.sesion.routes_mod) {
+          next()
+        } else {
+          next({
+            name: 'restringida'
+          })
+        }
+      }
+    },
+    {
+      path: '/residentes',
+      name: 'residentes',
+      component: Residentes,
       meta: {
         requiresAuth: true
       },
