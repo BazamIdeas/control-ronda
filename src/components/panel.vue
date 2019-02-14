@@ -92,6 +92,14 @@
            </v-switch>
           </td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
+           <v-switch  v-model="props.item.checks_mod" @change="changeModulo(props.item)" >
+           </v-switch>
+          </td>
+          <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
+           <v-switch  v-model="props.item.surveys_mod" @change="changeModulo(props.item)" >
+           </v-switch>
+          </td>
+          <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
             <v-tooltip bottom>
             <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getSupervisores(props.item)">person</v-icon>
             <span>Todos los supervisores</span>
@@ -170,6 +178,14 @@
         },
         { 
         text: 'Entrega', 
+        sortable: false, 
+        },
+        { 
+        text: 'Inventario', 
+        sortable: false, 
+        },
+        { 
+        text: 'Encuesta', 
         sortable: false, 
         },
         { 

@@ -13,7 +13,7 @@
           <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>RESIDENTES</v-toolbar-title>
           <v-spacer></v-spacer>
-          <!-- <v-dialog v-model="dialog" max-width="500px">
+           <v-dialog v-model="dialog" max-width="500px">
             <v-btn icon slot="activator">
             <v-icon >plus_one</v-icon>
           </v-btn>
@@ -27,34 +27,29 @@
               <v-container grid-list-md>
                 <v-layout wrap>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.first_name" label="Nombre completo" :rules="[rules.required]"></v-text-field>
+                    <v-text-field v-model="editedItem.name" label="Nombre completo" :rules="[rules.required]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.username" label="Usuario" :rules="[rules.required]"></v-text-field>
+                    <v-text-field v-model="editedItem.rut" label="RUT" :rules="[rules.required]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
                     <v-text-field v-model="editedItem.phone" label="Telefono" :rules="[rules.required]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.email" label="Email" :rules="[rules.required, rules.email]"></v-text-field>
+                    <v-text-field v-model="editedItem.email" label="Email" :rules="[rules.required, rules.email]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.address" label="Dirección" :rules="[rules.required]"></v-text-field>
+                    <v-text-field v-model="editedItem.departament" label="Departamento" :rules="[rules.required]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.city" label="Ciudad"></v-text-field>
-                  </v-flex>
-                  <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.community" label="Comuna"></v-text-field>
-                  </v-flex>
-                  <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.country" label="Pais"></v-text-field>
-                  </v-flex>
-                  <v-flex xs6>
-                    <v-text-field v-model="editedItem.worker.rut" label="RUT" :rules="[rules.required]"></v-text-field>
+                    <v-text-field v-model.number="editedItem.percentage" label="% Alicuota" :rules="[rules.required]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
                     <v-text-field v-model="editedItem.password" label="Contraseña" :rules="[rules.required]"></v-text-field>
+                  </v-flex>
+                  <v-flex xs6>
+                    <v-switch label="Comité" v-model="editedItem.committee" >
+                    </v-switch>
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -66,7 +61,7 @@
               <v-btn color="blue darken-1" flat @click.native="save" v-if="editedItem.password">Guardar</v-btn>
             </v-card-actions>
           </v-card>
-        </v-dialog> -->
+        </v-dialog>
         </v-toolbar>
       <v-toolbar flat color="white">
         <v-text-field
@@ -91,21 +86,26 @@
           <td  >{{ props.item.phone }}</td>
           <td  >{{ props.item.departament }}</td>
           <td  >{{ props.item.percentage }}%</td>
-          <!-- <td class="justify-center px-0" >
-           <v-switch v-if="!props.item.worker.approved" v-model="props.item.approved" @change="aprobar(props.item)" >
+          <td class="justify-center px-0" >
+           <v-switch v-if="!props.item.approved" v-model="props.item.approved" @change="changeStatus(props.item)" >
            </v-switch>
-           <v-icon v-if="props.item.worker.approved" v-model="props.item.approved">done</v-icon>
-          </td> -->
+           <v-icon v-if="props.item.approved" v-model="props.item.approved">done</v-icon>
+          </td> 
+          <td class="justify-center px-0" >
+           <v-switch v-if="!props.item.committee" v-model="props.item.committee" @change="changeStatus(props.item)" >
+           </v-switch>
+           <v-icon v-if="props.item.committee" v-model="props.item.committee">done</v-icon>
+          </td> 
           <td class="justify-center px-0" >
             <!-- <v-tooltip bottom>
               <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getFicha(props.item)">visibility</v-icon>
               <span>Detalles</span>
-            </v-tooltip>
+            </v-tooltip>-->
             <v-tooltip bottom>
               <v-icon  slot="activator" color="green darken-2" class="mr-2" @click="editItem(props.item)">edit</v-icon>
               <span>Editar</span>
             </v-tooltip>
-            <v-tooltip bottom>
+           <!-- <v-tooltip bottom>
               <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="props.expanded = !props.expanded">https</v-icon>
               <span>Permisos</span>
             </v-tooltip> -->
@@ -119,24 +119,10 @@
             <v-container grid-list-md>
                 <v-layout wrap>
                   <v-flex xs3>
-                    <v-switch v-if="props.item.worker.condos.assistances_mod" label="Asistencia" v-model="props.item.assistances_mod" @change="changeStatus(props.item)" >
-                    </v-switch>
-                    <span v-if="!props.item.worker.condos.assistances_mod">No habilitado</span>
+
                   </v-flex>
                   <v-flex xs3>
-                  <v-switch v-if="props.item.worker.condos.routes_mod"  label="Rondas"  v-model="props.item.routes_mod" @change="changeStatus(props.item)" >
-                  </v-switch>
-                  <span v-if="!props.item.worker.condos.routes_mod">No habilitado</span>
-                  </v-flex>
-                  <v-flex xs3>
-                  <v-switch v-if="props.item.worker.condos.delivery_mod" label="Entregas"  v-model="props.item.delivery_mod" @change="changeStatus(props.item)" >
-                  </v-switch>
-                  <span v-if="!props.item.worker.condos.delivery_mod">No habilitado</span>
-                  </v-flex>
-                  <v-flex xs3>
-                  <v-switch v-if="props.item.worker.condos.tasks_mod" label="Gestión" v-model="props.item.tasks_mod" @change="changeStatus(props.item)" >
-                  </v-switch>
-                  <span v-if="!props.item.worker.condos.tasks_mod">No habilitado</span>
+
                   </v-flex>
                 </v-layout>
             </v-container>
@@ -199,6 +185,14 @@ import BzUsuario from "./usuario.vue"
           text: 'Alicuota (%)',
           value: 'percentage',
         },
+        {
+          text: 'Aprobado',
+          value: 'percentage',
+        },
+        {
+          text: 'Comité',
+          value: 'percentage',
+        },
         { text: 'Acciones', 
         sortable: false, 
         }
@@ -213,7 +207,8 @@ import BzUsuario from "./usuario.vue"
         email: '',
         departament: '',
         percentage: '',
-        committee: ''
+        committee: false,
+        approved: true
       },
       defaultItem: {
         name: '',
@@ -223,7 +218,8 @@ import BzUsuario from "./usuario.vue"
         email: '',
         departament: '',
         percentage: '',
-        committee: ''
+        committee: false,
+        approved: true
       },
       rules: {
           required: value => !!value || 'El campo es requerido.',
@@ -302,11 +298,11 @@ import BzUsuario from "./usuario.vue"
         setTimeout(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
-        }, 500)
+        }, 1500)
       },
 
       /* userValidate () {
-        this.$axios.get('/watchers/username/'+this.editedItem.username)
+        this.$axios.get('/residents/username/'+this.editedItem.username)
         .then(resp => {
           if(resp.status === 200){
             alert("El usuario esta en uso")         
@@ -315,11 +311,11 @@ import BzUsuario from "./usuario.vue"
       }, */
 
       save () {
-        this.$axios.get('/watchers/username/'+this.editedItem.username)
+        this.$axios.get('/residents/email/'+this.editedItem.email)
         .then(resp => {
           console.log(resp)
-          if(resp.status === 200 && this.editedItem.username != resp.data.username){
-            alert("El usuario esta en uso")
+          if(resp.status === 200 && this.editedItem.email != resp.data.email){
+            alert("El Email esta en uso")
             return false         
           }
           return true 
@@ -337,36 +333,32 @@ import BzUsuario from "./usuario.vue"
               if (this.editedItem.password === 'xxxxxxxx'){
                 delete this.editedItem.password
               }
-              this.$axios.put('/watchers/'+this.editedItem.id, this.editedItem)
+              this.$axios.put('/residents/'+this.editedItem.id, this.editedItem)
               .then(resp => {
                 if(resp.status === 200){
                   Object.assign(this.residentes[this.editedIndex], this.editedItem)
+                  alert("Cambio satisfactorio")
                 }
               })
               .catch(e => {
                 if(e.response.data.code === 1062){
-                      alert("No se ha podido modificar al empleado, El usuario o email ya estan están siendo usados")
+                      alert("No se ha podido modificar al residente, el email ya esta registrado")
                     }
                 console.log(e)
               })
             } else {
-                if (this.residentes.length < this.$store.state.sesion.user_limit ){
-                  this.$axios.post('/watchers/', this.editedItem)
-                  .then(resp => {
-                    if(resp.status === 201){
-                      this.residentes.push(resp.data)
-                    }
-                  })
-                  .catch(e => {
-                    if(e.response.data.code === 1062){
-                      alert("No se ha podido registrar al empleado, El usuario o email ya estan están siendo usados")
-                    }
-                    console.log(e.response.data)
-                  })
-              }
-              else{
-                alert('Haz excedido el limite de usuarios de tu plan')
-              }
+              this.$axios.post('/residents/', this.editedItem)
+              .then(resp => {
+                if(resp.status === 201){
+                  this.residentes.push(resp.data)
+                }
+              })
+              .catch(e => {
+                if(e.response.data.code === 1062){
+                  alert("No se ha podido registrar al residente, el email ya existe")
+                }
+                console.log(e.response.data)
+              })
             }
             this.close()
           }
@@ -375,10 +367,10 @@ import BzUsuario from "./usuario.vue"
 
       changeStatus(item){
         delete item.password
-        this.$axios.put('/watchers/'+item.id, item)
+        this.$axios.put('/residents/'+item.id, item)
         .then(resp => {
           if(resp.status === 200){
-           alert("Haz cambiado el permiso al usuario satisfactoriamente")
+           alert("Cambio satisfactorio")
           }
         })
         .catch(e => {

@@ -180,7 +180,7 @@ export default new Router({
         requiresAuth: true
       },
       beforeEnter: (to, from, next) => {
-        if (store.state.sesion.routes_mod) {
+        if (store.state.sesion.checks_mod) {
           next()
         } else {
           next({
@@ -197,7 +197,7 @@ export default new Router({
         requiresAuth: true
       },
       beforeEnter: (to, from, next) => {
-        if (store.state.sesion.routes_mod) {
+        if (store.state.sesion.checks_mod) {
           next()
         } else {
           next({
@@ -214,7 +214,7 @@ export default new Router({
         requiresAuth: true
       },
       beforeEnter: (to, from, next) => {
-        if (store.state.sesion.routes_mod) {
+        if (store.state.sesion.surveys_mod) {
           next()
         } else {
           next({
@@ -231,7 +231,7 @@ export default new Router({
         requiresAuth: true
       },
       beforeEnter: (to, from, next) => {
-        if (store.state.sesion.routes_mod) {
+        if (store.state.sesion.surveys_mod) {
           next()
         } else {
           next({

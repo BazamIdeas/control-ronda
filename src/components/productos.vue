@@ -119,7 +119,7 @@
         align: 'left', 
         width: '180'}
       ],
-      objects: [{code: '001', name: 'Producto xxx', quantity: 3}],
+      objects: [],
       editedIndex: -1,
       editedItem: {
         name: '',
@@ -196,7 +196,7 @@
         setTimeout(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
-        }, 500)
+        }, 1500)
       },
 
       save () {

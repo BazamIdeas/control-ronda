@@ -94,15 +94,14 @@
           <td  >{{ moment(props.item.date_end).format('DD-MM-YYYY') }}</td>
           <td  ><v-icon v-if="props.item.committee_only" >people</v-icon> {{ props.item.label }}</td>
           <td class="justify-center px-0" >
-           <v-switch v-if="!props.item.approved" v-model="props.item.approved" @change="aprobar(props.item)" >
-           </v-switch>
-           <v-chip color="green" small text-color="white" v-if="props.item.approved" v-model="props.item.approved">visible</v-chip>
+           <v-switch  v-model="props.item.approved" @change="aprobar(props.item)" ></v-switch>
+           <!-- <v-chip color="green" small text-color="white" v-if="props.item.approved" v-model="props.item.approved">visible</v-chip> -->
           </td>
           <td ><v-chip color="blue" small text-color="white">{{ numeroVotos(props.item) }}</v-chip> </td>
           <td >{{ props.item.price }}</td>
           <td class="justify-center px-0" >
             <v-tooltip bottom>
-              <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getVotos(props.item)">visibility</v-icon>
+              <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getDetalles(props.item)">visibility</v-icon>
               <span>Detalles</span>
             </v-tooltip>
             <v-tooltip bottom>
@@ -168,7 +167,7 @@ var moment = require ('moment')
           value: 'label'
         },
         {
-          text: 'Estado',
+          text: 'Visible',
           sortable: false,
         },
         {
@@ -190,7 +189,7 @@ var moment = require ('moment')
       editedItem: {
         date_end: '',
         approved: true,
-        price: '',
+        price: 0,
         description: '',
         committee_only: false,
         label: '',
@@ -199,7 +198,7 @@ var moment = require ('moment')
       defaultItem: {
         date_end: '',
         approved: true,
-        price: '',
+        price: 0,
         description: '',
         committee_only: false,
         label: '',
@@ -278,7 +277,8 @@ var moment = require ('moment')
             console.log(e)
           })
         } else {
-          this.editedItem.date_end = this.moment(this.fecha).format('YYYY-MM-DD') 
+          this.editedItem.date_end = this.date ? this.moment(this.date).format('YYYY-MM-DD') : this.moment().format('YYYY-MM-DD')
+          
           this.editedItem.condos.condos_id = this.$store.state.admin.condos.id
             this.$axios.post('/questions/', this.editedItem)
             .then(resp => {
@@ -317,11 +317,11 @@ var moment = require ('moment')
 
  
 
-       aprobar (item) {
-        this.$axios.patch('/workers/'+item.id+'/approve')
+       aprobar(item){
+        this.$axios.put('/questions/'+item.id, item)
         .then(resp => {
           if(resp.status === 200){
-            alert('Usuario aprobado')
+           alert("Cambio satisfactorio")
           }
         })
         .catch(e => {
@@ -329,7 +329,7 @@ var moment = require ('moment')
         })
       },
 
-      getVotos(item){
+      getDetalles(item){
         this.detalleEncuesta = item
         this.selected = item.id
         this.verDetalles = true

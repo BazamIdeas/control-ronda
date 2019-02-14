@@ -110,25 +110,30 @@
         <template slot="expand" slot-scope="props">
             <v-container grid-list-md>
                 <v-layout wrap>
-                  <v-flex xs3>
+                  <v-flex xs2>
                     <v-switch v-if="props.item.worker.condos.assistances_mod" label="Asistencia" v-model="props.item.assistances_mod" @change="changeStatus(props.item)" >
                     </v-switch>
                     <span v-if="!props.item.worker.condos.assistances_mod">No habilitado</span>
                   </v-flex>
-                  <v-flex xs3>
+                  <v-flex xs2>
                   <v-switch v-if="props.item.worker.condos.routes_mod"  label="Rondas"  v-model="props.item.routes_mod" @change="changeStatus(props.item)" >
                   </v-switch>
                   <span v-if="!props.item.worker.condos.routes_mod">No habilitado</span>
                   </v-flex>
-                  <v-flex xs3>
+                  <v-flex xs2>
                   <v-switch v-if="props.item.worker.condos.delivery_mod" label="Entregas"  v-model="props.item.delivery_mod" @change="changeStatus(props.item)" >
                   </v-switch>
                   <span v-if="!props.item.worker.condos.delivery_mod">No habilitado</span>
                   </v-flex>
-                  <v-flex xs3>
+                  <v-flex xs2>
                   <v-switch v-if="props.item.worker.condos.tasks_mod" label="Gestión" v-model="props.item.tasks_mod" @change="changeStatus(props.item)" >
                   </v-switch>
                   <span v-if="!props.item.worker.condos.tasks_mod">No habilitado</span>
+                  </v-flex>
+                  <v-flex xs2>
+                  <v-switch v-if="props.item.worker.condos.checks_mod" label="Inventario" v-model="props.item.checks_mod" @change="changeStatus(props.item)" >
+                  </v-switch>
+                  <span v-if="!props.item.worker.condos.checks_mod">No habilitado</span>
                   </v-flex>
                 </v-layout>
             </v-container>

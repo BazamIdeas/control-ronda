@@ -1,7 +1,7 @@
 <template>
 <v-container grid-list-md >
   <v-layout row wrap>
-    <v-flex xs4>
+    <v-flex xs4 >
       <h3>DATOS</h3>
       <v-divider></v-divider>
       <v-layout row wrap mt-2>
@@ -30,7 +30,7 @@
       <v-flex xs12>
         <v-layout>
           <v-flex xs9 text-xs-center>
-            <h2>{{detalleEncuesta.label}}</h2>
+            <h2 style="margin-bottom: 10px;">{{detalleEncuesta.label}}</h2>
           </v-flex>
           <v-flex xs3 text-xs-right>
             <v-icon v-if="detalleEncuesta.committee_only" >people</v-icon>
@@ -38,15 +38,22 @@
           </v-flex>
         </v-layout>       
       </v-flex>
-      <v-layout row wrap>
-      <v-flex xs6 text-xs-center pl-1 pr-1 mt-3>
-        <h3 mb-2>Gráfico según alicuota (%)</h3>
-        <ve-pie :data="chartData" :settings="chartSettings"></ve-pie>
-      </v-flex>
-      <v-flex xs6 text-xs-center pl-1 pr-1 mt-3>
-        <h3 mb-2>Gráfico según número de residentes</h3>
-        <ve-pie :data="chartData" :settings="chartSettingsN"></ve-pie>
-      </v-flex>
+      <v-layout row wrap v-if="!detalleEncuesta.committee_only">
+      
+        <v-flex xs6 text-xs-center pl-1 pr-1 mt-3>
+          <v-card>
+          <h3 mb-2>Gráfico según alicuota (%)</h3>
+          <ve-pie :data="chartData" :settings="chartSettings"></ve-pie>
+          </v-card>
+        </v-flex>
+        
+        <v-flex xs6 text-xs-center pl-1 pr-1 mt-3>
+          <v-card>
+          <h3 mb-2>Gráfico según número de residentes</h3>
+          <ve-pie :data="chartData" :settings="chartSettingsN"></ve-pie>
+           </v-card>
+        </v-flex>
+      
       <!-- <v-flex xs4>
         <table class="tabla">
           <tr class="encabezado">
@@ -70,10 +77,66 @@
           </tr>
         </table>
       </v-flex> -->
-     
+
+        <v-flex xs12 mt-4>
+          <h3 style="margin-bottom: 20px;">VOTANTES</h3>
+          <v-divider></v-divider>
+          <v-data-table
+          :headers="headers"
+          :items="votos"
+          :search="search"
+          rows-per-page-text= "Número de Filas"
+          :pagination.sync="pagination"
+          class="elevation-1"
+        >
+          <template slot="items" slot-scope="props">
+            <td >{{ props.item.residents.name }}</td>
+            <td >{{ props.item.residents.rut }}</td>
+            <td >{{ props.item.residents.percentage }}</td>
+            <td >{{ props.item.residents.departament }}</td>
+            <td v-if="props.item.accepted"><v-chip color="green" small text-color="white">SI</v-chip></td>
+             <td v-if="!props.item.accepted"><v-chip color="red" small text-color="white">NO</v-chip></td>
+            <td >{{ props.item.comment }}</td>
+          </template>
+          <template slot="no-data">
+            <h3>Aún no hay votantes</h3>
+            <v-btn color="primary" @click="initialize">Recargar</v-btn>
+          </template>
+        </v-data-table>
+        </v-flex>
+      </v-layout>
+      <v-layout row wrap v-if="detalleEncuesta.committee_only">
+      <v-flex xs12 text-xs-center  mt-3>
+        <v-card>
+          <ve-pie :data="chartData" :settings="chartSettingsN"></ve-pie>
+        </v-card>
+        
+      </v-flex>
+        <v-flex xs12 mt-4>
+          <h3 style="margin-bottom: 20px;">VOTANTES DEL COMITÉ</h3>
+          <v-divider></v-divider>
+          <v-data-table
+          :headers="headersC"
+          :items="votos"
+          :search="search"
+          rows-per-page-text= "Número de Filas"
+          :pagination.sync="pagination"
+          class="elevation-1"
+        >
+          <template slot="items" slot-scope="props">
+            <td >{{ props.item.residents.name }}</td>
+            <td v-if="props.item.accepted"><v-chip color="green" small text-color="white">SI</v-chip></td>
+             <td v-if="!props.item.accepted"><v-chip color="red" small text-color="white">NO</v-chip></td>
+            <td >{{ props.item.comment }}</td>
+          </template>
+          <template slot="no-data">
+            <h3>Aún no hay votantes</h3>
+            <v-btn color="primary" @click="initialize">Recargar</v-btn>
+          </template>
+        </v-data-table>
+        </v-flex>
       </v-layout>
     </v-flex>
-
   </v-layout>
 </v-container>
 </template>
@@ -99,42 +162,50 @@
       pagination: {descending: true},
       headers: [
         {
-          text: 'Fecha',
-          align: 'left',
-          sortable: true,
+          text: 'Nombre',
           isDescending: true,
-          value: 'date'
+          value: 'residents.name'
         },
         {
-          text: 'Subtarea',
-          align: 'left',
-          sortable: false,
-          value: 'name'
+          text: 'RUT',
+          value: 'residents.rut'
         },
          {
-          text: 'Descripción',
-          align: 'left',
-          sortable: false,
-          value: 'description'
+          text: 'Alicuota',
+          value: 'residents.percentage'
         },
         {
-          text: 'Estado',
-          align: 'left',
-          sortable: false,
-          value: 'name'
+          text: 'Departamento',
+          value: 'residents.departament'
         },
         {
-          text: 'Fecha de Finalización',
-          align: 'left',
-          sortable: true,
-          value: 'date_end'
+          text: 'Voto',
+          sortable: false,
+          value: 'residents.acceptep'
         },
-        { text: 'Acciones', 
-        value: 'name', 
-        sortable: false, 
-        align: 'left', 
-        width: '180'}
-      ],
+        {
+          text: 'Comentario',
+          sortable: false,
+          value: 'comment'
+        }],
+
+        headersC: [
+          {
+            text: 'Nombre',
+            isDescending: true,
+            value: 'residents.name'
+          },
+          {
+            text: 'Voto',
+            sortable: false,
+            value: 'residents.acceptep'
+          },
+          {
+            text: 'Comentario',
+            sortable: false,
+            value: 'comment'
+          }],
+          
       votos: [],
       chartData: {
           columns: ['respuesta', 'numero', 'porcentaje'],

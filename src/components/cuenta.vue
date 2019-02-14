@@ -21,7 +21,55 @@
     </v-flex> 
   </v-layout>
   <v-layout row wrap>
-    <v-flex xs3>
+    <v-flex xs4>
+      <v-card>
+        <v-container grid-list-md >
+          <v-layout justify-space-around>
+              <v-icon>list</v-icon><h3>Encuestas</h3>
+          </v-layout>
+          <v-layout justify-space-around>
+            <h4 class="estado">Estado: <span v-html=encuestas></span></h4>
+          </v-layout>
+        </v-container>
+      </v-card>
+    </v-flex>
+    <v-flex xs4>
+      <v-card>
+        <v-container grid-list-md >
+          <v-layout justify-space-around>
+              <v-icon>check_box</v-icon><h3>Inventario</h3>
+          </v-layout>
+          <v-layout justify-space-around>
+            <h4 class="estado">Estado: <span v-html=inventario></span></h4>
+          </v-layout>
+        </v-container>
+      </v-card>
+    </v-flex>
+    <v-flex xs4>
+      <v-card>
+        <v-container grid-list-md >
+          <v-layout justify-space-around>
+              <v-icon>list</v-icon><h3>Gestion de tareas</h3>
+          </v-layout>
+          <v-layout justify-space-around>
+            <h4 class="estado">Estado: <span v-html=gestion></span></h4>
+          </v-layout>
+        </v-container>
+      </v-card>
+    </v-flex>
+    <v-flex xs4>
+      <v-card>
+        <v-container grid-list-md >
+          <v-layout justify-space-around>
+              <v-icon>check_box</v-icon><h3>Control de entregas</h3>
+          </v-layout>
+          <v-layout justify-space-around>
+            <h4 class="estado">Estado: <span v-html=entrega></span></h4>
+          </v-layout>
+        </v-container>
+      </v-card>
+    </v-flex>
+    <v-flex xs4>
       <v-card>
         <v-container grid-list-md >
           <v-layout justify-space-around>
@@ -36,7 +84,7 @@
         </v-container>
       </v-card>
     </v-flex>
-    <v-flex xs3>
+    <v-flex xs4>
       <v-card>
         <v-container grid-list-md >
           <v-layout justify-space-around>
@@ -47,30 +95,6 @@
           </v-layout>
           <v-layout justify-space-around>
            <h5 class="estado">Limite de zonas: {{zonas}}</h5>
-          </v-layout>
-        </v-container>
-      </v-card>
-    </v-flex>
-    <v-flex xs3>
-      <v-card>
-        <v-container grid-list-md >
-          <v-layout justify-space-around>
-              <v-icon>list</v-icon><h3>Gestion de tareas</h3>
-          </v-layout>
-          <v-layout justify-space-around>
-            <h4 class="estado">Estado: <span v-html=gestion></span></h4>
-          </v-layout>
-        </v-container>
-      </v-card>
-    </v-flex>
-    <v-flex xs3>
-      <v-card>
-        <v-container grid-list-md >
-          <v-layout justify-space-around>
-              <v-icon>check_box</v-icon><h3>Control de entregas</h3>
-          </v-layout>
-          <v-layout justify-space-around>
-            <h4 class="estado">Estado: <span v-html=entrega></span></h4>
           </v-layout>
         </v-container>
       </v-card>
@@ -96,6 +120,12 @@
         return this.estado(this.$store.state.sesion.routes_mod)
       },
       gestion (){
+        return this.estado(this.$store.state.sesion.tasks_mod)
+      },
+      inventario (){
+        return this.estado(this.$store.state.sesion.tasks_mod)
+      },
+      encuestas (){
         return this.estado(this.$store.state.sesion.tasks_mod)
       },
       entrega (){
