@@ -87,14 +87,12 @@
           <td  >{{ props.item.departament }}</td>
           <td  >{{ props.item.percentage }}%</td>
           <td class="justify-center px-0" >
-           <v-switch v-if="!props.item.approved" v-model="props.item.approved" @change="changeStatus(props.item)" >
+           <v-switch  v-model="props.item.approved" @change="changeStatus(props.item)" >
            </v-switch>
-           <v-icon v-if="props.item.approved" v-model="props.item.approved">done</v-icon>
           </td> 
           <td class="justify-center px-0" >
-           <v-switch v-if="!props.item.committee" v-model="props.item.committee" @change="changeStatus(props.item)" >
+           <v-switch  v-model="props.item.committee" @change="changeStatus(props.item)" >
            </v-switch>
-           <v-icon v-if="props.item.committee" v-model="props.item.committee">done</v-icon>
           </td> 
           <td class="justify-center px-0" >
             <!-- <v-tooltip bottom>
