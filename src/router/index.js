@@ -21,6 +21,8 @@ import Productos from '@/components/productos'
 import Inventario from '@/components/inventario'
 import Encuestas from '@/components/encuestas'
 import Residentes from '@/components/residentes'
+import LoginComite from '@/components/comite'
+import PanelComite from '@/components/panel_comite'
 
 Vue.use(Router)
 
@@ -270,6 +272,31 @@ export default new Router({
       component: LoginAdmin,
       meta: {
         requiresVisitor: true
+      }
+    },
+    {
+      path: '/comite',
+      name: 'comite',
+      component: LoginComite,
+      meta: {
+        requiresVisitor: true
+      }
+    },
+    {
+      path: '/comite/panel',
+      name: 'panelcomite',
+      component: PanelComite,
+      meta: {
+        comite: true
+      },
+      beforeEnter: (to, from, next) => {
+        if (store.state.comite) {
+          next()
+        } else {
+          next({
+            name: 'login'
+          })
+        }
       }
     },
     {

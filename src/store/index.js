@@ -8,8 +8,10 @@ export default new Vuex.Store({
     sesion: null,
     admin: null,
     status: null,
+    comite: null,
     conf: {
-      api: 'http://apicc.bazamdev.com/v1'
+      api: 'http://apicc.bazamdev.com/v1',
+      socket: 'ws://apicc.bazamdev.com/v1'
     }
   },
   mutations: {
@@ -21,9 +23,13 @@ export default new Vuex.Store({
       state.sesion = null
       state.admin = null
       state.status = null
+      state.comite = null
     },
     SET_SESION_ADMIN: function (state) {
       state.status = true
+    },
+    SET_SESION_COMITE: function (state) {
+      state.comite = true
     }
   }
 })

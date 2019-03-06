@@ -49,6 +49,14 @@ router.beforeEach((to, from, next) => {
         name: 'login'
       })
     }
+  } else if (to.matched.some(record => record.meta.comite)) {
+    if (store.state.comite) {
+      next()
+    } else {
+      next({
+        name: 'login'
+      })
+    }
   } else {
     next()
   }

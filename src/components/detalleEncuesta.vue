@@ -22,9 +22,24 @@
           readonly
         ></v-textarea>
       </v-flex>
-      </v-layout>
-      <h3>ADJUNTOS</h3>
+      <v-flex xs12>
+        <h3>ADJUNTOS</h3>
+      </v-flex>
+      <v-flex xs12>
+        <v-layout>
+          <div v-for='item in detalleEncuesta.attachments' :key="item.id" style="cursor:pointer; margin-right:10px; list-style: none;">
+            <v-avatar color="indigo" tile @click="download(item)">
+            <v-icon dark>play_for_work</v-icon>
+            </v-avatar> 
+          </div>
+        </v-layout>
       <v-divider></v-divider>
+      </v-flex>
+      <v-flex xs12 text-xs-center>
+        <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
+        <v-btn color="primary" small v-on:click="enviar()" >Cargar</v-btn>
+      </v-flex>
+      </v-layout>
     </v-flex >
     <v-flex xs8>
       <v-flex xs12>
@@ -40,45 +55,16 @@
       </v-flex>
       <v-layout row wrap v-if="!detalleEncuesta.committee_only">
       
-        <v-flex xs6 text-xs-center pl-1 pr-1 mt-3>
+        <v-flex xs12 text-xs-center pl-1 pr-1 mt-3>
           <v-card>
           <h3 mb-2>Gráfico según alicuota (%)</h3>
           <ve-pie :data="chartData" :settings="chartSettings"></ve-pie>
           </v-card>
         </v-flex>
         
-        <v-flex xs6 text-xs-center pl-1 pr-1 mt-3>
-          <v-card>
-          <h3 mb-2>Gráfico según número de residentes</h3>
-          <ve-pie :data="chartData" :settings="chartSettingsN"></ve-pie>
-           </v-card>
-        </v-flex>
       
-      <!-- <v-flex xs4>
-        <table class="tabla">
-          <tr class="encabezado">
-           <td></td><td>n°</td><td>%</td>
-          </tr>
-          <tr>
-            <td><v-chip color="deep-orange lighten-2" small ></v-chip>
-               SI</td>
-            <td text-xs-center>{{si}}</td>
-            <td text-xs-center>{{alicuotaSi}}%</td>
-          </tr>
-          <tr>
-            <td> <v-chip color="gray" small ></v-chip> NO</td>
-            <td text-xs-center>{{no}}</td>
-            <td text-xs-center>{{alicuotaNo}}%</td>
-          </tr>
-          <tr>
-            <td>TOTAL</td>
-            <td text-xs-center>{{no + si }}</td>
-            <td text-xs-center>{{alicuotaNo + alicuotaSi}}%</td>
-          </tr>
-        </table>
-      </v-flex> -->
 
-        <v-flex xs12 mt-4>
+        <v-flex xs12 mt-4 v-if="!comite">
           <h3 style="margin-bottom: 20px;">VOTANTES</h3>
           <v-divider></v-divider>
           <v-data-table
@@ -108,12 +94,13 @@
       <v-layout row wrap v-if="detalleEncuesta.committee_only">
       <v-flex xs12 text-xs-center  mt-3>
         <v-card>
+          <h3 mb-2>Gráfico según número de votantes del comité</h3>
           <ve-pie :data="chartData" :settings="chartSettingsN"></ve-pie>
         </v-card>
         
       </v-flex>
-        <v-flex xs12 mt-4>
-          <h3 style="margin-bottom: 20px;">VOTANTES DEL COMITÉ</h3>
+        <v-flex xs12 mt-4 v-if="!comite">
+          <h3 style="margin-bottom: 20px;">VOTANTES</h3>
           <v-divider></v-divider>
           <v-data-table
           :headers="headersC"
@@ -145,6 +132,7 @@
 <script>
   import axios from '../axios.js'
   import VePie from 'v-charts/lib/pie.common'
+  var fileSaver = require ('file-saver')
   var moment = require ('moment')
   moment.locale('es')
   export default {
@@ -153,6 +141,7 @@
     data: () => ({
       moment: moment,
       search: '',
+      file: '',
       si: 0,
       no: 0,
       alicuotaSi: 0,
@@ -227,6 +216,7 @@
        detalleEncuesta: function(newVal, oldVal) { 
          this.no = 0
          this.si = 0
+         this.file = ''
          this.alicuotaSi = 0
          this.alicuotaNo = 0
          this.votos = []
@@ -238,9 +228,11 @@
       this.initialize()
     }, 
 
+
     methods: {
       initialize () {
-        this.$axios.get('/residents/self')
+        let ruta = '/residents/self'
+        this.$axios.get(ruta)
         .then(resp => {
           if(resp.status === 200){
             //TODO ------- verificar aprobados
@@ -279,11 +271,52 @@
           console.log(e)
         })  
       },
+
+      handleFileUpload(){
+        this.file = this.$refs.file.files[0];
+      },
+
+    download (item) { 
+      let data = this.$store.state.conf.api+'/questions-attachments/attachment/'+item.attachment_uuid 
+      const link = document.createElement("a")
+      link.setAttribute("href", data)
+      link.setAttribute("target", '_blank')
+      const file = 'Adjunto'
+      link.setAttribute("download", file)
+      link.click()
+    },
+    
+      enviar(){
+        let formData = new FormData()
+        formData.append('question_id', this.detalleEncuesta.id)
+        formData.append('files', this.file)
+
+        fetch(this.$store.state.conf.api+'/questions-attachments/', {
+          method: 'POST',
+          body: formData,
+          headers: { "Authorization": "Bearer " + localStorage.getItem('bazam-token-control')}
+        })
+        .then(function(resp) {
+            if(resp.status === 201){
+              return resp.json();
+            }
+          })
+        .then(resp => {
+          this.detalleEncuesta.attachments.push(resp)
+          this.file = ''
+        })
+        .catch(e => {
+          console.log(e)
+        })    
+      },
     },
 
     computed: {
       porcentaje (){
         return (this.si * 100)/this.total
+      },
+      comite () {
+        return this.$store.state.comite
       }
     }
   }

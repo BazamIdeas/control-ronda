@@ -8,7 +8,7 @@
       </v-toolbar-items>
   </v-toolbar>
   <v-layout row wrap mt-5>
-    <v-flex xs12>
+    <v-flex xs8>
       <v-toolbar color="grey" dark>
           <v-toolbar-title>EMPLEADOS</v-toolbar-title>
         </v-toolbar>
@@ -79,6 +79,25 @@
         </template>
       </v-data-table>
     </v-flex>
+    <v-flex xs4>
+      <v-toolbar color="grey" dark>
+        <v-toolbar-title>TIEMPO REAL</v-toolbar-title>
+      </v-toolbar>
+      <v-data-table
+        :headers="headers2"
+        :items="tiempoReal"
+        hide-actions
+        class="elevation-1"
+      >
+        <template slot="items" slot-scope="props">
+          <td >{{ props.item.User }}</td>
+          <td ><v-chip small :color= 'props.item.tipo.color' text-color="white">{{props.item.tipo.texto}}</v-chip></td>
+        </template>
+        <template slot="no-data">
+          <p>Vista previa de las asistencias en tiempo real, este listado es temporal </p>
+        </template>
+      </v-data-table>
+    </v-flex>
     <v-dialog v-model="ventana" fullscreen hide-overlay transition="dialog-bottom-transition">
       <v-card>
         <v-toolbar >
@@ -104,12 +123,15 @@
     components: {BzReport, BzResume},
     data: () => ({
       fab: true,
+      isConnected: false,
       search: '',
       employeesReport: 0,
       employeesResume: 0,
       dialog: false,
       selected: 0,
       ventana: false,
+      tiempoReal: [],
+      headers2:[{text:'Nombre', value:'User', sortable: false}, {text:'Tipo', value: 'Content', sortable: false}],
       headers: [
         {
           text: 'Nombre Completo',
@@ -160,9 +182,27 @@
 
     created () {
       this.initialize()
+      this.socket()
     },
 
     methods: {
+      socket (){
+        const socket = new WebSocket(this.$store.state.conf.socket + '/ws/join?token=' + localStorage.getItem('bazam-token-control'))
+        socket.onmessage = event => {
+          this.initialize()
+          let data = event.data.replace("-", "_")
+          let dataParser = JSON.parse(event.data)
+          let estados = {
+            'hola': {color: 'green', texto: 'Entrada'},
+            'break': {color: 'orange', texto: 'Inicio colación'},
+            'finish_break': {color: 'blue', texto: 'Final colación'},
+            'exit': {color: 'red', texto: 'Salida'}
+          }
+          dataParser.tipo = estados[dataParser.Content]
+          this.tiempoReal.push(dataParser)
+        }
+      },
+
       initialize () {
         this.$axios.get('/workers/self')
         .then(resp => {
