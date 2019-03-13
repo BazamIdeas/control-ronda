@@ -10,8 +10,8 @@ export default new Vuex.Store({
     status: null,
     comite: null,
     conf: {
-      api: 'http://api.cs100.com/v1',
-      socket: 'ws://api.cs100.com/v1'
+      api: 'http://api.cs100.cl/v1',
+      socket: 'ws://api.cs100.cl/v1'
     }
   },
   mutations: {

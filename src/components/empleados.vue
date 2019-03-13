@@ -193,7 +193,7 @@
           let data = event.data.replace("-", "_")
           let dataParser = JSON.parse(event.data)
           let estados = {
-            'hola': {color: 'green', texto: 'Entrada'},
+            'entry': {color: 'green', texto: 'Entrada'},
             'break': {color: 'orange', texto: 'Inicio colación'},
             'finish_break': {color: 'blue', texto: 'Final colación'},
             'exit': {color: 'red', texto: 'Salida'}

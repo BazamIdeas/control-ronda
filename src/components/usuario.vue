@@ -50,7 +50,7 @@
 export default {
   props: ['usuario'],
   data: () => ({
-    api: 'http://api.cs100.com/v1'
+    api: 'http://api.cs100.cl/v1'
   }),
 
   methods: {
