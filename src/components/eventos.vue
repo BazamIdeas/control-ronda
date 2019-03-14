@@ -35,6 +35,9 @@
           <v-date-picker v-model="date" locale="es-419" @input="$refs.menu.save(date)" type="month"></v-date-picker>
             </v-menu>
             </v-flex>
+            <v-btn icon @click="initialize ()">
+            <v-icon>autorenew</v-icon>
+          </v-btn>
       </v-toolbar>
      <!-- <v-toolbar flat color="white">
         <v-text-field

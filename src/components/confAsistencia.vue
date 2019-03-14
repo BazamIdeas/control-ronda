@@ -11,9 +11,11 @@
     <v-flex xs5>
       <v-card>
         <v-toolbar color="grey" dark>
-          <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>Parametros</v-toolbar-title>
           <v-spacer></v-spacer>
+          <v-btn icon @click="initialize ()">
+            <v-icon>autorenew</v-icon>
+          </v-btn>
         </v-toolbar>
         <v-container grid-list-md >
           <v-layout row wrap>
@@ -65,9 +67,11 @@
     <v-flex xs5 >
       <v-card>
         <v-toolbar color="grey" dark>
-          <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>Feriados</v-toolbar-title>
           <v-spacer></v-spacer>
+          <v-btn icon @click="initialize ()">
+            <v-icon>autorenew</v-icon>
+          </v-btn>
         </v-toolbar>
         <v-container >
           <v-layout align-center justify-center>

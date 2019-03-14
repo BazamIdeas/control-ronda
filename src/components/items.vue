@@ -69,7 +69,7 @@
           </td>
           <td v-if="props.item.date_end">{{ moment(props.item.date_end).format('DD-MM-YYYY') }}</td>
           <td v-else>-</td>
-          <td v-if="props.item.date_end">{{ moment(props.item.date_end).format('HH-mm') }}</td>
+          <td v-if="props.item.date_end">{{ moment(props.item.date_end).format('HH:mm') }}</td>
           <td v-else>-</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
             <!-- <v-tooltip bottom>

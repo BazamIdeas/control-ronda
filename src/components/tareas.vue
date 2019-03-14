@@ -19,6 +19,9 @@
           <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>Listado de Tareas </v-toolbar-title>
           <v-spacer></v-spacer>
+          <v-btn icon @click="initialize ()">
+            <v-icon>autorenew</v-icon>
+          </v-btn>
           <v-dialog v-model="dialog" max-width="500px">
             <v-btn icon slot="activator">
             <v-icon >plus_one</v-icon>

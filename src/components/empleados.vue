@@ -11,6 +11,10 @@
     <v-flex xs8>
       <v-toolbar color="grey" dark>
           <v-toolbar-title>EMPLEADOS</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="initialize ()">
+            <v-icon>autorenew</v-icon>
+          </v-btn>
         </v-toolbar>
 
       <v-toolbar flat color="white">

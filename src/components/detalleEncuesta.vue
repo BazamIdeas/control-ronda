@@ -237,6 +237,11 @@
           if(resp.status === 200){
             //TODO ------- verificar aprobados
             this.residentes = resp.data.length
+            if (this.detalleEncuesta.committee_only){
+              let residents = resp.data.filter(residente => residente.committee)
+              console.log(residents)
+              this.residentes = residents.length
+            }
             if (this.detalleEncuesta.votes){
               this.votos = this.detalleEncuesta.votes
               this.votos.forEach(voto => {
