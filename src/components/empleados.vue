@@ -195,7 +195,7 @@
         socket.onmessage = event => {
           this.initialize()
           let data = event.data.replace("-", "_")
-          let dataParser = JSON.parse(event.data)
+          let dataParser = JSON.parse(data)
           let estados = {
             'entry': {color: 'green', texto: 'Entrada'},
             'break': {color: 'orange', texto: 'Inicio colación'},
