@@ -27,7 +27,7 @@
           class="elevation-1"
         >
           <template slot="items" slot-scope="props">
-            <td >{{ props.item.mes }} </td>
+            <td ><v-chip @click="getReport(props.item)" small>{{ props.item.mes }} </v-chip></td>
             <td >{{ props.item.dias}} </td>
             <td >{{ props.item.horas_extras }} </td>
             <td >{{ priceHour }} </td>
@@ -41,12 +41,24 @@
         </v-data-table>
       </v-card>
     </v-flex>
+    <v-dialog v-model="ventana" fullscreen hide-overlay transition="dialog-bottom-transition">
+      <v-card>
+        <v-toolbar >
+          <v-spacer></v-spacer>
+          <v-toolbar-items>
+            <v-btn  flat @click.native="ventana = false">Cerrar</v-btn>
+          </v-toolbar-items>
+        </v-toolbar>
+        <bz-report v-if= "employeesReport" v-bind:empleado="employeesReport" v-bind:mes_numero="mes_numero"> </bz-report>
+      </v-card>
+    </v-dialog>
   </v-layout>
   </v-container>
 </template>
 
 
 <script>
+import BzReport from "./report.vue"
   let meses= new Array ("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
   let d= new Date()
   var moment = require ('moment')
@@ -56,11 +68,14 @@
   require('jspdf-autotable');
   moment.locale('es')
   export default {
+    components: {BzReport},
     props: ['empleado'],
     data: () => ({
       moment: moment,
       anio: d.getFullYear(),
-
+      ventana: false,
+      mes_numero : 0,
+      employeesReport: 0,
       headers: [
         {
           text: 'Mes',
@@ -145,6 +160,7 @@
              for (var mes in resp.data.year_data){
               let  m = resp.data.year_data[mes]
                m.mes = meses[mes - 1]
+               m.mes_numero = mes
                m.dias = this.dias(m) 
                m.horas_extras = m.extra_worked_hours.toFixed(2)
                m.precio_hora = this.priceHour
@@ -164,6 +180,12 @@
           alert('No hay reportes para esta fecha')
           console.log(e)
         }) 
+      },
+
+      getReport(item){
+        this.mes_numero = item.mes_numero
+        this.employeesReport = this.empleado
+        this.ventana = true
       },
 
       printElem() {

@@ -1,7 +1,7 @@
 <template>
   <v-container grid-list-md >
   <v-layout row wrap>
-    <v-flex xs8 class="white" offset-xs2>
+    <v-flex xs10 class="white" offset-xs1>
       <v-card>
         <v-toolbar color="grey" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
@@ -72,6 +72,7 @@
             <td >{{ moment(props.item.entry.date).format('HH:mm') }} </td>
             <td >{{ inicio_colacion(props.item) }} </td>
              <td >{{ final_colacion(props.item) }} </td>
+            <td >{{ moment(props.item.exit.date).format('DD') }} </td>
             <td >{{ moment(props.item.exit.date).format('HH:mm') }} </td>
             <td >{{ parseFloat(props.item.total_worked_hours).toFixed(2) }} </td>
             <td >{{ diferencial(props.item.total_worked_hours) }} </td>
@@ -99,7 +100,7 @@
   var xlsx = require ('xlsx')
   require('jspdf-autotable');
   export default {
-    props: ['empleado'],
+    props: ['empleado', 'mes_numero'],
     data: () => ({
       moment: moment,
       menu: false,
@@ -110,6 +111,7 @@
       valor_hora: null,
       porcentaje: null,
       total_horas_extras: 0,
+      total_horas : 0,
       mesN: moment(d).format('MM'),
       anio: moment(d).format('YYYY'),
 
@@ -135,7 +137,12 @@
 
         },
         { 
-          text: 'Salida', 
+          text: 'Dia de Salida', 
+          value: 'name', 
+
+        },
+        { 
+          text: 'Hora Salida', 
           value: 'name', 
 
         },
@@ -159,6 +166,7 @@
         {title: 'INGRESO', dataKey: 'entrada'}, 
         {title: 'INICIO COLACION', dataKey: 'inicio_colacion'}, 
         {title:'TERMINO COLACION', dataKey: 'final_colacion'},
+        {title: 'DIA SALIDA', dataKey: 'fecha_salida'}, 
         {title: 'SALIDA', dataKey: 'salida'}, 
         {title: 'TIEMPO TRABAJADO', dataKey:'horas'}, 
         {title:'DIFERENCIAL', dataKey: 'diferencial'},
@@ -170,6 +178,16 @@
     watch: { 
       empleado: function(newVal, oldVal) { 
         this.date = null
+        if (this.mes_numero){
+        this.mesN = this.mes_numero
+      }
+        this.initialize(this.mesN,this.anio)
+      },
+      mes_numero: function(newVal, oldVal) { 
+        this.date = null
+        if (this.mes_numero){
+        this.mesN = this.mes_numero
+      }
         this.initialize(this.mesN,this.anio)
       }
     },
@@ -187,6 +205,9 @@
         return (parseFloat(this.total_horas_extras) * parseFloat(priceHour)).toFixed(2) 
       },
       mes: function (){
+        if (this.mes_numero){
+          return meses[this.mes_numero - 1]
+        }
         if (!this.date){
           return meses[m]
         }
@@ -199,6 +220,10 @@
     },
 
     created () {
+      if (this.mes_numero){
+        this.mesN = this.mes_numero
+      }
+
       this.initialize(this.mesN,this.anio)
     },
 
@@ -210,11 +235,13 @@
           if(resp.status === 200){
             let dias = []
             this.total_horas_extras = 0
+            this.total_horas = 0
             
             // Obteniendo todas las claves del JSON
             for (var dia in resp.data.month_data.days){
               dias.push(resp.data.month_data.days[dia])
               this.total_horas_extras += resp.data.month_data.days[dia].extra_worked_hours
+              this.total_horas += resp.data.month_data.days[dia].total_worked_hours
             }
             this.assistances = dias
             this.jornada =  parseFloat(this.$store.state.sesion.working_hours)
@@ -293,6 +320,7 @@
         doc.text('Reporte mensual de asistencia', 15, 20)
         doc.setFontSize(12)
         doc.text('Mes: '+this.mes+" | Empleado: "+this.empleado.first_name, 15, 25)
+        
         const file = 'Reporte Mensual de asistencia: '+this.empleado.first_name +"-"+this.mes+"-"+this.anio+'.pdf'
         let tabla = []
         
@@ -307,12 +335,16 @@
             'entrada' : moment(asistencia.entry.date).format('HH:mm'),
             'inicio_colacion' : ini_break,
             'final_colacion' : finish_break,
+            'fecha_salida' : moment(asistencia.exit.date).format('DD'),
             'salida' : moment(asistencia.exit.date).format('HH:mm'),
             'horas': parseFloat(asistencia.total_worked_hours).toFixed(2) ,
             'diferencial': parseFloat(asistencia.extra_worked_hours).toFixed(2) ,
             'festivo' : festivo
           })
         });
+        tabla.push({
+          'dia': 'TOTAL', 'horas': parseFloat(this.total_horas).toFixed(2), 'diferencial': parseFloat(this.total_horas_extras).toFixed(2)
+        })
         doc.autoTable(this.columns, tabla, {margin: {top: 35}})
         doc.save(file)
       },
@@ -323,7 +355,7 @@
           Title: "Reporte mensual de asistencia",
         }
         wb.SheetNames.push("Informe")
-        var ws_data = [['Reporte mensual de asistencia'],['Mes: '+this.mes,"Empleado: "+this.empleado.first_name],['DIA','INGRESO','INICIO COLACION','TERMINO COLACION','SALIDA','TIEMPO TRABAJADO','DIFERENCIAL']]
+        var ws_data = [['Reporte mensual de asistencia'],['Mes: '+this.mes,"Empleado: "+this.empleado.first_name],['DIA','INGRESO','INICIO COLACION','TERMINO COLACION','DIA SALIDA', 'HORA', 'TIEMPO TRABAJADO','DIFERENCIAL', 'FESTIVO']]
 
         this.assistances.forEach(asistencia => {
 
@@ -336,12 +368,14 @@
             moment(asistencia.entry.date).format('HH:mm'),
             ini_break,
             finish_break,
+            moment(asistencia.exit.date).format('DD'),
             moment(asistencia.exit.date).format('HH:mm'),
             parseFloat(asistencia.total_worked_hours).toFixed(2) ,
             parseFloat(asistencia.extra_worked_hours).toFixed(2) ,
             festivo
           ])
         });
+        ws_data.push(['TOTAL','','','','','',parseFloat(this.total_horas).toFixed(2),parseFloat(this.total_horas_extras).toFixed(2)])
         var ws = xlsx.utils.aoa_to_sheet(ws_data)
         wb.Sheets["Informe"] = ws
         var wbout = xlsx.write(wb, {bookType:'xlsx',  type: 'binary'})

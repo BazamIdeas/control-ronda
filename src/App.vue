@@ -59,7 +59,7 @@ export default {
     return {
       menu : [
         {name: 'DASHBOARD', route: 'cuenta', id : 6, icon: 'dashboard'},
-        {name: 'ASISTENCIA', route: 'asistencia', id : 1, icon: 'assignment'},
+        {name: 'ASISTENCIA', route: 'asistencias', id : 1, icon: 'assignment'},
         {name: 'RONDA',  route: 'ronda', id : 2, icon: 'autorenew'},
         {name: 'GESTION',  route: 'gestion', id : 3, icon: 'event'},
         {name: 'ENTREGA',  route: 'entrega', id : 4, icon: 'airport_shuttle'},

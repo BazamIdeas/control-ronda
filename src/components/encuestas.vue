@@ -270,6 +270,8 @@ var moment = require ('moment')
 
       save () {
         if (this.editedIndex > -1) {
+          this.editedItem.date_end = this.date ? this.moment(this.date).format('YYYY-MM-DD') : this.moment().format('YYYY-MM-DD')
+
           this.$axios.put('/questions/'+this.editedItem.id, this.editedItem)
           .then(resp => {
             if(resp.status === 200){

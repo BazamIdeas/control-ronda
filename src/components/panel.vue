@@ -4,6 +4,7 @@
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-btn flat @click="salir()">SALIR</v-btn>
+         <v-btn flat @click="cambiopass()">CAMBIAR CONTRASEÑA</v-btn>
       </v-toolbar-items>
   </v-toolbar>
   <v-layout row wrap>
@@ -129,6 +130,17 @@
         <bz-supervisor v-if= "condominio" v-bind:condominio="condominio"> </bz-supervisor>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="ventanapass" fullscreen hide-overlay transition="dialog-bottom-transition">
+      <v-card>
+        <v-toolbar >
+          <v-spacer></v-spacer>
+          <v-toolbar-items>
+            <v-btn  flat @click.native="ventanapass = false">Cerrar</v-btn>
+          </v-toolbar-items>
+        </v-toolbar>
+        <bz-cambiopass> </bz-cambiopass>
+      </v-card>
+    </v-dialog>
     </v-flex>
     
     
@@ -139,12 +151,13 @@
 
 <script>
   import BzSupervisor from "./supervisores.vue"
-
+  import BzCambiopass from "./cambiopass.vue"
 
   export default {
-    components: {BzSupervisor },
+    components: {BzSupervisor, BzCambiopass },
     data: () => ({
       ventana: false,
+      ventanapass: false,
       fab: false,
       search: '',
       condominio: 0,
@@ -266,6 +279,10 @@
         this.selected = item.id
         this.condominio = item
         this.ventana = true
+      },
+
+      cambiopass(){
+        this.ventanapass = true
       },
 
       deleteItem (item) {

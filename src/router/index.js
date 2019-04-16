@@ -23,15 +23,33 @@ import Encuestas from '@/components/encuestas'
 import Residentes from '@/components/residentes'
 import LoginComite from '@/components/comite'
 import PanelComite from '@/components/panel_comite'
+import Asistencias from '@/components/asistencias'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {
-      path: '/asistencia',
-      name: 'asistencia',
+      path: '/empleados',
+      name: 'empleados',
       component: Empleados,
+      meta: {
+        requiresAuth: true
+      },
+      beforeEnter: (to, from, next) => {
+        if (store.state.sesion.assistances_mod) {
+          next()
+        } else {
+          next({
+            name: 'restringida'
+          })
+        }
+      }
+    },
+    {
+      path: '/asistencias',
+      name: 'empleados',
+      component: Asistencias,
       meta: {
         requiresAuth: true
       },

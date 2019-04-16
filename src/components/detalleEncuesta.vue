@@ -50,6 +50,12 @@
           <v-flex xs3 text-xs-right>
             <v-icon v-if="detalleEncuesta.committee_only" >people</v-icon>
             <v-chip color="green" small text-color="white" v-if="detalleEncuesta.approved" >visible</v-chip>
+            <v-chip v-if="!detalleEncuesta.committee_only" @click="pdf()" small>
+            <v-avatar>
+              <v-icon>arrow_downward</v-icon>
+            </v-avatar>
+            Pdf
+          </v-chip>
           </v-flex>
         </v-layout>       
       </v-flex>
@@ -65,7 +71,31 @@
       
 
         <v-flex xs12 mt-4 v-if="!comite">
-          <h3 style="margin-bottom: 20px;">VOTANTES</h3>
+          <h3 >Tabla resumen</h3>
+
+          <table class="tabla">
+            <thead>
+              <tr class="encabezado">
+                <th></th>
+                <th>SI</th>
+                <th>NO</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+          <tbody>
+            <tr><td>Total votos</td>
+              <td>{{si}}</td>
+              <td>{{no}}</td>
+              <td>{{si + no}}</td>
+            </tr>
+            <tr><td>Total alicuota</td>
+            <td>{{alicuotaSi}}</td>
+            <td>{{alicuotaNo}}</td>
+            <td>{{alicuotaNo + alicuotaSi}}</td>
+            </tr>
+          </tbody>
+        </table>
+          <h3 style="margin-top: 20px;">Votantes</h3>
           <v-divider></v-divider>
           <v-data-table
           :headers="headers"
@@ -121,6 +151,7 @@
             <v-btn color="primary" @click="initialize">Recargar</v-btn>
           </template>
         </v-data-table>
+
         </v-flex>
       </v-layout>
     </v-flex>
@@ -133,6 +164,7 @@
   import axios from '../axios.js'
   import VePie from 'v-charts/lib/pie.common'
   var fileSaver = require ('file-saver')
+  var jsPDF = require ('jspdf')
   var moment = require ('moment')
   moment.locale('es')
   export default {
@@ -196,6 +228,23 @@
           }],
           
       votos: [],
+
+      columns : [
+        {title: 'NOMBRE', dataKey: 'nombre'}, 
+        {title: 'RUT', dataKey: 'rut'}, 
+        {title: 'ALICUOTA', dataKey: 'alicuota'}, 
+        {title:'DEPARTAMENTO', dataKey: 'departamento'},
+        {title: 'VOTO', dataKey: 'voto'}, 
+        {title: 'COMENTARIO', dataKey:'comentario'}
+        ],
+
+      resumen : [
+        {title: 'TABLA RESUMEN', dataKey: 'titulo'},
+        {title: 'SI', dataKey: 'si'},
+        {title: 'NO', dataKey: 'no'},
+        {title: 'TOTAL', dataKey: 'total'},
+      ],
+
       chartData: {
           columns: ['respuesta', 'numero', 'porcentaje'],
           rows: []
@@ -239,7 +288,7 @@
             this.residentes = resp.data.length
             if (this.detalleEncuesta.committee_only){
               let residents = resp.data.filter(residente => residente.committee)
-              console.log(residents)
+              //console.log(residents)
               this.residentes = residents.length
             }
             if (this.detalleEncuesta.votes){
@@ -290,6 +339,35 @@
       link.setAttribute("download", file)
       link.click()
     },
+
+    pdf(){
+        var doc = new jsPDF()
+        doc.text(this.$store.state.admin.condos.name, 15, 20)
+        doc.setFontSize(12)
+        doc.text('Informe de encuesta', 15, 25)
+        doc.text('Pregunta: '+this.detalleEncuesta.label, 15, 30)
+        const file = 'Detalle de encuesta: '+this.$store.state.admin.condos.name +'.pdf'
+        let votos = this.votos.map( voto => {
+          let votacion = voto.accepted ? 'SI' : 'NO'
+          let v = {
+            'nombre': voto.residents.name, 
+            'rut' : voto.residents.rut,
+            'alicuota' : voto.residents.percentage,
+            'departamento' : voto.residents.departament,
+            'voto' : votacion,
+            'comentario' : voto.comment
+          }
+          return v
+        })
+        let resumen = [
+          { titulo: 'Total votos', si : this.si, no : this.no, total : this.si + this.no},
+          { titulo: 'Total alicuota', si : this.alicuotaSi, no : this.alicuotaNo, total : this.alicuotaSi + this.alicuotaNo}
+        ]
+        doc.autoTable(this.resumen, resumen, {margin: {top: 40}})
+        doc.text('Votantes', 15, 70)
+        doc.autoTable(this.columns, votos, {margin: {top: 75}})
+        doc.save(file)
+      },
     
       enviar(){
         let formData = new FormData()
@@ -329,7 +407,7 @@
 
 <style scope>
 .tabla {
-  width: 100%;
+  width: 50%;
   border: solid 2px #d3c9c9;
   font-size: 16px;
 }
@@ -338,6 +416,10 @@
   background: #a9d0e2;
     text-align: center;
     font-weight: 900;
+}
+
+.tabla tr td {
+  text-align: center;
 }
 
 </style>

@@ -80,6 +80,7 @@
           hide-actions
         >
           <template slot="items" slot-scope="props">
+            <td :class="{actived:selected == props.item.id}" >{{ moment(props.item.date).format('DD/MM/YYYY') }}</td>
             <td :class="{actived:selected == props.item.id}" >{{ props.item.point.zones.name }}</td>
             <td :class="{actived:selected == props.item.id}" >{{ props.item.point.name }}</td>
             <td :class="{actived:selected == props.item.id}" >
@@ -152,6 +153,12 @@
         ],
 
       headers: [
+        {
+          text: 'Fecha',
+          align: 'left',
+          sortable: false,
+          value: 'name'
+        },
         {
           text: 'Zona',
           align: 'left',
