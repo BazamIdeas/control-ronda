@@ -63,7 +63,7 @@ export default {
         {name: 'RONDA',  route: 'ronda', id : 2, icon: 'autorenew'},
         {name: 'GESTION',  route: 'gestion', id : 3, icon: 'event'},
         {name: 'ENTREGA',  route: 'entrega', id : 4, icon: 'airport_shuttle'},
-        {name: 'INVENTARIO',  route: 'inventario', id : 8, icon: 'view_list'},
+        {name: 'ENT. TURNO',  route: 'inventario', id : 8, icon: 'view_list'},
         {name: 'ENCUESTAS',  route: 'encuestas', id : 9, icon: 'assessment'}, 
         {name: 'USUARIOS',  route: 'usuarios', id :5, icon: 'group'},
         {name: 'SALIR',  route: 'logout', id : 7, icon: 'exit_to_app'}

@@ -219,7 +219,7 @@ var moment = require ('moment')
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nuevo Encuesta' : 'Modificar encuesta'
+        return this.editedIndex === -1 ? 'Nueva Encuesta' : 'Modificar encuesta'
       },
 
       fecha: function (){

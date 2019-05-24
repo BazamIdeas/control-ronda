@@ -4,14 +4,14 @@
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-btn flat to='/productos'>ITEMS</v-btn>
-        <v-btn flat to='/inventario'>INVENTARIO</v-btn>
+        <v-btn flat to='/inventario'>ENTREGA DE TURNO</v-btn>
       </v-toolbar-items>
   </v-toolbar>
   <v-flex xs12>
      <v-layout row wrap>
       <v-flex xs3 mt-3>
         <h2 >
-          Reporte de inventario
+          Reporte de entrega de Turnos
         </h2>
       </v-flex>
       <v-flex xs3>
@@ -114,7 +114,6 @@
                   v-for="ocurrencia in props.item.occurrences"
                   :key="ocurrencia.id"
                   avatar
-                  @click=""
                   >
                   <v-list-tile-content>
                     <v-list-tile-title v-html="ocurrencia.objects.name"></v-list-tile-title>

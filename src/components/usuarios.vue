@@ -131,7 +131,7 @@
                   <span v-if="!props.item.worker.condos.tasks_mod">No habilitado</span>
                   </v-flex>
                   <v-flex xs2>
-                  <v-switch v-if="props.item.worker.condos.checks_mod" label="Inventario" v-model="props.item.checks_mod" @change="changeStatus(props.item)" >
+                  <v-switch v-if="props.item.worker.condos.checks_mod" label="Entrega de turno" v-model="props.item.checks_mod" @change="changeStatus(props.item)" >
                   </v-switch>
                   <span v-if="!props.item.worker.condos.checks_mod">No habilitado</span>
                   </v-flex>
@@ -292,7 +292,7 @@ import BzUsuario from "./usuario.vue"
       },
 
       deleteItem (item) {
-        this.$axios.delete('/watchers/'+item.id+'?trash=true')
+        this.$axios.delete('/workers/'+item.worker.id+'?trash=true')
           .then(resp => {
             if(resp.status === 200){
               const index = this.users.indexOf(item)

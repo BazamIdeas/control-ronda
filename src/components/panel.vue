@@ -194,7 +194,7 @@
         sortable: false, 
         },
         { 
-        text: 'Inventario', 
+        text: 'Entrega de turno', 
         sortable: false, 
         },
         { 
@@ -304,14 +304,10 @@
         setTimeout(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
-        }, 500)
+        }, 1500)
       },
 
       save () {
-          if (this.ruts.indexOf(this.editedItem.rut) > -1) {
-            alert("El rut de la empresa ya esta registrado")
-          }
-          else{
             if (this.editedIndex > -1) {
             this.$axios.put('/condos/'+this.editedItem.id, this.editedItem)
             .then(resp => {
@@ -323,6 +319,10 @@
               console.log(e)
             })
           } else {
+             if (this.ruts.indexOf(this.editedItem.rut) > -1) {
+                alert("El rut de la empresa ya esta registrado")
+              }
+              else{
               this.$axios.post('/condos/', this.editedItem)
               .then(resp => {
               if(resp.status === 201){
@@ -333,9 +333,9 @@
               .catch(e => {
               console.log(e)
               })
+            }  
           }
           this.close()
-        }
       },
 
       changeModulo(item){

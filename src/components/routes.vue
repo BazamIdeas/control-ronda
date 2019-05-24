@@ -86,6 +86,7 @@
             <td :class="{actived:selected == props.item.id}" >
              {{ moment(props.item.date).format('HH:mm') }}
              <v-chip color="red" small text-color="white" v-if= "props.item.watcher_comment" @click="props.expanded = !props.expanded">!</v-chip>
+             <v-chip color="green" small text-color="white" v-if= "props.item.image_uuid" @click="props.expanded = !props.expanded">img</v-chip>
             </td>
           </template>
           <template slot="expand" slot-scope="props">

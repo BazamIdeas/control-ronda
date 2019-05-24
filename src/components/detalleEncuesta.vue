@@ -28,16 +28,22 @@
       <v-flex xs12>
         <v-layout>
           <div v-for='item in detalleEncuesta.attachments' :key="item.id" style="cursor:pointer; margin-right:10px; list-style: none;">
+        <span @click="deleteItem(item)">x</span>
             <v-avatar color="indigo" tile @click="download(item)">
             <v-icon dark>play_for_work</v-icon>
             </v-avatar> 
           </div>
+          
         </v-layout>
       <v-divider></v-divider>
       </v-flex>
       <v-flex xs12 text-xs-center>
         <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
-        <v-btn color="primary" small v-on:click="enviar()" >Cargar</v-btn>
+        <v-btn color="primary" small v-on:click="enviar()" v-if="file">Cargar</v-btn>
+        <v-progress-circular v-if = "cargando"
+      indeterminate
+      color="primary"
+    ></v-progress-circular>
       </v-flex>
       </v-layout>
     </v-flex >
@@ -141,6 +147,8 @@
           class="elevation-1"
         >
           <template slot="items" slot-scope="props">
+            
+            <td >{{ moment(props.item.created_at).format("DD-MM-YYYY") }}</td>
             <td >{{ props.item.residents.name }}</td>
             <td v-if="props.item.accepted"><v-chip color="green" small text-color="white">SI</v-chip></td>
              <td v-if="!props.item.accepted"><v-chip color="red" small text-color="white">NO</v-chip></td>
@@ -174,6 +182,7 @@
       moment: moment,
       search: '',
       file: '',
+      cargando: false,
       si: 0,
       no: 0,
       alicuotaSi: 0,
@@ -211,9 +220,13 @@
         }],
 
         headersC: [
+           {
+            text: 'Fecha',
+            isDescending: true,
+            value: 'created_at'
+          },
           {
             text: 'Nombre',
-            isDescending: true,
             value: 'residents.name'
           },
           {
@@ -368,25 +381,45 @@
         doc.autoTable(this.columns, votos, {margin: {top: 75}})
         doc.save(file)
       },
+
+      deleteItem (item) {
+        this.$axios.delete('/questions-attachments/'+item.id+'?trash=true')
+          .then(resp => {
+            if(resp.status === 200){
+              const index = this.detalleEncuesta.attachments.indexOf(item)
+              this.detalleEncuesta.attachments.splice(index, 1)
+            }
+          })
+          .catch(e => {
+            console.log(e)
+          })
+      },
     
       enviar(){
+        this.cargando = true
         let formData = new FormData()
         formData.append('question_id', this.detalleEncuesta.id)
         formData.append('files', this.file)
-
         fetch(this.$store.state.conf.api+'/questions-attachments/', {
           method: 'POST',
           body: formData,
           headers: { "Authorization": "Bearer " + localStorage.getItem('bazam-token-control')}
         })
-        .then(function(resp) {
+        .then(resp => {
+          
             if(resp.status === 201){
               return resp.json();
             }
           })
         .then(resp => {
+          if (!this.detalleEncuesta.attachments){
+            this.detalleEncuesta.attachments = []
+          }
+          this.cargando = false
           this.detalleEncuesta.attachments.push(resp)
-          this.file = ''
+          this.file = null
+          this.$refs.file.value = '';
+          alert("Archivo cargado")
         })
         .catch(e => {
           console.log(e)

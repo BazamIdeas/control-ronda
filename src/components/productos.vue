@@ -4,7 +4,7 @@
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-btn flat to='/productos'>ITEMS</v-btn>
-        <v-btn flat to='/inventario'>INVENTARIO</v-btn>
+        <v-btn flat to='/inventario'>ENTREGA DE TURNO</v-btn>
       </v-toolbar-items>
   </v-toolbar>
   <v-layout row wrap mt-5>

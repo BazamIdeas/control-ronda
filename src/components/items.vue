@@ -72,10 +72,10 @@
           <td v-if="props.item.date_end">{{ moment(props.item.date_end).format('HH:mm') }}</td>
           <td v-else>-</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
-            <!-- <v-tooltip bottom>
+             <v-tooltip bottom>
               <v-icon  slot="activator" color="green darken-2" class="mr-2" @click="editItem(props.item)">edit</v-icon>
               <span>Editar</span>
-            </v-tooltip> -->
+            </v-tooltip> 
             <v-tooltip bottom>
               <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getComentarios(props.item)">comment</v-icon>
               <span>Comentarios</span>
@@ -255,7 +255,7 @@
         setTimeout(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
-        }, 1000)
+        }, 1500)
       },
 
       save () {

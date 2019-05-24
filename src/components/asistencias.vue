@@ -41,8 +41,8 @@
           <td  >{{moment(props.item.date).format('DD/MM/YYYY') }}</td>
           <td >{{moment(props.item.date).format('HH:mm') }}</td>
           <td ><v-chip small :color= "tipo(props.item, 'color')" text-color="white">{{tipo(props.item, 'texto')}}</v-chip></td>
-          <td >{{ props.item.watchers.worker.first_name }}</td>
-          <td >{{ props.item.watchers.worker.rut }}</td>
+          <td >{{ props.item.workers.first_name }}</td>
+          <td >{{ props.item.workers.rut }}</td>
           <td >{{ props.item.latitude }}</td>
           <td >{{ props.item.longitude }}</td>
         </template>

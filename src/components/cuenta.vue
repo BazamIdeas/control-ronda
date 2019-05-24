@@ -1,10 +1,10 @@
 <template>
 <v-container grid-list-md >
    <v-layout row wrap>
-    <v-flex xs6 >
+    <v-flex xs4 >
       <v-card>
         <v-container >
-          <h2>{{nombre}}</h2>
+          <h2>Bienvenido {{nombre}}</h2>
           <v-layout row wrap>
             <v-flex xs8 >
               <v-text-field
@@ -18,7 +18,20 @@
           </v-layout>
         </v-container>
       </v-card>
-    </v-flex> 
+    </v-flex>
+    <v-flex xs4 offset-xs4 >
+      <v-card>
+        <v-container >
+          <h2>{{empresa}}</h2>
+          <v-layout row wrap>
+            <v-flex xs8 >
+              <h5 >Limites de trabajadores: {{usuarios}}</h5>
+              <h5>Limite de zonas: {{zonas}}</h5>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-card>
+    </v-flex>  
   </v-layout>
   <v-layout row wrap>
     <v-flex xs4>
@@ -37,7 +50,7 @@
       <v-card>
         <v-container grid-list-md >
           <v-layout justify-space-around>
-              <v-icon>check_box</v-icon><h3>Inventario</h3>
+              <v-icon>check_box</v-icon><h3>Entrega de turno</h3>
           </v-layout>
           <v-layout justify-space-around>
             <h4 class="estado">Estado: <span v-html=inventario></span></h4>
@@ -78,9 +91,6 @@
           <v-layout justify-space-around>
             <h4 class="estado">Estado: <span v-html=asistencia></span></h4>
           </v-layout>
-          <v-layout justify-space-around>
-           <h5 class="estado">Limites de trabajadores: {{usuarios}}</h5>
-          </v-layout>
         </v-container>
       </v-card>
     </v-flex>
@@ -92,9 +102,6 @@
           </v-layout>
           <v-layout justify-space-around>
            <h4 class="estado">Estado: <span v-html=ronda></span></h4>
-          </v-layout>
-          <v-layout justify-space-around>
-           <h5 class="estado">Limite de zonas: {{zonas}}</h5>
           </v-layout>
         </v-container>
       </v-card>
@@ -139,7 +146,10 @@
       },
       nombre (){
         return this.$store.state.admin.first_name
-      } 
+      },
+      empresa (){
+        return this.$store.state.admin.condos.name
+      }  
     },
 
 
