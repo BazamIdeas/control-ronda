@@ -254,7 +254,7 @@
 
     methods: {
       initialize () {
-        this.$axios.get('/condos/')
+        this.$axios.get('/condos/?limit=1000000000000000')
         .then(resp => {
           if(resp.status === 200){
             this.condominios = resp.data
