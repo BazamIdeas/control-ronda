@@ -22,7 +22,7 @@
           :size="120"
           color="grey lighten-4"
         >
-          <img src="./assets/logo.jpeg" alt="avatar">
+          <img src="./assets/logo.png" alt="avatar">
         </v-avatar>
         </v-flex>
         <v-divider></v-divider>
