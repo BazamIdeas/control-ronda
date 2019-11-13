@@ -173,12 +173,15 @@ import BzUsuario from "./usuario.vue"
         {
           text: 'Nombre completo',
           sortable: true,
-          value: 'worker.first_name'
+          value: 'worker.first_name',
+          align: 'center'
         },
         {
           text: 'Usuario',
           sortable: true,
-          value: 'username'
+          value: 'username',
+          align: 'center'
+
         },
         {
           text: 'RUT',
@@ -188,18 +191,22 @@ import BzUsuario from "./usuario.vue"
         },
         {
           text: 'Email',
+          align: 'center',
            value: 'worker.email',
         },
         {
           text: 'Telefono',
           sortable: false,
-          value: 'phone',
+          align: 'center',
+          value: 'phone'
         },
         {
           text: 'Aprobado',
           sortable: false,
+          align: 'center'
         },
         { text: 'Acciones', 
+        align: 'center',
         sortable: false, 
         }
       ],
@@ -282,7 +289,7 @@ import BzUsuario from "./usuario.vue"
         this.selected = item.id
         this.editedIndex = this.users.indexOf(item)
         this.editedItem = Object.assign({}, item)
-        this.editedItem.password = 'xxxxxxxx'
+        //this.editedItem.password = 'xxxxxxxx'
         this.dialog = true
       },
 

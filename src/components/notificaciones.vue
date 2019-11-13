@@ -48,8 +48,8 @@
               <v-icon  slot="activator" color="blue darken-2" class="mr-2" @click="getDescripcion(props.item)">visibility</v-icon>
               <span>Descripción</span>
             </v-tooltip>
-						 <v-chip color="red" small text-color="white" v-if= "!props.item.view" >!</v-chip>
-
+						 <v-chip color="white" small v-if= "props.item.foto" @click="props.expanded = !props.expanded"><v-icon>camera_alt</v-icon></v-chip>
+						 <v-chip color="red" small text-color="white" v-if= "!props.item.view" >no visto</v-chip>
           </td>
         </template>
         <template slot="no-data">
@@ -143,6 +143,7 @@ export default {
 						resp.data.forEach(element => {
 							if (!element.view)
 								this.numeroNotificaciones += 1
+							element.foto = element.image_uuid ? true : false
 						})
 						
 					this.notificaciones = resp.data       

@@ -13,6 +13,7 @@
           <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>RESIDENTES</v-toolbar-title>
           <v-spacer></v-spacer>
+          <v-chip small v-on:click="aprobacionMasiva()">Aprobar todos</v-chip>
            <v-dialog v-model="dialog" max-width="500px">
             <v-btn icon slot="activator">
             <v-icon >plus_one</v-icon>
@@ -39,7 +40,7 @@
                     <v-text-field v-model="editedItem.email" label="Email" :rules="[rules.required, rules.email]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.departament" label="Departamento" :rules="[rules.required]"></v-text-field>
+                    <v-text-field v-model="editedItem.departament" label="Casa / Departamento" :rules="[rules.required]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
                     <v-text-field v-model.number="editedItem.percentage" label="% Alicuota" :rules="[rules.required]"></v-text-field>
@@ -176,7 +177,7 @@ import BzUsuario from "./usuario.vue"
            value: 'phone',
         },
         {
-          text: 'Departamento',
+          text: ' Casa / Departamento',
           value: 'departament',
         },
         {
@@ -241,7 +242,7 @@ import BzUsuario from "./usuario.vue"
       }
     },
 
-    created () {
+   created () {
       this.initialize()
     },
 
@@ -357,10 +358,25 @@ import BzUsuario from "./usuario.vue"
                 }
                 console.log(e.response.data)
               })
-            }
-            this.close()
+            }            this.close()
           }
         })
+      },
+
+      aprobacion () {
+        console.log(this.residentes.length)
+        this.residentes.forEach( residente => {
+          console.log(residente)
+          delete residente.password
+          residente.approved = true
+          this.$axios.put('/residents/'+residente.id, residente)
+        })
+        alert("Todos los residentes han sido aprobados")
+      },
+
+      async aprobacionMasiva () {
+        await this.aprobacion ()
+        this.initialize()
       },
 
       changeStatus(item){

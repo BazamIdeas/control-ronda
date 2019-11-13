@@ -3,7 +3,7 @@
   <v-toolbar absolute>
       <v-spacer></v-spacer>
       <v-toolbar-items>
-        <v-btn flat to='/empleados'>EMPLEADOS</v-btn>
+        <v-btn flat to='/empleados'>REPORTES DE EMPLEADOS</v-btn>
         <v-btn flat to='/asistencias'>ASISTENCIAS</v-btn>
         <v-btn flat to='/configuracion-asistencia'>CONFIGURACIÓN</v-btn>
       </v-toolbar-items>

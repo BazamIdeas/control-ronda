@@ -138,39 +138,39 @@
       headers: [
         {
           text: 'Fecha',
-          align: 'left',
+          align: 'center',
           sortable: true,
           isDescending: true,
           value: 'date'
         },
         {
           text: 'Subtarea',
-          align: 'left',
+          align: 'center',
           sortable: false,
           value: 'name'
         },
          {
           text: 'Descripción',
-          align: 'left',
+          align: 'center',
           sortable: false,
           value: 'description'
         },
         {
           text: 'Estado',
-          align: 'left',
+          align: 'center',
           sortable: false,
           value: 'name'
         },
         {
           text: 'Fecha de Finalización',
-          align: 'left',
+          align: 'center',
           sortable: true,
           value: 'date_end'
         },
         { text: 'Acciones', 
         value: 'name', 
         sortable: false, 
-        align: 'left', 
+        align: 'center', 
         width: '180'}
       ],
       subtareas: [],

@@ -5,7 +5,7 @@
       <v-card>
         <v-toolbar color="grey" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
-          <v-toolbar-title>Reporte mensual de asistencia - {{ empleado.first_name }} {{ empleado.last_name }}</v-toolbar-title>
+          <v-toolbar-title>Reporte mensual de asistencia - Empleado: {{ empleado.first_name }} {{ empleado.last_name }}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-chip @click="excel()" small>
             <v-avatar>
@@ -74,7 +74,7 @@
              <td >{{ final_colacion(props.item) }} </td>
             <td >{{ moment(props.item.exit.date).format('DD') }} </td>
             <td >{{ moment(props.item.exit.date).format('HH:mm') }} </td>
-            <td >{{ parseFloat(props.item.total_worked_hours).toFixed(2) }} </td>
+            <td >{{ conversorHoras(props.item.total_worked_hours) }} </td>
             <td >{{ diferencial(props.item.total_worked_hours) }} </td>
             <td ><v-icon v-if= props.item.is_holiday large color="green darken-2">done</v-icon> </td>
           </template>
@@ -271,6 +271,30 @@
           let anio = dateNew[0]
           this.download(anio, mes)
         }
+      },
+
+      conversorHoras (decimalTimeString) {
+        var decimalTime = parseFloat(decimalTimeString);
+        decimalTime = decimalTime * 60 * 60;
+        var hours = Math.floor((decimalTime / (60 * 60)));
+        decimalTime = decimalTime - (hours * 60 * 60);
+        var minutes = Math.floor((decimalTime / 60));
+        decimalTime = decimalTime - (minutes * 60);
+        var seconds = Math.round(decimalTime);
+        if(hours < 10)
+        {
+          hours = "0" + hours;
+        }
+        if(minutes < 10)
+        {
+          minutes = "0" + minutes;
+        }
+        if(seconds < 10)
+        {
+          seconds = "0" + seconds;
+        }
+
+        return hours+":"+minutes+":"+seconds
       },
 
       download(anio, mes){

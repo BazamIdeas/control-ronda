@@ -67,14 +67,48 @@
           </v-dialog>
         </v-toolbar>
       <v-toolbar flat color="white">
-        <v-text-field
-        v-model="search"
-        append-icon="search"
-        label="Buscar por fecha, tarea o responsable"
-        single-line
-      
-      ></v-text-field>
-        
+        <v-flex xs9>
+          <v-radio-group v-model="filtroUsuario"  label="Filtro: " :mandatory="false" row @change="filtrar">
+
+            <v-radio label="Ninguno" value='ninguno' ></v-radio>
+            <v-radio label="Fecha" value='fecha'></v-radio>
+            <v-radio label="Trabajador" value='trabajador'></v-radio>
+          </v-radio-group>
+        </v-flex>
+        <v-flex xs3>
+          <v-select
+            :items="usuarios"
+            item-text="first_name"
+            v-model="selectUsuarioFiltro"
+            item-value="id"
+            label="Usuario responsable"
+            v-if  = "filtroUsuario == 'trabajador'"
+            return-object
+            single-line
+            @change="busquedaUsuario"
+            ></v-select>
+
+          <v-menu
+            ref="menu"
+            :close-on-content-click="false"
+            v-model="menu"
+            :nudge-right="40"
+            v-if  = "filtroUsuario == 'fecha'"
+            lazy
+            transition="scale-transition"
+            offset-y
+            full-width
+            min-width="290px"
+          >
+          <v-text-field
+          slot="activator"
+          v-model="fecha"
+          label="Dia"
+          readonly
+          ></v-text-field>
+          <v-date-picker v-model="date" locale="es-419" @input="$refs.menu.save(date)" @change="busquedaFecha"></v-date-picker>
+          </v-menu>
+        </v-flex> 
       </v-toolbar>
       <v-data-table
         :headers="headers"
@@ -85,7 +119,7 @@
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
-          <td>{{ moment(props.item.date).format('DD-MM-YYYY') }} </td>
+          <td>{{ props.item.date }} </td>
           <td>{{ props.item.name }}</td>
           <td>{{ props.item.worker.first_name }}</td>
           <td>
@@ -150,8 +184,13 @@ import BzComentarios from "./comentarios.vue"
       moment: moment,
       fab: true,
       info: null,
+      menu: false,
+      date: null,
+      selectUsuarioFiltro: '',
+      fechaActual: moment().format('DD-MM-YYYY'),
       search: '',
       selectUsuarios: { id: '', first_name: '' },
+      filtroUsuario: 'ninguno',
       usuarios: [],
       subtareas: 0,
       pagination: {descending: true},
@@ -208,7 +247,16 @@ import BzComentarios from "./comentarios.vue"
     computed: {
       formTitle () {
         return this.editedIndex === -1 ? 'Nueva tarea' : 'Modificar tarea'
-      }
+      },
+
+      fecha: function (){
+        if (!this.date){
+          return this.fechaActual
+        }
+        else{
+          return moment(this.date).format('DD-MM-YYYY')
+        }
+      },
     },
 
     watch: {
@@ -224,32 +272,60 @@ import BzComentarios from "./comentarios.vue"
     },
 
     methods: {
+
+      modTareas (tareas){
+        for (let x = 0; x < tareas.length; x++) {
+          let i = 0
+          tareas[x].date = this.moment(tareas[x].date).format('DD-MM-YYYY') 
+          if (tareas[x].goals) {
+            for (let y = 0; y < Object.keys(tareas[x].goals).length; y++) {
+            if (tareas[x].goals[y].completed)
+              i += 1
+          }
+          if (Object.keys(tareas[x].goals).length == i)
+            tareas[x].completa = true
+          else
+            tareas[x].completa = false       
+          }
+          else
+            tareas[x].completa = false  
+        }
+        return tareas 
+
+      },
+
       initialize () {
         axios.get('/tasks/condos/self')
         .then(resp => {
           if(resp.status === 200){
-            this.tareas = resp.data
-            for (let x = 0; x < this.tareas.length; x++) {
-              let i = 0
-              if (this.tareas[x].goals) {
-               for (let y = 0; y < Object.keys(this.tareas[x].goals).length; y++) {
-                if (this.tareas[x].goals[y].completed)
-                  i += 1
-              }
-              if (Object.keys(this.tareas[x].goals).length == i)
-                this.tareas[x].completa = true
-              else
-                this.tareas[x].completa = false       
-              }
-              else
-                this.tareas[x].completa = false  
-            }        
+            this.tareas = this.modTareas(resp.data)       
           }
         })
         .catch(e => {
           console.log(e)
         })
       },
+
+      filtrar (){
+        if (this.filtroUsuario === 'ninguno'){
+          this.initialize()
+          this.search = ''
+        }
+        else if (this.filtroUsuario === 'fecha'){
+          this.search =  this.fecha
+        }
+        else{
+          this.search = ''
+        }
+      },
+
+      busquedaUsuario (){
+        this.search = this.selectUsuarioFiltro.first_name
+      },
+
+      busquedaFecha () {
+        this.search = moment(this.date).format('DD-MM-YYYY')
+      }, 
 
       getUsuarios () {
         this.$axios.get('/watchers/self')

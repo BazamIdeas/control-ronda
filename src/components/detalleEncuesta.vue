@@ -12,7 +12,7 @@
         <v-text-field label="Expiracion" readonly box :value= 'moment(detalleEncuesta.date_end).format("DD-MM-YYYY")'></v-text-field>
       </v-flex>
       <v-flex xs4>
-        <v-text-field label="Precio" readonly box :value= 'detalleEncuesta.price'></v-text-field>
+        <v-text-field  readonly box :value= 'formatPrice(detalleEncuesta.price)' valor_hora prefix="$"></v-text-field>
       </v-flex>
       <v-flex xs12>
         <v-textarea
@@ -342,6 +342,11 @@
       handleFileUpload(){
         this.file = this.$refs.file.files[0];
       },
+
+      formatPrice(value) {
+        let val = (value/1).toFixed(2).replace('.', ',')
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+    },
 
     download (item) { 
       let data = this.$store.state.conf.api+'/questions-attachments/attachment/'+item.attachment_uuid 

@@ -3,13 +3,13 @@
   <v-toolbar absolute>
       <v-spacer></v-spacer>
       <v-toolbar-items>
-        <v-btn flat to='/empleados'>EMPLEADOS</v-btn>
+        <v-btn flat to='/empleados'>REPORTE DE EMPLEADOS</v-btn>
         <v-btn flat to='/asistencias'>ASISTENCIAS</v-btn>
         <v-btn flat to='/configuracion-asistencia'>CONFIGURACIÓN</v-btn>
       </v-toolbar-items>
   </v-toolbar>
   <v-layout row wrap mt-5>
-    <v-flex xs8>
+    <v-flex xs6>
       <v-toolbar color="grey" dark>
           <v-toolbar-title>EMPLEADOS</v-toolbar-title>
           <v-spacer></v-spacer>
@@ -55,28 +55,14 @@
         :items="employees"
         :search="search"
         rows-per-page-text= "Número de Filas"
-        
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
           <td :class="{actived:selected == props.item.id}" >{{ props.item.first_name }}</td>
           <td :class="{actived:selected == props.item.id}" >{{ props.item.rut }}</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
-           <v-switch v-if="!props.item.approved" v-model="props.item.approved" @change="changeStatus(props.item)" >
-           </v-switch>
-           <v-icon v-if="props.item.approved" v-model="props.item.approved">done</v-icon>
-          </td>
-          <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
-            <!-- <v-tooltip bottom>
-              <v-icon  slot="activator" color="green darken-2" class="small" @click="editItem(props.item)">edit</v-icon>
-              <span>Editar</span>
-            </v-tooltip> -->
-              <v-chip class="text-xs-center" slot="activator" @click="getReport(props.item)">Mensual</v-chip>
-              <v-chip class="text-xs-center" slot="activator" @click="getResume(props.item)">Anual</v-chip>
-            <!-- <v-tooltip bottom>
-              <v-icon  slot="activator" color="red darken-2" class="small" @click="deleteItem(props.item)">delete</v-icon>
-              <span>Eliminar</span>
-            </v-tooltip> -->
+              <v-chip class="text-xs-center" small slot="activator" @click="getReport(props.item)">Mensual</v-chip>
+              <v-chip class="text-xs-center" small slot="activator" @click="getResume(props.item)">Anual</v-chip>
             </td>
         </template>
         <template slot="no-data">
@@ -84,22 +70,94 @@
         </template>
       </v-data-table>
     </v-flex>
-    <v-flex xs4>
+    <v-flex xs6>
       <v-toolbar color="grey" dark>
-        <v-toolbar-title>TIEMPO REAL</v-toolbar-title>
+        <v-toolbar-title>JORNADAS SIN TERMINAR</v-toolbar-title>
+      </v-toolbar>
+      <v-toolbar flat color="white">
+        <v-text-field
+        v-model="search2"
+        append-icon="search"
+        label="Buscar por nombre"
+        single-line
+        hide-details
+      ></v-text-field>
       </v-toolbar>
       <v-data-table
         :headers="headers2"
-        :items="tiempoReal"
-        hide-actions
+        :items="sinTerminar"
+        rows-per-page-text= "Número de Filas"
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
-          <td >{{ props.item.User }}</td>
-          <td ><v-chip small :color= 'props.item.tipo.color' text-color="white">{{props.item.tipo.texto}}</v-chip></td>
+          <tr @click="props.expanded = !props.expanded" style="cursor:pointer">
+            <td >{{ props.item.workers.first_name }}</td>
+            <td  >{{moment(props.item.date).format('DD/MM/YYYY') }}</td>
+            <td >{{moment(props.item.date).format('HH:mm') }}</td>
+          </tr>
+        </template>
+        <template slot="expand" slot-scope="props">
+          <v-card flat>
+            <v-container grid-list-md >
+            <v-layout row wrap>
+              <v-flex xs12> <h4>Cerrar jornada manualmente</h4></v-flex>
+              <v-flex xs4>
+                  <v-menu
+                  ref="menu"
+                  :close-on-content-click="false"
+                  v-model="menu"
+                  :nudge-right="40"
+                  lazy
+                  transition="scale-transition"
+                  offset-y
+                  full-width
+                  min-width="290px"
+                  >
+                  <v-text-field
+                  slot="activator"
+                  v-model="fecha"
+                  label="Fecha de salida"
+                  readonly
+                  ></v-text-field>
+                  <v-date-picker v-model="date" locale="es-419" @input="$refs.menu.save(date)"></v-date-picker>
+                </v-menu>
+              </v-flex>
+              <v-flex xs4>
+                  <v-menu
+                  ref="menu2"
+                  :close-on-content-click="false"
+                  v-model="menu2"
+                  :nudge-right="40"
+                  lazy
+                  transition="scale-transition"
+                  offset-y
+                  full-width
+                  min-width="290px"
+                  >
+                  <v-text-field
+                  slot="activator"
+                  v-model="hora2"
+                  label="Hora de salida"
+                  readonly
+                  ></v-text-field>
+                  <v-time-picker 
+                  v-model="hora2" 
+                  locale="es-419" 
+                  @input="$refs.menu.save(hora2)"
+                  format="24hr"
+                  scrollable>
+                  </v-time-picker>
+                </v-menu>
+              </v-flex>
+              <v-flex xs4>
+                 <v-btn small @click="cerrarJornada(props.item)">Guardar</v-btn>
+              </v-flex>
+            </v-layout>
+            </v-container>
+          </v-card>
         </template>
         <template slot="no-data">
-          <p>Vista previa de las asistencias en tiempo real, este listado es temporal </p>
+          <p>No hay asistencias por completar o aún se está verificando</p>
         </template>
       </v-data-table>
     </v-flex>
@@ -124,11 +182,20 @@
   import BzReport from "./report.vue"
   import BzResume from "./resume.vue"
 
+  var moment = require ('moment')
+
   export default {
     components: {BzReport, BzResume},
     data: () => ({
       fab: true,
       isConnected: false,
+      moment: moment,
+      menu: false,
+      menu2: false,
+      date: null,
+      fechaActual: moment().format('DD-MM-YYYY'),
+      hora2: '00:00',
+      search2: '',
       search: '',
       employeesReport: 0,
       employeesResume: 0,
@@ -136,25 +203,35 @@
       selected: 0,
       ventana: false,
       tiempoReal: [],
-      headers2:[{text:'Nombre', value:'User', sortable: false}, {text:'Tipo', value: 'Content', sortable: false}],
+      sinTerminar: [],
+      headers2:[
+        { 
+        text: 'Nombre', 
+        sortable: true,
+        value: 'watchers.worker.first_name',
+        },
+        {
+          text: 'Fecha',
+          sortable: true,
+          value: 'date',
+          isDescending: true
+        },
+        {
+          text: 'Hora de entrada'
+        },
+        ],
       headers: [
         {
           text: 'Nombre Completo',
           sortable: true,
           value: 'first_name',
-          width: '140'
         },
         {
           text: 'RUT',
           sortable: true,
           value: 'rut',
-          width: '140'
         },
-        { text: 'Aprobado', 
-        width: '10'},
-
-        { text: 'Reportes', 
-        width: '100'}
+        { text: 'Reportes'}
       ],
       employees: [],
       editedIndex: -1,
@@ -176,6 +253,21 @@
         ) return 0
 
         return Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage)
+      },
+
+      fecha: function (){
+        if (!this.date){
+          return this.fechaActual
+        }
+        else{
+          return moment(this.date).format('DD-MM-YYYY')
+        }
+      },
+
+      fechaHora: function (){
+        let fecha = this.date ? moment(this.date).format('YYYY-MM-DD') : moment(this.fechaActual).format('YYYY-MM-DD')
+        return fecha + ' ' + this.hora2 + ':00'
+         
       }
     },
 
@@ -187,7 +279,8 @@
 
     created () {
       this.initialize()
-      this.socket()
+      this.asistencias ()
+      //this.socket()
     },
 
     methods: {
@@ -213,6 +306,50 @@
         .then(resp => {
           if(resp.status === 200){
             this.employees = resp.data
+          }
+        })
+        .catch(e => {
+          console.log(e)
+        })
+      },
+
+      cerrarJornada (jornada) {
+        //console.log(jornada)
+        this.$axios.post('/asistencias/cerrar/', { 
+          "date" : this.fechaHora,
+          "watchers_id" : jornada.watchers.id,
+          "workers_id" : jornada.workers.id,
+          "work_time_id": jornada.id
+          }, {baseURL: this.$store.state.conf.api2,})
+        .then(resp => {
+          //console.log(resp)
+          if(resp.status === 200){
+            const index = this.sinTerminar.indexOf(jornada)
+            this.sinTerminar.splice(index, 1)
+            alert('Jornada cerrada')
+          }
+        })
+        .catch(e => {
+          console.log(e)
+        })
+      },
+
+      asistencias () {
+        this.$axios.get('/assistances?limit=1000000000000000')
+        .then(resp => {
+          if(resp.status === 200){
+            const finalizadas = resp.data.filter(a =>  a.type === 'exit').map(b => b.work_time_id)
+            const entradas = resp.data.filter(a =>  a.type === 'entry')
+            for (let index = 0; index <  entradas.length; index++) {
+              const asistencia = entradas[index];
+              if (asistencia.workers.condos.id === this.$store.state.admin.condos.id){
+                //console.log(Object.keys(trabajadores))
+                //console.log(asistencia.workers.id)
+                if (finalizadas.indexOf(asistencia.id) === -1){
+                  this.sinTerminar.push(asistencia)
+                }
+              }
+            }
           }
         })
         .catch(e => {

@@ -62,20 +62,20 @@
     <v-date-picker v-model="date" locale="es-419" @input="$refs.menu.save(date)" @change="initialize" type="month"></v-date-picker>
       </v-menu>
     </v-flex>
-    <!-- <v-flex xs3 pl-4>
-      <v-chip @click="excel()" >
+     <v-flex xs3 pl-4>
+      <!--<v-chip @click="excel()" >
             <v-avatar>
               <v-icon>arrow_downward</v-icon>
             </v-avatar>
             Excel
-          </v-chip>
+          </v-chip>-->
           <v-chip @click="pdf()" >
             <v-avatar>
               <v-icon>arrow_downward</v-icon>
             </v-avatar>
             Pdf
           </v-chip>
-    </v-flex> -->
+    </v-flex> 
      </v-layout>
     <v-layout row wrap>
       <v-flex xs12>
@@ -102,8 +102,10 @@
             <td >{{ moment(props.item.date).format('HH:mm') }}</td>
             <td >{{ props.item.workers.first_name }}</td>
             <td >{{ props.item.comment }}</td>
-            <td> <v-chip small> {{ props.item.estado }}</v-chip>
+            <td> 
+            <!-- <v-chip small> {{ props.item.estado }}</v-chip> -->
             <v-chip color="red" small text-color="white" v-if= "props.item.occurrences" @click="props.expanded = !props.expanded">!</v-chip>
+            <v-chip color="white" small v-if= "props.item.foto" @click="props.expanded = !props.expanded"><v-icon>camera_alt</v-icon></v-chip>
             </td>
           </template>
           <template slot="expand" slot-scope="props">
@@ -174,7 +176,7 @@
       selected: 0,
       columns : [
         {title: 'FECHA', dataKey: 'fecha'}, 
-        {title: 'HORA', dataKey: 'fecha'}, 
+        {title: 'HORA', dataKey: 'hora'}, 
         {title: 'TRABAJADOR', dataKey: 'trabajador'}, 
         {title: 'COMENTARIO', dataKey: 'comentario'},
         {title: 'ESTADO', dataKey: 'estado'},  
@@ -184,23 +186,28 @@
         {
           text: 'Fecha',
           sortable: true,
-          value: 'date'
+          value: 'date',
+          align: 'center'
         },
         { text: 'Hora', 
         value: 'date', 
+        align: 'center',
         sortable: false, 
         }
         ,
         { text: 'Trabajador', 
         value: 'worker.name', 
+        align: 'center',
         sortable: true, 
         },
         { text: 'Comentario', 
         value: 'comment', 
+        align: 'center',
         sortable: false, 
         },
         { text: 'Estado', 
         value: 'data', 
+        align: 'center',
         sortable: false, 
         }
       ],
@@ -248,6 +255,11 @@
             this.inventario = resp.data
             this.inventario.forEach(element => {
               element.estado = element.occurrences ? 'Aviso de incidencia' : 'Sin incidencias' 
+              if (element.occurrences){
+                element.occurrences.forEach( ocurrencia =>{
+                  element.foto = ocurrencia.image_uuid ? true : false
+                })
+              }
             });
           }
           else{
@@ -261,25 +273,27 @@
         }) 
       },
       pdf(){
+
+        let fechaReporte = this.tipoInforme == 'diario'  ? this.fecha : this.mes
+
         var doc = new jsPDF('landscape')
         doc.text('Sistema de control de ronda', 15, 20)
         doc.setFontSize(12)
         doc.text("Empresa: "+this.$store.state.admin.condos.name, 15, 25)
-        doc.text("Empleado: "+ this.user.worker.first_name, 15, 30)
-        const file = 'Reporte de ronda -'+this.user.worker.first_name +"-"+moment().format('DD/MM/YYYY')+'.pdf'
+        const file = 'Reporte de entrega de turnos -'+ fechaReporte +'.pdf'
         let tabla = []
-        this.inventario.forEach(verificacion => {
-          let comentario = "-"
-          if (verificacion.watcher_comment)
-            comentario = verificacion.watcher_comment
-          tabla.push({'zona':verificacion.point.zones.name, 
-          'punto': verificacion.point.name, 
-          'fecha' : moment(verificacion.date).format('DD/MM/YYYY'), 
-          'hora': moment(verificacion.date).format('HH:mm'), 
+
+        this.inventario.forEach(entrega => {
+          let comentario = entrega.comment ? entrega.comment : "-"
+
+          tabla.push({
+          'fecha' : moment(entrega.date).format('DD/MM/YYYY'), 
+          'hora': moment(entrega.date).format('HH:mm'), 
+          'trabajador': entrega.workers.first_name,
           'comentario': comentario,
-          'latitud': verificacion.latitude,
-          'longitud': verificacion.longitude})
-        });
+          'estado': entrega.estado})
+        })
+
         doc.autoTable(this.columns, tabla, {margin: {top: 40}})
         doc.save(file)
       },
@@ -291,17 +305,17 @@
         }
         wb.SheetNames.push("Informe")
         var ws_data = [['Sistema de control de ronda'],['Empresa: '+this.$store.state.admin.condos.name,"Empleado: "+this.user.worker.first_name],['ZONA','PUNTO','FECHA','HORA','COMENTARIO','LATITUD','LONGITUD']]
-        this.inventario.forEach(verificacion => {
+        this.inventario.forEach(entrega => {
           let comentario = "-"
-          if (verificacion.watcher_comment)
-            comentario = verificacion.watcher_comment
-          ws_data.push([verificacion.point.zones.name, 
-          verificacion.point.name, 
-          moment(verificacion.date).format('DD/MM/YYYY'), 
-          moment(verificacion.date).format('HH:mm'), 
+          if (entrega.watcher_comment)
+            comentario = entrega.watcher_comment
+          ws_data.push([entrega.point.zones.name, 
+          entrega.point.name, 
+          moment(entrega.date).format('DD/MM/YYYY'), 
+          moment(entrega.date).format('HH:mm'), 
           comentario,
-          verificacion.latitude,
-           verificacion.longitude])
+          entrega.latitude,
+           entrega.longitude])
         });
         var ws = xlsx.utils.aoa_to_sheet(ws_data)
         wb.Sheets["Informe"] = ws

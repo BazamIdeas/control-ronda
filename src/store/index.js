@@ -11,7 +11,8 @@ export default new Vuex.Store({
     comite: null,
     conf: {
       api: 'http://api.cs100.cl/v1',
-      socket: 'ws://api.cs100.cl/v1'
+      socket: 'ws://api.cs100.cl/v1',
+      api2: 'http://api2.bazamdev.com/v3'
     }
   },
   mutations: {
