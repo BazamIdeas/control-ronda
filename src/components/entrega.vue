@@ -251,7 +251,7 @@ var moment = require ('moment')
         setTimeout(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
-        }, 500)
+        }, 1500)
       },
 
       save () {
