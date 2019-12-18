@@ -34,16 +34,16 @@
                       <v-text-field v-model="editedItem.address" label="Direccion"></v-text-field>
                     </v-flex>
                     <v-flex xs12 md6>
-                      <v-text-field type="number" label="N°"></v-text-field>
+                      <v-text-field v-model="editedItem.street_number" type="number" label="N°"></v-text-field>
                     </v-flex>
                     <v-flex xs12 md6>
-                      <v-text-field label="OffDepto"></v-text-field>
+                      <v-text-field v-model="editedItem.office_department" label="OffDepto"></v-text-field>
                     </v-flex>
                     <v-flex xs12 md6>
-                      <v-text-field  label="Destinatario"></v-text-field>
+                      <v-text-field v-model="editedItem.addressee"  label="Destinatario"></v-text-field>
                     </v-flex>
                     <v-flex xs12 md6>
-                      <v-text-field label="Código"></v-text-field>
+                      <v-text-field v-model="editedItem.code" label="Código"></v-text-field>
                     </v-flex>
                     <v-flex xs12>
                       <v-textarea v-model="editedItem.description" label="Descripción"></v-textarea>
@@ -230,6 +230,8 @@ export default {
       this.selected = item.id;
       this.editedIndex = this.itemsLista.indexOf(item);
       this.editedItem = Object.assign({}, item);
+      console.log('this.itemsLista',item)
+      console.log('editeditem >>>>', this.editedItem )
       this.dialog = true;
     },
 
@@ -286,6 +288,10 @@ export default {
           .put("/items/" + this.editedItem.id, {
             address: this.editedItem.address,
             description: this.editedItem.description,
+            street_number: this.editedItem.street_number,
+            office_department: this.editedItem.office_department,
+            addressee: this.editedItem.addressee,
+            code: this.editedItem.code,
             delivery: {
               id: this.lista.id
             }
@@ -303,14 +309,22 @@ export default {
           .post("/items/", {
             address: this.editedItem.address,
             description: this.editedItem.description,
+            street_number: this.editedItem.street_number,
+            office_department: this.editedItem.office_department,
+            addressee: this.editedItem.addressee,
+            code: this.editedItem.code,
             delivery: {
               id: this.lista.id
             }
           })
           .then(resp => {
             if (resp.status === 201) {
-              resp.data.address = this.editedItem.address;
-              resp.data.description = this.editedItem.description;
+            resp.data.address = this.editedItem.address;
+            resp.data.description = this.editedItem.description;
+            resp.data.street_number = this.editedItem.street_number;
+            resp.data.office_department = this.editedItem.office_department;
+            resp.data.addressee = this.editedItem.addressee;
+            resp.data.code = this.editedItem.code;
               this.itemsLista.push(resp.data);
             }
           })

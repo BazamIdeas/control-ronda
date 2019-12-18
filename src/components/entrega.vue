@@ -191,6 +191,7 @@ var moment = require ('moment')
         .then(resp => {
           if(resp.status === 200){
             this.listas = resp.data
+            console.log('resp data >>>> ', resp.data)
           }
         })
         .catch(e => {
