@@ -209,6 +209,7 @@
 <script>
 import BzUsuario from "./usuario.vue";
 import papaparse from "papaparse";
+import sender from "axios";
 export default {
   components: { BzUsuario },
   data: () => ({
@@ -330,15 +331,36 @@ export default {
           console.log(e);
         });
     },
- 
-   readCsvFile() {
+
+    readCsvFile() {
       this.files = this.$refs.inputFiles.files[0];
-      var csv
-     papaparse.parse(this.files, {
-        complete: async function(results) {
-          console.log("Finished:", results.data);
+      var csv = {};
+
+      var headers = {}
+      var token = localStorage.getItem('bazam-token-control')
+      var route = process.env.API_URL
+
+      if (token !== null && token !== undefined && token !== '') {
+        headers['Authorization'] = 'Bearer ' + token
+
+              papaparse.parse(
+        this.files,
+   
+        {    
+          header: true,
+          complete: async function(results) {
+            console.log("Finisheda:", results.data);
+            console.log(localStorage.getItem('bazam-condo-id'))
+            sender.post(route,{
+                
+            })
+          }
         }
-      });
+      );
+      }else{
+        alert('SESIÓN NO VALIDA')
+      }
+
     },
     editItem(item) {
       this.selected = item.id;

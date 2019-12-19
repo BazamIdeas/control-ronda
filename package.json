@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "dotenv-webpack": "^1.7.0",
     "echarts": "^4.2.0-rc.2",
     "file-saver": "^2.0.0",
     "image-to-base64": "^2.0.1",

@@ -50,6 +50,7 @@
           if(resp.status === 200){
             this.$store.commit('SET_SESION',resp.data.worker)
             localStorage.setItem('bazam-token-control', resp.data.token)
+            localStorage.setItem('bazam-condo-id',JSON.stringify(resp.data.worker.condos.id))
             this.$router.push('cuenta')
           }
           else{
