@@ -336,31 +336,35 @@ export default {
       this.files = this.$refs.inputFiles.files[0];
       var csv = {};
 
-      var headers = {}
-      var token = localStorage.getItem('bazam-token-control')
-      var route = process.env.API_URL
+      var headers = {};
+      var token = localStorage.getItem("bazam-token-control");
+      var route = process.env.API_URL;
 
-      if (token !== null && token !== undefined && token !== '') {
-        headers['Authorization'] = 'Bearer ' + token
+      if (token !== null && token !== undefined && token !== "") {
+        headers["Authorization"] = "Bearer " + token;
 
-              papaparse.parse(
-        this.files,
-   
-        {    
-          header: true,
-          complete: async function(results) {
-            console.log("Finisheda:", results.data);
-            console.log(localStorage.getItem('bazam-condo-id'))
-            sender.post(route,{
-                
-            })
+        papaparse.parse(
+          this.files,
+
+          {
+            header: true,
+            complete: async function(results) {
+              console.log("Finisheda:", results.data);
+
+              sender
+                .post(route + '/residentes/importar', results.data)
+                .then(result => {
+                  console.log("the result is =>>>>", result);
+                })
+                .catch(err => {
+                  console.log("the error >>>>", err);
+                });
+            }
           }
-        }
-      );
-      }else{
-        alert('SESIÓN NO VALIDA')
+        );
+      } else {
+        alert("SESIÓN NO VALIDA");
       }
-
     },
     editItem(item) {
       this.selected = item.id;
