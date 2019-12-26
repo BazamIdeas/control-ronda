@@ -30,7 +30,13 @@
                     <v-flex xs12>
                       <!--                       <v-text-field @change="readCsvFile()"  ref="inputFiles" type="file" label="csv"></v-text-field>
                       -->
-                      <input type="file" @change="readCsvFile" ref="inputFiles" label="csv" />
+                      <input
+                        type="file"
+                        @change="readCsvFile"
+                        id="inputFiles"
+                        ref="inputFiles"
+                        label="csv"
+                      />
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -339,6 +345,7 @@ export default {
       var headers = {};
       var token = localStorage.getItem("bazam-token-control");
       var route = process.env.API_URL;
+      var condos_id = localStorage.getItem('bazam-condo-id');
 
       if (token !== null && token !== undefined && token !== "") {
         headers["Authorization"] = "Bearer " + token;
@@ -350,9 +357,13 @@ export default {
             header: true,
             complete: async function(results) {
               console.log("Finisheda:", results.data);
-
               sender
-                .post(route + '/residentes/importar', results.data)
+                .post(route + '/residentes/importar', results.data,{
+                    headers: {
+                    Authorization: "Bearer " + token,
+                    condos_id  
+                  }
+                })
                 .then(result => {
                   console.log("the result is =>>>>", result);
                 })
@@ -404,6 +415,8 @@ export default {
     closeDialogCsv() {
       this.selected = 0;
       this.dialogCsv = false;
+      document.getElementById('inputFiles').value = ''
+      
       /*         setTimeout(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
@@ -418,7 +431,7 @@ export default {
           }
         })
       }, */
-
+   
     save() {
       this.$axios
         .get("/residents/email/" + this.editedItem.email)
