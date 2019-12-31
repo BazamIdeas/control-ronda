@@ -6,6 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 /config
 config
+build.zip
 # Editor directories and files
 .idea
 .vscode
