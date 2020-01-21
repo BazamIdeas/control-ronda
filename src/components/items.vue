@@ -40,7 +40,7 @@
                       <v-text-field v-model="editedItem.office_department" label="OffDepto"></v-text-field>
                     </v-flex>
                     <v-flex xs12 md6>
-                      <v-text-field v-model="editedItem.addressee"  label="Destinatario"></v-text-field>
+                      <v-text-field v-model="editedItem.addressee" label="Destinatario"></v-text-field>
                     </v-flex>
                     <v-flex xs12 md6>
                       <v-text-field v-model="editedItem.code" label="Código"></v-text-field>
@@ -132,9 +132,47 @@
         </v-card>
       </v-dialog>
     </v-layout>
+    <div class="absolute-map">
+      <GmapMap
+        style="width: 600px; height: 300px;"
+        :zoom="1"
+        :center="{lat: 0, lng: 0}"
+        @click="isClicked"
+      >
+        <GmapMarker v-for="(marker, index) in markers" :key="index" :position="marker.position" />
+        <GmapMarker
+          v-if="this.place"
+          label="★"
+          :position="{
+          lat: this.place.geometry.location.lat(),
+          lng: this.place.geometry.location.lng(),
+        }"
+        />
+      </GmapMap>
+    </div>
   </v-container>
 </template>
 
+<style>
+.actived {
+  background: #f7f0b2;
+}
+
+.img-comment {
+  max-width: 420px;
+  padding-left: 10%;
+}
+.absolute-map {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: 99999999;
+}
+</style>
 <script>
 import axios from "../axios.js";
 var moment = require("moment");
@@ -142,6 +180,9 @@ moment.locale("es");
 export default {
   props: ["lista"],
   data: () => ({
+    markers: [],
+    place: null,
+    description: "Autocomplete Example (#164)",
     moment: moment,
     fab: true,
     search: "",
@@ -221,6 +262,34 @@ export default {
   },
 
   methods: {
+    setDescription(description) {
+      this.description = description;
+    },
+    setPlace(place) {
+      this.place = place;
+    },
+    isClicked(e) {
+      let position = {
+        lat: e.latLng.lat(),
+        lng: e.latLng.lng()
+      };
+      console.log("event >>>", position);
+      this.markers = [];
+      this.markers.push({
+        position: position
+      });
+    },
+    usePlace(place) {
+      if (this.place) {
+        this.markers = {
+          position: {
+            lat: this.place.geometry.location.lat(),
+            lng: this.place.geometry.location.lng()
+          }
+        };
+        this.place = null;
+      }
+    },
     initialize() {
       if (this.lista.items) this.itemsLista = this.lista.items;
       else this.itemsLista = [];
@@ -230,8 +299,8 @@ export default {
       this.selected = item.id;
       this.editedIndex = this.itemsLista.indexOf(item);
       this.editedItem = Object.assign({}, item);
-      console.log('this.itemsLista',item)
-      console.log('editeditem >>>>', this.editedItem )
+      console.log("this.itemsLista", item);
+      console.log("editeditem >>>>", this.editedItem);
       this.dialog = true;
     },
 
@@ -319,12 +388,12 @@ export default {
           })
           .then(resp => {
             if (resp.status === 201) {
-            resp.data.address = this.editedItem.address;
-            resp.data.description = this.editedItem.description;
-            resp.data.street_number = this.editedItem.street_number;
-            resp.data.office_department = this.editedItem.office_department;
-            resp.data.addressee = this.editedItem.addressee;
-            resp.data.code = this.editedItem.code;
+              resp.data.address = this.editedItem.address;
+              resp.data.description = this.editedItem.description;
+              resp.data.street_number = this.editedItem.street_number;
+              resp.data.office_department = this.editedItem.office_department;
+              resp.data.addressee = this.editedItem.addressee;
+              resp.data.code = this.editedItem.code;
               this.itemsLista.push(resp.data);
             }
           })
@@ -337,14 +406,3 @@ export default {
   }
 };
 </script>
-
-<style>
-.actived {
-  background: #f7f0b2;
-}
-
-.img-comment {
-  max-width: 420px;
-  padding-left: 10%;
-}
-</style>

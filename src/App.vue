@@ -50,6 +50,7 @@
         <router-view/>
       </v-flex>
     </v-layout>
+    
   </v-app>
 </template>
 
