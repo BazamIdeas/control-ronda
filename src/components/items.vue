@@ -31,7 +31,8 @@
                 <v-container grid-list-md>
                   <v-layout wrap>
                     <v-flex xs12>
-                      <v-text-field v-model="editedItem.address" label="Direccion"></v-text-field>
+                      <v-icon @click="showMap = !showMap" class color="red accent-4">where_to_vote</v-icon>
+                      <!-- <v-text-field v-model="editedItem.address" label="Direccion"></v-text-field> -->
                     </v-flex>
                     <v-flex xs12 md6>
                       <v-text-field v-model="editedItem.street_number" type="number" label="N°"></v-text-field>
@@ -58,6 +59,49 @@
                 <v-btn color="blue darken-1" flat @click.native="save">Guardar</v-btn>
               </v-card-actions>
             </v-card>
+            <div class="absolute-map-container" v-if="showMap">
+              <div class="absolute-map">
+                <GmapAutocomplete
+                  class="google-map-autocomplete"
+                  placeholder="Ingresa una dirección "
+                  @place_changed="setPlace"
+                ></GmapAutocomplete>-
+                <br />
+
+                <GmapMap
+                  style="width: 600px; height: 300px;"
+                  :zoom="1"
+                  :center="{lat: 0, lng: 0}"
+                  @click="setMarker"
+                >
+                  <GmapMarker
+                    v-for="(marker, index) in markers"
+                    :key="index"
+                    :position="marker.position"
+                  />
+                  <GmapMarker
+                    v-if="this.place"
+                    label="★"
+                    :position="{
+          lat: this.place.geometry.location.lat(),
+          lng: this.place.geometry.location.lng(),
+        }"
+                  />
+                </GmapMap>
+                <br />
+
+                <div style="display:flex; justify-content:center;">
+                  <button class="google-btn-add-place mr-4" @click="showMap = !showMap">
+                    guardar
+                    <v-icon class color="green accent-4">save</v-icon>
+                  </button>
+                  <button class="google-btn-add-place" @click="showMap = !showMap">
+                    cancelar
+                    <v-icon class color="red accent-4">close</v-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
           </v-dialog>
         </v-toolbar>
         <v-data-table
@@ -132,24 +176,6 @@
         </v-card>
       </v-dialog>
     </v-layout>
-    <div class="absolute-map">
-      <GmapMap
-        style="width: 600px; height: 300px;"
-        :zoom="1"
-        :center="{lat: 0, lng: 0}"
-        @click="isClicked"
-      >
-        <GmapMarker v-for="(marker, index) in markers" :key="index" :position="marker.position" />
-        <GmapMarker
-          v-if="this.place"
-          label="★"
-          :position="{
-          lat: this.place.geometry.location.lat(),
-          lng: this.place.geometry.location.lng(),
-        }"
-        />
-      </GmapMap>
-    </div>
   </v-container>
 </template>
 
@@ -162,15 +188,36 @@
   max-width: 420px;
   padding-left: 10%;
 }
-.absolute-map {
+.absolute-map-container {
   position: absolute;
+  background: #fffffb;
   height: 100%;
   width: 100%;
   top: 0;
   left: 0;
   min-width: 100%;
   min-height: 100%;
-  z-index: 99999999;
+  z-index: 99999999999999999999;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+}
+.google-map-autocomplete {
+  border: solid 2px #f1f1f1;
+  padding: 0.4rem;
+  width: 100%;
+  max-width: 100%;
+}
+.google-btn-add-place {
+  background: #e0e0f5;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  padding: 0.2rem;
+  padding-right: 0.7rem;
+  padding-left: 0.7rem;
+  border-radius: 5px;
 }
 </style>
 <script>
@@ -180,9 +227,9 @@ moment.locale("es");
 export default {
   props: ["lista"],
   data: () => ({
+    showMap: false,
     markers: [],
     place: null,
-    description: "Autocomplete Example (#164)",
     moment: moment,
     fab: true,
     search: "",
@@ -262,22 +309,32 @@ export default {
   },
 
   methods: {
-    setDescription(description) {
-      this.description = description;
-    },
     setPlace(place) {
-      this.place = place;
+      console.log("place >>>", place);
+      /*     this.place = place; */
+      if (place) {
+        let position = {
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng()
+        };
+        this.markers = [];
+        this.markers.push({
+          position: position
+        });
+      }
     },
-    isClicked(e) {
+    setMarker(e) {
       let position = {
         lat: e.latLng.lat(),
         lng: e.latLng.lng()
       };
-      console.log("event >>>", position);
+      console.log("event >>>", e);
+      this.place;
       this.markers = [];
       this.markers.push({
         position: position
       });
+      console.log("event 2 >>>", position);
     },
     usePlace(place) {
       if (this.place) {
