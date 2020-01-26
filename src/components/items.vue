@@ -31,8 +31,13 @@
                 <v-container grid-list-md>
                   <v-layout wrap>
                     <v-flex xs12>
-                      <v-icon @click="showMap = !showMap" class color="red accent-4">where_to_vote</v-icon>
                       <!-- <v-text-field v-model="editedItem.address" label="Direccion"></v-text-field> -->
+                      <p @click="showMap = !showMap" style="cursor:pointer;">
+                        <v-icon
+                          :class="editedItem.address ? 'green-accent-4': 'brown-lighten-5'"
+                        >where_to_vote</v-icon>
+                        {{editedItem.address ? "Ya ha seleccionado ubicación" : "por favor, seleccione una ubicación"}}
+                      </p>
                     </v-flex>
                     <v-flex xs12 md6>
                       <v-text-field v-model="editedItem.street_number" type="number" label="N°"></v-text-field>
@@ -91,11 +96,16 @@
                 <br />
 
                 <div style="display:flex; justify-content:center;">
-                  <button class="google-btn-add-place mr-4" @click="showMap = !showMap">
+                  <button
+                    class="google-btn-add-place mr-4"
+                    @click="saveAddress(); showMap = !showMap"
+                    :class="{'btn-disabled': markers.length <= 0 }"
+                    :disabled="markers.length <= 0"
+                  >
                     guardar
                     <v-icon class color="green accent-4">save</v-icon>
                   </button>
-                  <button class="google-btn-add-place" @click="showMap = !showMap">
+                  <button class="google-btn-add-place" @click="markers = [];showMap = !showMap">
                     cancelar
                     <v-icon class color="red accent-4">close</v-icon>
                   </button>
@@ -183,7 +193,6 @@
 .actived {
   background: #f7f0b2;
 }
-
 .img-comment {
   max-width: 420px;
   padding-left: 10%;
@@ -218,6 +227,17 @@
   padding-right: 0.7rem;
   padding-left: 0.7rem;
   border-radius: 5px;
+}
+.btn-disabled,
+.btn-disabled .v-icon {
+  background: #ececec !important;
+  color: #bdbdbd !important;
+}
+.brown-lighten-5 {
+  color: #efebe9 !important;
+}
+.green-accent-4 {
+  color: #00c853 !important;
 }
 </style>
 <script>
@@ -309,6 +329,16 @@ export default {
   },
 
   methods: {
+    saveAddress() {
+      if (
+        this.markers.length > 0 &&
+        this.markers[0].hasOwnProperty("position")
+      ) {
+        console.log("this.markers >>>", this.markers[0].position);
+        let position = JSON.stringify(this.markers[0].position);
+        this.editedItem.address = position;
+      }
+    },
     setPlace(place) {
       console.log("place >>>", place);
       /*     this.place = place; */

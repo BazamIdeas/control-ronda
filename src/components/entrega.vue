@@ -1,10 +1,17 @@
 <template>
 <v-container grid-list-md >
-  <v-layout row wrap>
+    <v-toolbar absolute>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn flat to='/entrega'>EN TERRENO</v-btn>
+        <v-btn flat to='/recepcion-paquetes'>PUESTO DE TRABAJO</v-btn>
+      </v-toolbar-items>
+  </v-toolbar>
+  <v-layout row wrap mt-5>
     <v-flex xs12 >
       <v-toolbar color="grey" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
-          <v-toolbar-title>Listas de entrega </v-toolbar-title>
+          <v-toolbar-title>Listas de entrega - en terreno </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon @click="initialize ()">
             <v-icon>autorenew</v-icon>
