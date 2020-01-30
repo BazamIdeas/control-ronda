@@ -30,7 +30,36 @@
                 <v-container grid-list-md>
                   <v-layout wrap>
                     <v-flex xs12>
-                      <v-text-field v-model="editedItem.name" label="Nombre"></v-text-field>
+                      <v-flex xs12>
+                        <!-- <v-text-field v-model="editedItem.address" label="Direccion"></v-text-field> -->
+                        <p @click="showMap = !showMap" style="cursor:pointer;">
+                          <v-icon
+                            :class="editedItem.address ? 'green-accent-4': 'brown-lighten-5'"
+                          >where_to_vote</v-icon>
+                          {{editedItem.address ? "Ya ha seleccionado ubicación" : "por favor, seleccione una ubicación"}}
+                        </p>
+                      </v-flex>
+                      <v-select
+                        :items="usuarios"
+                        v-model="editedItem.worker_id"
+                        item-text="first_name"
+                        item-value="id"
+                        label="Usuario responsable"
+                        single-line
+                      ></v-select>
+                    </v-flex>
+                    <v-flex xs12>
+                      <v-select
+                        :items="shipping_companies"
+                        item-text="name"
+                        v-model="editedItem.shipping_company_id"
+                        item-value="id"
+                        label="Empresa de envío"
+                        single-line
+                      ></v-select>
+                    </v-flex>
+                    <v-flex xs12>
+                      <v-text-field v-model="editedItem.addreesse" label="Destinatario"></v-text-field>
                     </v-flex>
                     <v-flex xs12></v-flex>
                   </v-layout>
@@ -39,10 +68,54 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" flat @click.native="close">Cancelar</v-btn>
-                <v-btn color="blue darken-1" flat @click.native="save(editedItem)">Guardar</v-btn>
+                <v-btn color="blue darken-1" flat @click="close">Cancelar</v-btn>
+                <v-btn color="blue darken-1" flat @click="save(editedItem)">Guardar</v-btn>
               </v-card-actions>
             </v-card>
+                <div class="absolute-map-container" v-if="showMap">
+      <div class="absolute-map">
+        <GmapAutocomplete
+          class="google-map-autocomplete"
+          placeholder="Ingresa una dirección "
+          @place_changed="setPlace"
+        ></GmapAutocomplete>-
+        <br />
+
+        <GmapMap
+          style="width: 600px; height: 300px;"
+          :zoom="1"
+          :center="{lat: 0, lng: 0}"
+          @click="setMarker"
+        >
+          <GmapMarker v-for="(marker, index) in markers" :key="index" :position="marker.position" />
+          <GmapMarker
+            v-if="this.place"
+            label="★"
+            :position="{
+          lat: this.place.geometry.location.lat(),
+          lng: this.place.geometry.location.lng(),
+        }"
+          />
+        </GmapMap>
+        <br />
+
+        <div style="display:flex; justify-content:center;">
+          <button
+            class="google-btn-add-place mr-4"
+            @click="saveAddress(); showMap = !showMap"
+            :class="{'btn-disabled': markers.length <= 0 }"
+            :disabled="markers.length <= 0"
+          >
+            guardar
+            <v-icon class color="green accent-4">save</v-icon>
+          </button>
+          <button class="google-btn-add-place" @click="markers = [];showMap = !showMap">
+            cancelar
+            <v-icon class color="red accent-4">close</v-icon>
+          </button>
+        </div>
+      </div>
+    </div>
           </v-dialog>
         </v-toolbar>
         <v-toolbar flat color="white">
@@ -69,7 +142,18 @@
             <td
               :class="{actived:selected == props.item.id}"
             >{{ moment(props.item.date).format('HH:mm') }}</td>-->
-            <td :class="{actived:selected == props.item.id}">{{ props.item.name }}</td>
+            <td
+              :class="{actived:selected == props.item.id}"
+            >{{ shipping_companies.find(el => el.id = props.item.shipping_company_id ).name}}</td>
+            <td :class="{actived:selected == props.item.id}">{{props.item.worker.username}}</td>
+            <td>
+              <v-chip v-bind:color="estadoEntrega(props.item, 'color')" small text-color="white">
+                <v-avatar>
+                  <v-icon>{{ estadoEntrega(props.item, "icono") }}</v-icon>
+                </v-avatar>
+                {{ estadoEntrega(props.item, "texto") }}
+              </v-chip>
+            </td>
             <!--             <td :class="{actived:selected == props.item.id}">{{ props.item.worker.first_name }}</td>
             <td class="justify-center px-0" :class="{actived:selected == props.item.id}">-->
             <v-tooltip bottom>
@@ -101,15 +185,8 @@
         </v-data-table>
         <div class="text-xs-center pt-2"></div>
       </v-flex>
-      <v-dialog v-model="ventana" fullscreen hide-overlay transition="dialog-bottom-transition">
-        <v-card>
-          <v-layout justify-end>
-            <v-btn flat @click.native="ventana = false">Cerrar</v-btn>
-          </v-layout>
-          <bz-items v-if="itemsLista" v-bind:lista="itemsLista"></bz-items>
-        </v-card>
-      </v-dialog>
     </v-layout>
+
   </v-container>
 </template>
 
@@ -123,6 +200,9 @@ import axios, { nodeInstance } from "../axios.js";
 export default {
   components: { BzItems },
   data: () => ({
+    showMap: false,
+    markers: [],
+    place: null,
     moment: moment,
     fab: true,
     info: null,
@@ -132,6 +212,7 @@ export default {
     itemsLista: 0,
     usuarios: [],
     selectCategory: { id: "", name: "" },
+    selectUsuarios: { id: "", first_name: "" },
     dialog: false,
     selected: 0,
     headers: [
@@ -150,10 +231,22 @@ export default {
         isDescending: true
       }, */
       {
-        text: "Categoría",
+        text: "Compañía",
         align: "left",
         sortable: true,
-        value: "name"
+        value: "shipping_company_id"
+      },
+      {
+        text: "Responsable",
+        align: "left",
+        sortable: true,
+        value: "worker"
+      },
+      {
+        text: "Estado",
+
+        sortable: false,
+        align: "left"
       },
       {
         text: "Acciones",
@@ -164,9 +257,12 @@ export default {
       }
     ],
     listas: [],
+    shipping_companies: [],
     editedIndex: -1,
     editedItem: {
-      name: ""
+      shipping_company_id: "",
+      worker_id: "",
+      addreesse: ""
     },
     defaultItem: {
       name: ""
@@ -189,28 +285,95 @@ export default {
 
   created() {
     this.initialize();
-    this.getUsuarios();
   },
 
   methods: {
+    setPlace(place) {
+      console.log("place >>>", place);
+      /*     this.place = place; */
+      if (place) {
+        let position = {
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng()
+        };
+        this.markers = [];
+        this.markers.push({
+          position: position
+        });
+      }
+    },
+    setMarker(e) {
+      let position = {
+        lat: e.latLng.lat(),
+        lng: e.latLng.lng()
+      };
+      console.log("event >>>", e);
+      this.place;
+      this.markers = [];
+      this.markers.push({
+        position: position
+      });
+    },
+    usePlace(place) {
+      if (this.place) {
+        this.markers = {
+          position: {
+            lat: this.place.geometry.location.lat(),
+            lng: this.place.geometry.location.lng()
+          }
+        };
+        this.place = null;
+      }
+    },
+    saveAddress() {
+      if (
+        this.markers.length > 0 &&
+        this.markers[0].hasOwnProperty("position")
+      ) {
+        let position = JSON.stringify(this.markers[0].position);
+        this.editedItem.address = position;
+      }
+    },
+    PrintThis(e) {
+      //editedItem.shipping_company_id
+      console.log("event >>>> ", e);
+    },
     initialize() {
+      this.getUsuarios();
+      this.getShippingCompanies();
+      this.getPackages();
+    },
+    estadoEntrega(item, tipo) {
+      if (item.delivered) {
+        let estado = { color: "orange", icono: "done", texto: "Entregada" };
+        return estado[tipo];
+      } else {
+        let estado = {
+          color: "red",
+          icono: "hourglass_empty",
+          texto: "Pendiente"
+        };
+        return estado[tipo];
+      }
+    },
+    getPackages() {
       nodeInstance
-        .get("/shipping_company/")
+        .get("/package_reception/")
         .then(resp => {
           if (resp.status === 200) {
-            this.listas = resp.data;
+            this.listas = [];
+            resp.data.forEach(item => {
+              let result = this.usuarios.find(
+                user => (user.id = item.worker_id)
+              );
+              if (result) this.listas.push(item);
+            });
+            console.log("packages >>>> ", resp.data);
           }
         })
         .catch(e => {
           console.error(e);
         });
-    },
-
-    selectItem(item) {
-      this.selected = item.id;
-      this.editedIndex = this.listas.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
     },
     getUsuarios() {
       this.$axios
@@ -222,7 +385,9 @@ export default {
               resp.data.forEach(element => {
                 workers.push(element.worker);
               });
+
               this.usuarios = workers;
+              console.log("users >>> ", this.usuarios);
             } else {
               this.users = [];
             }
@@ -231,6 +396,24 @@ export default {
         .catch(e => {
           console.error(e);
         });
+    },
+    getShippingCompanies() {
+      nodeInstance
+        .get("/shipping_company/")
+        .then(resp => {
+          if (resp.status === 200) {
+            this.shipping_companies = resp.data;
+          }
+        })
+        .catch(e => {
+          console.error(e);
+        });
+    },
+    selectItem(item) {
+      this.selected = item.id;
+      this.editedIndex = this.listas.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialog = true;
     },
 
     deleteItem(item) {
@@ -257,7 +440,8 @@ export default {
       this.editedIndex = -1;
     },
     save(item) {
-      if (item.hasOwnProperty("id")) {
+      console.log("save >>>", item);
+      /*       if (item.hasOwnProperty("id")) {
         nodeInstance
           .put("/shipping_company/", {
             name: item.name,
@@ -286,7 +470,7 @@ export default {
           .catch(e => {
             console.error(e);
           });
-      }
+      } */
     }
   }
 };
@@ -295,5 +479,48 @@ export default {
 <style>
 .actived {
   background: #f7f0b2;
+}
+
+.absolute-map-container {
+  position: absolute;
+  background: #fffffb;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: 99999999999999999999;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+}
+.google-map-autocomplete {
+  border: solid 2px #f1f1f1;
+  padding: 0.4rem;
+  width: 100%;
+  max-width: 100%;
+}
+.google-btn-add-place {
+  background: #e0e0f5;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  padding: 0.2rem;
+  padding-right: 0.7rem;
+  padding-left: 0.7rem;
+  border-radius: 5px;
+}
+.btn-disabled,
+.btn-disabled .v-icon {
+  background: #ececec !important;
+  color: #bdbdbd !important;
+}
+.brown-lighten-5 {
+  color: #efebe9 !important;
+}
+.green-accent-4 {
+  color: #00c853 !important;
 }
 </style>
