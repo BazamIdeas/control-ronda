@@ -3,16 +3,16 @@
     <v-toolbar absolute>
       <v-spacer></v-spacer>
       <v-toolbar-items>
-        <v-btn flat to="/recepcion-paquetes">recepcion de paquetes</v-btn>
-        <v-btn flat to="/empresas-de-envios">Empresas de envios</v-btn>
-        <v-btn flat to="/categorias-de-eventos">categorias de evento</v-btn>
+        <v-btn flat to="/recepcion-paquetes">Recepción de paquetes</v-btn>
+        <v-btn flat to="/empresas-de-envios">Empresas de envíos</v-btn>
+        <v-btn flat to="/categorias-de-eventos">Categorias de evento</v-btn>
       </v-toolbar-items>
     </v-toolbar>
     <v-layout row wrap mt-5>
       <v-flex xs12>
         <v-toolbar color="grey" dark>
           <v-toolbar-side-icon></v-toolbar-side-icon>
-          <v-toolbar-title>Empresas de envios</v-toolbar-title>
+          <v-toolbar-title>Categorías de evento</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon @click="initialize ()">
             <v-icon>autorenew</v-icon>
@@ -30,7 +30,8 @@
                 <v-container grid-list-md>
                   <v-layout wrap>
                     <v-flex xs12>
-                      <v-text-field v-model="editedItem.name" label="Nombre"></v-text-field>
+                      <v-text-field v-model="editedItem.name" label="Nombre"
+                       :rules="inputRules"></v-text-field>
                     </v-flex>
                     <v-flex xs12></v-flex>
                   </v-layout>
@@ -40,7 +41,8 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" flat @click.native="close">Cancelar</v-btn>
-                <v-btn color="blue darken-1" flat @click.native="save(editedItem)">Guardar</v-btn>
+                <v-btn color="blue darken-1" flat @click.native="save(editedItem)"
+                :disabled='isDisable'>Guardar</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -134,6 +136,10 @@ export default {
     selectCategory: { id: "", name: "" },
     dialog: false,
     selected: 0,
+    inputRules: [
+      v => v.length >= 5 || `*Este campo es obligatorio y debe tener 5 o más caracteres`
+    ],
+    isValid: false,
     headers: [
       /*       {
         text: "Fecha",
@@ -174,10 +180,15 @@ export default {
   }),
 
   computed: {
+    isDisable(){
+      console.info(this.editedItem.name)
+      if(this.editedItem.name.length < 2)
+       return !this.isValid
+    },
     formTitle() {
       return this.editedIndex === -1
-        ? "Nueva empresa de envio"
-        : "Modificar empresa de envio";
+        ? "Nueva categoria de evento"
+        : "Modificar categoria de evento";
     }
   },
 
@@ -257,6 +268,9 @@ export default {
       this.editedIndex = -1;
     },
     save(item) {
+      if(item.name.length <= 5){
+        return
+      }
       if (item.hasOwnProperty("id")) {
         nodeInstance
           .put("/event_category/", {

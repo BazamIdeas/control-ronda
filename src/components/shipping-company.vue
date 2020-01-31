@@ -21,7 +21,7 @@
             <v-btn icon slot="activator">
               <v-icon>plus_one</v-icon>
             </v-btn>
-            <v-card>
+            <v-card >
               <v-card-title>
                 <span class="headline">{{ formTitle }}</span>
               </v-card-title>
@@ -30,7 +30,10 @@
                 <v-container grid-list-md>
                   <v-layout wrap>
                     <v-flex xs12>
-                      <v-text-field v-model="editedItem.name" label="Nombre"></v-text-field>
+                      <v-text-field 
+                      v-model="editedItem.name" 
+                      label="Nombre" 
+                      :rules="inputRules"></v-text-field>
                     </v-flex>
                     <v-flex xs12></v-flex>
                   </v-layout>
@@ -39,8 +42,10 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" flat @click.native="close">Cancelar</v-btn>
-                <v-btn color="blue darken-1" flat @click.native="save(editedItem)">Guardar</v-btn>
+                <v-btn color="blue darken-1" flat @click.native="close" >Cancelar</v-btn>
+                <v-btn color="blue darken-1" flat @click.native="save(editedItem)"
+                :disabled='isDisable'
+                >Guardar</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -134,6 +139,10 @@ export default {
     selectCategory: { id: "", name: "" },
     dialog: false,
     selected: 0,
+    inputRules: [
+      v => v.length >= 2 || `*Este campo es obligatorio y debe tener 2 o más caracteres`
+    ],
+    isValid: false,
     headers: [
       /*       {
         text: "Fecha",
@@ -174,24 +183,26 @@ export default {
   }),
 
   computed: {
+    isDisable(){
+      console.info(this.editedItem.name)
+      if(this.editedItem.name.length < 2)
+       return !this.isValid
+    },
     formTitle() {
       return this.editedIndex === -1
         ? "Nueva empresa de envio"
         : "Modificar empresa de envio";
     }
   },
-
   watch: {
     dialog(val) {
       val || this.close();
     }
   },
-
   created() {
     this.initialize();
     this.getUsuarios();
   },
-
   methods: {
     initialize() {
       nodeInstance
@@ -205,7 +216,6 @@ export default {
           console.error(e);
         });
     },
-
     selectItem(item) {
       this.selected = item.id;
       this.editedIndex = this.listas.indexOf(item);
@@ -249,7 +259,6 @@ export default {
           });
       }
     },
-
     close() {
       this.selected = 0;
       this.dialog = false;
@@ -257,6 +266,9 @@ export default {
       this.editedIndex = -1;
     },
     save(item) {
+      if(item.name.length <= 2){
+        return
+      }
       if (item.hasOwnProperty("id")) {
         nodeInstance
           .put("/shipping_company/", {
@@ -273,6 +285,7 @@ export default {
             console.error(e);
           });
       } else {
+
         nodeInstance
           .post("/shipping_company/", {
             name: item.name

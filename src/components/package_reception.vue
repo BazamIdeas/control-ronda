@@ -14,7 +14,7 @@
           <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>Recepción de paquetes</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn icon @click="initialize ()">
+          <v-btn icon @click="initialize()">
             <v-icon>autorenew</v-icon>
           </v-btn>
           <v-dialog v-model="dialog" max-width="500px">
@@ -59,7 +59,11 @@
                       ></v-select>
                     </v-flex>
                     <v-flex xs12>
-                      <v-text-field v-model="editedItem.addreesse" label="Destinatario"></v-text-field>
+                      <v-text-field 
+                      v-model="editedItem.addreesse"
+                      label="Destinatario"
+                      :rules="inputRules"
+                      ></v-text-field>
                     </v-flex>
                     <v-flex xs12></v-flex>
                   </v-layout>
@@ -68,8 +72,15 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" flat @click="close">Cancelar</v-btn>
-                <v-btn color="blue darken-1" flat @click="save(editedItem)">Guardar</v-btn>
+                <v-btn 
+                color="blue darken-1" 
+                flat 
+                @click.native="close">Cancelar</v-btn>
+                <v-btn 
+                color="blue darken-1" 
+                flat @click.native="save(editedItem)"
+                :disabled='isDisable'
+                >Guardar</v-btn>
               </v-card-actions>
             </v-card>
                 <div class="absolute-map-container" v-if="showMap">
@@ -215,6 +226,10 @@ export default {
     selectUsuarios: { id: "", first_name: "" },
     dialog: false,
     selected: 0,
+    inputRules: [
+      (v='') => v.length != 0 || `*Este campo no puede estar vacío`
+    ],
+    isValid: false,
     headers: [
       /*       {
         text: "Fecha",
@@ -270,10 +285,14 @@ export default {
   }),
 
   computed: {
+    isDisable(){
+      if(this.editedItem.addreesse < 5)
+       this.isValid = !this.isValid
+    },
     formTitle() {
       return this.editedIndex === -1
-        ? "Nueva empresa de envio"
-        : "Modificar empresa de envio";
+        ? "Nueva recepción de paquetes"
+        : "Modificar recepción de paquetes";
     }
   },
 
@@ -415,7 +434,6 @@ export default {
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
-
     deleteItem(item) {
       if (item.hasOwnProperty("id")) {
         let id = item.id;
@@ -441,9 +459,9 @@ export default {
     },
     save(item) {
       console.log("save >>>", item);
-      /*       if (item.hasOwnProperty("id")) {
+      if (item.hasOwnProperty("id")) {
         nodeInstance
-          .put("/shipping_company/", {
+          .put("/package_reception/", {
             name: item.name,
             id: item.id
           })
@@ -457,9 +475,12 @@ export default {
             console.error(e);
           });
       } else {
+        console.info(item)
+        console.info(item, 'no existe, añade')
         nodeInstance
-          .post("/shipping_company/", {
+          .post("/package_reception/", {
             name: item.name
+            
           })
           .then(resp => {
             if (resp.status === 200) {
@@ -470,7 +491,7 @@ export default {
           .catch(e => {
             console.error(e);
           });
-      } */
+      }
     }
   }
 };
