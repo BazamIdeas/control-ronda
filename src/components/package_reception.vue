@@ -34,10 +34,20 @@
                         <!-- <v-text-field v-model="editedItem.address" label="Direccion"></v-text-field> -->
                         <p @click="showMap = !showMap" style="cursor:pointer;">
                           <v-icon
-                            :class="editedItem.address ? 'green-accent-4': 'brown-lighten-5'"
+                            :class="editedItem.address 
+                            ? 'green-accent-4'
+                            : 'brown-lighten-5'"
+                            :rules="inputRules"
                           >where_to_vote</v-icon>
-                          {{editedItem.address ? "Ya ha seleccionado ubicación" : "por favor, seleccione una ubicación"}}
+                          {{editedItem.address 
+                          ? "Ya ha seleccionado ubicación" 
+                          : "por favor, seleccione una ubicación"}}
                         </p>
+                        <small
+                          style="color:tomato">{{editedItem.address.length <= 5
+                          ? "*Seleccione una ubicación"
+                          : ""}}
+                        </small>
                       </v-flex>
                       <v-select
                         :items="usuarios"
@@ -46,6 +56,7 @@
                         item-value="id"
                         label="Usuario responsable"
                         single-line
+                        :rules="inputRules"
                       ></v-select>
                     </v-flex>
                     <v-flex xs12>
@@ -56,6 +67,7 @@
                         item-value="id"
                         label="Empresa de envío"
                         single-line
+                        :rules="inputRules"
                       ></v-select>
                     </v-flex>
                     <v-flex xs12>
@@ -293,7 +305,12 @@ export default {
 
   computed: {
     isDisable() {
-      if (this.editedItem.addreesse < 5) this.isValid = !this.isValid;
+      if (this.editedItem.addreesse.length <= 1
+          || this.editedItem.address.length <= 1
+          || this.editedItem.worker_id <= 1
+          || this.editedItem.shipping_company_id < 1){
+        return !this.isValid;
+        }
     },
     formTitle() {
       return this.editedIndex === -1
@@ -368,8 +385,9 @@ export default {
       await this.getPackages();
     },
     estadoEntrega(item, tipo) {
-      if (item.delivered) {
-        let estado = { color: "orange", icono: "done", texto: "Entregada" };
+      console.info(item,tipo)
+      if (item.delivered_date) {
+        let estado = { color: "green", icono: "done", texto: "Entregada" };
         return estado[tipo];
       } else {
         let estado = {
@@ -438,7 +456,7 @@ export default {
       if (item.hasOwnProperty("id")) {
         let id = item.id;
         nodeInstance
-          .delete("/shipping_company/" + id)
+          .delete("/package_reception/" + id)
           .then(resp => {
             if (resp.status === 200) {
               this.initialize();
