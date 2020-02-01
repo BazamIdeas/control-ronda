@@ -158,7 +158,9 @@
             <td
               :class="{actived:selected == props.item.id}"
             >{{ shipping_companies.find(el => el.id === props.item.shipping_company_id ).name}}</td>
-            <td :class="{actived:selected == props.item.id}">{{usuarios.find(el => el.id === props.item.worker_id).first_name}}</td>
+            <td
+              :class="{actived:selected == props.item.id}"
+            >{{usuarios.find(el => el.id === props.item.worker_id).first_name}}</td>
             <td>
               <v-chip v-bind:color="estadoEntrega(props.item, 'color')" small text-color="white">
                 <v-avatar>
@@ -282,7 +284,10 @@ export default {
       address: ""
     },
     defaultItem: {
-      name: ""
+      shipping_company_id: "",
+      worker_id: "",
+      addreesse: "",
+      address: ""
     }
   }),
 
@@ -457,8 +462,11 @@ export default {
       if (item.hasOwnProperty("id")) {
         nodeInstance
           .put("/package_reception/", {
-            name: item.name,
-            id: item.id
+            id: item.id,
+            shipping_company_id: item.shipping_company_id,
+            worker_id: item.worker_id,
+            addreesse: item.addreesse,
+            address: item.address
           })
           .then(resp => {
             if (resp.status === 200) {
@@ -473,9 +481,7 @@ export default {
         console.info(item);
         console.info(item, "no existe, añade");
         nodeInstance
-          .post("/package_reception/", {
-            name: item.name
-          })
+          .post("/package_reception/", item)
           .then(resp => {
             if (resp.status === 200) {
               this.initialize();
