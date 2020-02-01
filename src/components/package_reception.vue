@@ -45,7 +45,7 @@
                         </p>
                         <small
                           style="color:tomato">{{editedItem.address.length <= 5
-                          ? "*Seleccione una ubicación"
+                          ? "*Este campo es obligatorio"
                           : ""}}
                         </small>
                       </v-flex>
@@ -212,6 +212,27 @@
         </v-data-table>
         <div class="text-xs-center pt-2"></div>
       </v-flex>
+
+      <v-snackbar
+        v-model="isSuccess.snackbar"
+        :bottom="isSuccess.y === 'bottom'"
+        :color="isSuccess.color"
+        :left="isSuccess.x === 'left'"
+        :multi-line="isSuccess.mode === 'multi-line'"
+        :right="isSuccess.x === 'right'"
+        :timeout="isSuccess.timeout"
+        :top="isSuccess.y === 'top'"
+        :vertical="isSuccess.mode === 'vertical'"
+      >
+      {{ isSuccess.text }}
+      <v-btn
+        dark
+        text
+        @click="isSuccess.snackbar = false"
+      >
+        Cerrar
+      </v-btn>
+    </v-snackbar>
     </v-layout>
   </v-container>
 </template>
@@ -226,6 +247,14 @@ import axios, { nodeInstance } from "../axios.js";
 export default {
   components: { BzItems },
   data: () => ({
+    isSuccess:{
+        color: '',
+        mode: '',
+        snackbar: false,
+        text: '',
+        timeout: 5000,
+        x: null,
+        y: 'top'},
     showMap: false,
     markers: [],
     place: null,
@@ -316,7 +345,7 @@ export default {
       return this.editedIndex === -1
         ? "Nueva recepción de paquetes"
         : "Modificar recepción de paquetes";
-    }
+    },
   },
 
   watch: {
@@ -387,7 +416,11 @@ export default {
     estadoEntrega(item, tipo) {
       console.info(item,tipo)
       if (item.delivered_date) {
-        let estado = { color: "green", icono: "done", texto: "Entregada" };
+        let estado = {
+          color: "green",
+          icono: "done",
+          texto: "Entregada"
+        };
         return estado[tipo];
       } else {
         let estado = {
@@ -460,11 +493,27 @@ export default {
           .then(resp => {
             if (resp.status === 200) {
               this.initialize();
-              this.close();
+              this.close()
+              this.isSuccess = {
+                color: 'success',
+                snackbar: true,
+                text: 'Eliminado con éxito!',
+                timeout: 5000,
+                x: null,
+                y: 'top'
+              }
             }
           })
           .catch(e => {
             console.error(e);
+            this.isSuccess = {
+                color: 'error',
+                snackbar: true,
+                text: 'No es posible eliminar',
+                timeout: 5000,
+                x: null,
+                y: 'top'
+              }
           });
       }
     },
@@ -489,11 +538,28 @@ export default {
           .then(resp => {
             if (resp.status === 200) {
               this.initialize();
+              this.isSuccess = {
+                color: 'success',
+                snackbar: true,
+                text: 'Editado con éxito!',
+                timeout: 5000,
+                x: null,
+                y: 'top'
+              }
               this.close();
             }
           })
           .catch(e => {
             console.error(e);
+            this.isSuccess = {
+                color: 'error',
+                snackbar: true,
+                text: 'No es posible editar',
+                timeout: 5000,
+                x: null,
+                y: 'top'
+              }
+
           });
       } else {
         console.info(item);
@@ -503,11 +569,27 @@ export default {
           .then(resp => {
             if (resp.status === 200) {
               this.initialize();
+              this.isSuccess = {
+                color: 'success',
+                snackbar: true,
+                text: 'Registrado con éxito!',
+                timeout: 5000,
+                x: null,
+                y: 'top'
+              }
               this.close();
             }
           })
           .catch(e => {
             console.error(e);
+            this.isSuccess = {
+                color: 'error',
+                snackbar: true,
+                text: 'No es posible registrar',
+                timeout: 5000,
+                x: null,
+                y: 'top'
+              }
           });
       }
     }

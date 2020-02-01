@@ -111,6 +111,26 @@
           <bz-items v-if="itemsLista" v-bind:lista="itemsLista"></bz-items>
         </v-card>
       </v-dialog>
+      <v-snackbar
+        v-model="isSuccess.snackbar"
+        :bottom="isSuccess.y === 'bottom'"
+        :color="isSuccess.color"
+        :left="isSuccess.x === 'left'"
+        :multi-line="isSuccess.mode === 'multi-line'"
+        :right="isSuccess.x === 'right'"
+        :timeout="isSuccess.timeout"
+        :top="isSuccess.y === 'top'"
+        :vertical="isSuccess.mode === 'vertical'"
+      >
+      {{ isSuccess.text }}
+      <v-btn
+        dark
+        text
+        @click="isSuccess.snackbar = false"
+      >
+        Cerrar
+      </v-btn>
+    </v-snackbar>
     </v-layout>
   </v-container>
 </template>
@@ -125,6 +145,14 @@ import axios, { nodeInstance } from "../axios.js";
 export default {
   components: { BzItems },
   data: () => ({
+     isSuccess:{
+        color: '',
+        mode: '',
+        snackbar: false,
+        text: '',
+        timeout: 5000,
+        x: null,
+        y: 'top'},
     moment: moment,
     fab: true,
     info: null,
@@ -252,11 +280,27 @@ export default {
           .then(resp => {
             if (resp.status === 200) {
               this.initialize();
+               this.isSuccess = {
+                color: 'success',
+                snackbar: true,
+                text: 'Eliminado con éxito!',
+                timeout: 5000,
+                x: null,
+                y: 'top'
+              }
               this.close();
             }
           })
           .catch(e => {
             console.error(e);
+            this.isSuccess = {
+                color: 'error',
+                snackbar: true,
+                text: 'No es posible eliminar',
+                timeout: 5000,
+                x: null,
+                y: 'top'
+              }
           });
       }
     },
@@ -280,11 +324,27 @@ export default {
           .then(resp => {
             if (resp.status === 200) {
               this.initialize();
+               this.isSuccess = {
+                color: 'success',
+                snackbar: true,
+                text: 'Editado con éxito!',
+                timeout: 5000,
+                x: null,
+                y: 'top'
+              }
               this.close();
             }
           })
           .catch(e => {
             console.error(e);
+            this.isSuccess = {
+                color: 'error',
+                snackbar: true,
+                text: 'No es posible editar',
+                timeout: 5000,
+                x: null,
+                y: 'top'
+              }
           });
       } else {
         nodeInstance
@@ -294,11 +354,27 @@ export default {
           .then(resp => {
             if (resp.status === 200) {
               this.initialize();
+               this.isSuccess = {
+                color: 'success',
+                snackbar: true,
+                text: 'Añadido con éxito!',
+                timeout: 5000,
+                x: null,
+                y: 'top'
+              }
               this.close();
             }
           })
           .catch(e => {
             console.error(e);
+            this.isSuccess = {
+                color: 'error',
+                snackbar: true,
+                text: 'No es posible añadir',
+                timeout: 5000,
+                x: null,
+                y: 'top'
+              }
           });
       }
     }
