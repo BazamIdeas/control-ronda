@@ -59,10 +59,10 @@
                       ></v-select>
                     </v-flex>
                     <v-flex xs12>
-                      <v-text-field 
-                      v-model="editedItem.addreesse"
-                      label="Destinatario"
-                      :rules="inputRules"
+                      <v-text-field
+                        v-model="editedItem.addreesse"
+                        label="Destinatario"
+                        :rules="inputRules"
                       ></v-text-field>
                     </v-flex>
                     <v-flex xs12></v-flex>
@@ -72,61 +72,63 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn 
-                color="blue darken-1" 
-                flat 
-                @click.native="close">Cancelar</v-btn>
-                <v-btn 
-                color="blue darken-1" 
-                flat @click.native="save(editedItem)"
-                :disabled='isDisable'
+                <v-btn color="blue darken-1" flat @click.native="close">Cancelar</v-btn>
+                <v-btn
+                  color="blue darken-1"
+                  flat
+                  @click.native="save(editedItem)"
+                  :disabled="isDisable"
                 >Guardar</v-btn>
               </v-card-actions>
             </v-card>
-                <div class="absolute-map-container" v-if="showMap">
-      <div class="absolute-map">
-        <GmapAutocomplete
-          class="google-map-autocomplete"
-          placeholder="Ingresa una dirección "
-          @place_changed="setPlace"
-        ></GmapAutocomplete>-
-        <br />
+            <div class="absolute-map-container" v-if="showMap">
+              <div class="absolute-map">
+                <GmapAutocomplete
+                  class="google-map-autocomplete"
+                  placeholder="Ingresa una dirección "
+                  @place_changed="setPlace"
+                ></GmapAutocomplete>-
+                <br />
 
-        <GmapMap
-          style="width: 600px; height: 300px;"
-          :zoom="1"
-          :center="{lat: 0, lng: 0}"
-          @click="setMarker"
-        >
-          <GmapMarker v-for="(marker, index) in markers" :key="index" :position="marker.position" />
-          <GmapMarker
-            v-if="this.place"
-            label="★"
-            :position="{
+                <GmapMap
+                  style="width: 600px; height: 300px;"
+                  :zoom="1"
+                  :center="{lat: 0, lng: 0}"
+                  @click="setMarker"
+                >
+                  <GmapMarker
+                    v-for="(marker, index) in markers"
+                    :key="index"
+                    :position="marker.position"
+                  />
+                  <GmapMarker
+                    v-if="this.place"
+                    label="★"
+                    :position="{
           lat: this.place.geometry.location.lat(),
           lng: this.place.geometry.location.lng(),
         }"
-          />
-        </GmapMap>
-        <br />
+                  />
+                </GmapMap>
+                <br />
 
-        <div style="display:flex; justify-content:center;">
-          <button
-            class="google-btn-add-place mr-4"
-            @click="saveAddress(); showMap = !showMap"
-            :class="{'btn-disabled': markers.length <= 0 }"
-            :disabled="markers.length <= 0"
-          >
-            guardar
-            <v-icon class color="green accent-4">save</v-icon>
-          </button>
-          <button class="google-btn-add-place" @click="markers = [];showMap = !showMap">
-            cancelar
-            <v-icon class color="red accent-4">close</v-icon>
-          </button>
-        </div>
-      </div>
-    </div>
+                <div style="display:flex; justify-content:center;">
+                  <button
+                    class="google-btn-add-place mr-4"
+                    @click="saveAddress(); showMap = !showMap"
+                    :class="{'btn-disabled': markers.length <= 0 }"
+                    :disabled="markers.length <= 0"
+                  >
+                    guardar
+                    <v-icon class color="green accent-4">save</v-icon>
+                  </button>
+                  <button class="google-btn-add-place" @click="markers = [];showMap = !showMap">
+                    cancelar
+                    <v-icon class color="red accent-4">close</v-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
           </v-dialog>
         </v-toolbar>
         <v-toolbar flat color="white">
@@ -156,7 +158,7 @@
             <td
               :class="{actived:selected == props.item.id}"
             >{{ shipping_companies.find(el => el.id = props.item.shipping_company_id ).name}}</td>
-            <td :class="{actived:selected == props.item.id}">{{props.item.worker.username}}</td>
+            <td :class="{actived:selected == props.item.id}">{{usuarios.find(el => el.worker.id === props.item.worker_id).worker.first_name}}</td>
             <td>
               <v-chip v-bind:color="estadoEntrega(props.item, 'color')" small text-color="white">
                 <v-avatar>
@@ -197,7 +199,6 @@
         <div class="text-xs-center pt-2"></div>
       </v-flex>
     </v-layout>
-
   </v-container>
 </template>
 
@@ -227,7 +228,7 @@ export default {
     dialog: false,
     selected: 0,
     inputRules: [
-      (v='') => v.length != 0 || `*Este campo no puede estar vacío`
+      (v = "") => v.length != 0 || `*Este campo no puede estar vacío`
     ],
     isValid: false,
     headers: [
@@ -277,7 +278,8 @@ export default {
     editedItem: {
       shipping_company_id: "",
       worker_id: "",
-      addreesse: ""
+      addreesse: "",
+      address: ""
     },
     defaultItem: {
       name: ""
@@ -285,9 +287,8 @@ export default {
   }),
 
   computed: {
-    isDisable(){
-      if(this.editedItem.addreesse < 5)
-       this.isValid = !this.isValid
+    isDisable() {
+      if (this.editedItem.addreesse < 5) this.isValid = !this.isValid;
     },
     formTitle() {
       return this.editedIndex === -1
@@ -308,7 +309,7 @@ export default {
 
   methods: {
     setPlace(place) {
-      console.log("place >>>", place);
+      //console.log("place >>>", place);
       /*     this.place = place; */
       if (place) {
         let position = {
@@ -326,7 +327,6 @@ export default {
         lat: e.latLng.lat(),
         lng: e.latLng.lng()
       };
-      console.log("event >>>", e);
       this.place;
       this.markers = [];
       this.markers.push({
@@ -357,10 +357,10 @@ export default {
       //editedItem.shipping_company_id
       console.log("event >>>> ", e);
     },
-    initialize() {
-      this.getUsuarios();
-      this.getShippingCompanies();
-      this.getPackages();
+    async initialize() {
+      await this.getUsuarios();
+      await this.getShippingCompanies();
+      await this.getPackages();
     },
     estadoEntrega(item, tipo) {
       if (item.delivered) {
@@ -381,12 +381,7 @@ export default {
         .then(resp => {
           if (resp.status === 200) {
             this.listas = [];
-            resp.data.forEach(item => {
-              let result = this.usuarios.find(
-                user => (user.id = item.worker_id)
-              );
-              if (result) this.listas.push(item);
-            });
+            this.listas = resp.data;
             console.log("packages >>>> ", resp.data);
           }
         })
@@ -394,6 +389,7 @@ export default {
           console.error(e);
         });
     },
+
     getUsuarios() {
       this.$axios
         .get("/watchers/self")
@@ -401,21 +397,22 @@ export default {
           if (resp.status === 200) {
             if (resp.data !== null) {
               let workers = [];
-              resp.data.forEach(element => {
+              console.log("packages >>>> ", resp.data);
+              this.usuarios = resp.data;
+              /*               resp.data.forEach(element => {
                 workers.push(element.worker);
               });
-
-              this.usuarios = workers;
-              console.log("users >>> ", this.usuarios);
+              this.usuarios = workers; */
             } else {
               this.users = [];
             }
           }
         })
         .catch(e => {
-          console.error(e);
+          console.log(e);
         });
     },
+
     getShippingCompanies() {
       nodeInstance
         .get("/shipping_company/")
@@ -475,12 +472,11 @@ export default {
             console.error(e);
           });
       } else {
-        console.info(item)
-        console.info(item, 'no existe, añade')
+        console.info(item);
+        console.info(item, "no existe, añade");
         nodeInstance
           .post("/package_reception/", {
             name: item.name
-            
           })
           .then(resp => {
             if (resp.status === 200) {
