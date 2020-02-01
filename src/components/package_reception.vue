@@ -157,8 +157,8 @@
             >{{ moment(props.item.date).format('HH:mm') }}</td>-->
             <td
               :class="{actived:selected == props.item.id}"
-            >{{ shipping_companies.find(el => el.id = props.item.shipping_company_id ).name}}</td>
-            <td :class="{actived:selected == props.item.id}">{{usuarios.find(el => el.worker.id === props.item.worker_id).worker.first_name}}</td>
+            >{{ shipping_companies.find(el => el.id === props.item.shipping_company_id ).name}}</td>
+            <td :class="{actived:selected == props.item.id}">{{usuarios.find(el => el.id === props.item.worker_id).first_name}}</td>
             <td>
               <v-chip v-bind:color="estadoEntrega(props.item, 'color')" small text-color="white">
                 <v-avatar>
@@ -397,12 +397,10 @@ export default {
           if (resp.status === 200) {
             if (resp.data !== null) {
               let workers = [];
-              console.log("packages >>>> ", resp.data);
-              this.usuarios = resp.data;
-              /*               resp.data.forEach(element => {
+              resp.data.forEach(element => {
                 workers.push(element.worker);
               });
-              this.usuarios = workers; */
+              this.usuarios = workers;
             } else {
               this.users = [];
             }
