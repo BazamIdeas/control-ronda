@@ -42,12 +42,17 @@
                           {{editedItem.address 
                           ? "Ya ha seleccionado ubicación" 
                           : "por favor, seleccione una ubicación"}}
-                        </p>
-                        <small
+                          <small
                           style="color:tomato">{{editedItem.address.length <= 5
                           ? "*Este campo es obligatorio"
                           : ""}}
                         </small>
+                        </p>
+
+                        <button class="google-btn-add-place" @click="watchMap = !watchMap">
+                          <v-icon color="green accent-4">map</v-icon>
+                          Observar ubicación
+                        </button>
                       </v-flex>
                       <v-select
                         :items="usuarios"
@@ -118,12 +123,10 @@
                     :position="marker.position"
                   />
                   <GmapMarker
-                    v-if="this.place"
+                    v-if="this.itemAddress"
                     label="★"
-                    :position="{
-                      lat: this.place.geometry.location.lat(),
-                      lng: this.place.geometry.location.lng(),
-                    }"
+                    :position="this.itemAddress"
+
                   />
                 </GmapMap>
                 <br />
@@ -145,6 +148,31 @@
                 </div>
               </div>
             </div>
+
+          <!-- MAP JUST FOR WATCH DATA -->
+
+          <div class="absolute-map-container" v-if="watchMap">
+              <div class="absolute-map">
+                <GmapMap
+                  style="width: 600px; height: 300px;"
+                  :zoom="1"
+                  :center="{lat: 0, lng: 0}">
+                  <GmapMarker
+                    v-if="this.itemAddress"
+                    label="★"
+                    :position="itemAddress"
+                  />
+                </GmapMap>
+              </div>
+              <button class="google-btn-add-place close-watchMap" @click="watchMap = !watchMap">
+                    Salir
+                    <v-icon class color="grey accent-4">close</v-icon>
+                  </button>
+            </div>
+            
+
+
+          <!-- END OF MAP FOR WATCH DATA -->
           </v-dialog>
         </v-toolbar>
         <v-toolbar flat color="white">
@@ -260,6 +288,7 @@ export default {
         x: null,
         y: 'top'},
     showMap: false,
+    watchMap: false,
     markers: [],
     place: null,
     moment: moment,
@@ -274,8 +303,18 @@ export default {
     selectUsuarios: { id: "", first_name: "" },
     dialog: false,
     selected: 0,
+    itemAddress: [],
+    inputRulesSave:[
+      v => v.length 
+    ],
     inputRules: [
-      (v = "") => v.length != 0 || `*Este campo no puede estar vacío`
+      (v) => {
+        if(typeof(v) ==='string'){
+          return v.length < 1 && `*Este campo no puede estar vacío`
+        }else if(typeof(v) === 'number'){
+          return v < 1 && `*Este es obligatorio`
+        }
+        }
     ],
     isValid: false,
     headers: [
@@ -335,7 +374,6 @@ export default {
       address: ""
     }
   }),
-
   computed: {
     isDisable() {
       if (this.editedItem.addreesse.length <= 1
@@ -351,17 +389,14 @@ export default {
         : "Modificar recepción de paquetes";
     },
   },
-
   watch: {
     dialog(val) {
       val || this.close();
     }
   },
-
   created() {
     this.initialize();
   },
-
   methods: {
     setPlace(place) {
       //console.log("place >>>", place);
@@ -387,6 +422,7 @@ export default {
       this.markers.push({
         position: position
       });
+      this.place = null
     },
     usePlace(place) {
       if (this.place) {
@@ -407,6 +443,7 @@ export default {
         let position = JSON.stringify(this.markers[0].position);
         this.editedItem.address = position;
       }
+
     },
     PrintThis(e) {
       //editedItem.shipping_company_id
@@ -418,7 +455,7 @@ export default {
       await this.getPackages();
     },
     estadoEntrega(item, tipo) {
-      console.info(item,tipo)
+      //console.info(item,tipo)
       if (item.delivered_date) {
         let estado = {
           color: "green",
@@ -437,19 +474,19 @@ export default {
     },
     getPackages() {
       nodeInstance
-        .get("/package_reception/")
+        .get("/package_reception/self/")
         .then(resp => {
           if (resp.status === 200) {
             this.listas = [];
             this.listas = resp.data;
             console.log("packages >>>> ", resp.data);
+
           }
         })
         .catch(e => {
           console.error(e);
         });
     },
-
     getUsuarios() {
       this.$axios
         .get("/watchers/self")
@@ -470,7 +507,6 @@ export default {
           console.log(e);
         });
     },
-
     getShippingCompanies() {
       nodeInstance
         .get("/shipping_company/")
@@ -484,6 +520,11 @@ export default {
         });
     },
     selectItem(item) {
+      console.info(item.id)
+      console.info(item.address)
+      const getItemAddress = JSON.parse(item.address)
+      this.itemAddress = {lat:getItemAddress.lat,lng:getItemAddress.lng}
+      console.info(this.itemAddress)
       this.selected = item.id;
       this.editedIndex = this.listas.indexOf(item);
       this.editedItem = Object.assign({}, item);
@@ -521,16 +562,18 @@ export default {
           });
       }
     },
-
     close() {
       this.selected = 0;
       this.dialog = false;
       this.editedItem = Object.assign({}, this.defaultItem);
       this.editedIndex = -1;
+      this.markers = []
+      this.itemAddress = []
     },
     save(item) {
       console.log("save >>>", item);
       if (item.hasOwnProperty("id")) {
+        console.info(item, 'here to edit')
         nodeInstance
           .put("/package_reception/", {
             id: item.id,
@@ -563,11 +606,10 @@ export default {
                 x: null,
                 y: 'top'
               }
-
-          });
+          return
+          })
       } else {
-        console.info(item);
-        console.info(item, "no existe, añade");
+        console.info(item, "here to save");
         nodeInstance
           .post("/package_reception/", item)
           .then(resp => {
@@ -602,6 +644,7 @@ export default {
 </script>
 
 <style>
+
 .actived {
   background: #f7f0b2;
 }
@@ -647,5 +690,9 @@ export default {
 }
 .green-accent-4 {
   color: #00c853 !important;
+}
+
+.close-watchMap{
+  margin-top: 1em;
 }
 </style>
