@@ -169,9 +169,9 @@
                     <v-icon class color="grey accent-4">close</v-icon>
                   </button>
             </div>
-            
 
-
+ 
+ 
           <!-- END OF MAP FOR WATCH DATA -->
           </v-dialog>
         </v-toolbar>
