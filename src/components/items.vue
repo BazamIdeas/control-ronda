@@ -105,7 +105,7 @@
                     guardar
                     <v-icon class color="green accent-4">save</v-icon>
                   </button>
-                  <button class="google-btn-add-place" @click="markers = [];showMap = !showMap">
+                  <button class="google-btn-add-place" @click="markers === [];showMap = !showMap">
                     cancelar
                     <v-icon class color="red accent-4">close</v-icon>
                   </button>
@@ -430,12 +430,18 @@ export default {
     },
 
     close() {
+      // this.selected = 0;
+      // this.dialog = false;
+      // setTimeout(() => {
+      //   this.editedItem = Object.assign({}, this.defaultItem);
+      //   this.editedIndex = -1;
+      // }, 1500);
       this.selected = 0;
       this.dialog = false;
-      setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      }, 1500);
+      this.editedItem = Object.assign({}, this.defaultItem);
+      this.editedIndex = -1;
+      this.markers = []
+      this.itemAddress = []
     },
 
     save() {
