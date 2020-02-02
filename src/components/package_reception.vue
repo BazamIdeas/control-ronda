@@ -84,7 +84,11 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" flat @click.native="close">Cancelar</v-btn>
+                <v-btn 
+                  color="blue darken-1" 
+                  flat 
+                  @click.native="close"
+                  >Cancelar</v-btn>
                 <v-btn
                   color="blue darken-1"
                   flat
@@ -99,7 +103,7 @@
                   class="google-map-autocomplete"
                   placeholder="Ingresa una dirección "
                   @place_changed="setPlace"
-                ></GmapAutocomplete>-
+                ></GmapAutocomplete>
                 <br />
 
                 <GmapMap
@@ -117,9 +121,9 @@
                     v-if="this.place"
                     label="★"
                     :position="{
-          lat: this.place.geometry.location.lat(),
-          lng: this.place.geometry.location.lng(),
-        }"
+                      lat: this.place.geometry.location.lat(),
+                      lng: this.place.geometry.location.lng(),
+                    }"
                   />
                 </GmapMap>
                 <br />
@@ -134,7 +138,7 @@
                     guardar
                     <v-icon class color="green accent-4">save</v-icon>
                   </button>
-                  <button class="google-btn-add-place" @click="markers = [];showMap = !showMap">
+                  <button class="google-btn-add-place" @click="markers === [];showMap = !showMap">
                     cancelar
                     <v-icon class color="red accent-4">close</v-icon>
                   </button>
