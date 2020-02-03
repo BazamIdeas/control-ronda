@@ -29,10 +29,22 @@
                 <v-container grid-list-md>
                   <v-layout wrap>
                     <v-flex xs12>
-                      <v-text-field v-model="editedItem.name" label="Nombre"></v-text-field>
+                      <v-text-field 
+                        v-model="editedItem.name" 
+                        label="Nombre">
+                      </v-text-field>
                     </v-flex>
                     <v-flex xs12>
-                    <v-select
+                    <!-- <v-select
+                        :items="usuarios"
+                        v-model="selectUsuarios"
+                        item-text="first_name"
+                        item-value="id"
+                        label="Usuario responsable"
+                        return-object
+                        single-line
+                        ></v-select> -->
+                        <v-select
                         :items="usuarios"
                         v-model="selectUsuarios"
                         item-text="first_name"
@@ -207,6 +219,7 @@ var moment = require ('moment')
       },
 
       editItem (item) {
+        console.info(item)
         this.selected = item.id
         this.editedIndex = this.listas.indexOf(item)
         this.editedItem = Object.assign({}, item)
@@ -229,6 +242,7 @@ var moment = require ('moment')
                     workers.push(element.worker)
                 })
               this.usuarios = workers
+              console.info(this.usuarios)
             }
             else{
               this.users = []
@@ -260,6 +274,8 @@ var moment = require ('moment')
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
         }, 1500)
+        // this.editedItem = Object.assign({}, this.defaultItem);
+        // this.editedIndex = -1;
       },
 
       save () {

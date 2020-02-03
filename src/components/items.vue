@@ -240,6 +240,7 @@
   color: #00c853 !important;
 }
 </style>
+
 <script>
 import axios from "../axios.js";
 var moment = require("moment");
@@ -385,9 +386,13 @@ export default {
     editItem(item) {
       this.selected = item.id;
       this.editedIndex = this.itemsLista.indexOf(item);
-      this.editedItem = Object.assign({}, item);
+      this.editedItem = Object.assign({}, item)
       console.log("this.itemsLista", item);
       console.log("editeditem >>>>", this.editedItem);
+
+      const {address} = this.editedItem
+      const {lat,lng} = JSON.parse(address)
+      this.markers.push({position:{lat,lng}})
       this.dialog = true;
     },
 
@@ -435,6 +440,7 @@ export default {
       setTimeout(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
+        this.markers = []
       }, 1500);
     },
 
