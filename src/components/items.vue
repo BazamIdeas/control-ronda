@@ -70,7 +70,7 @@
                   class="google-map-autocomplete"
                   placeholder="Ingresa una dirección "
                   @place_changed="setPlace"
-                ></GmapAutocomplete>-
+                ></GmapAutocomplete>
                 <br />
 
                 <GmapMap
@@ -84,14 +84,11 @@
                     :key="index"
                     :position="marker.position"
                   />
-                  <GmapMarker
+                  <!-- <GmapMarker
                     v-if="this.place"
                     label="★"
-                    :position="{
-          lat: this.place.geometry.location.lat(),
-          lng: this.place.geometry.location.lng(),
-        }"
-                  />
+                    :position="{lat:this.place.geometry.location.lat(),lng:this.place.geometry.location.lng()}"
+                  /> -->
                 </GmapMap>
                 <br />
 
@@ -105,7 +102,7 @@
                     guardar
                     <v-icon class color="green accent-4">save</v-icon>
                   </button>
-                  <button class="google-btn-add-place" @click="showMap = !showMap">
+                  <button class="google-btn-add-place" @click="showMap = !showMap; close">
                     cancelar
                     <v-icon class color="red accent-4">close</v-icon>
                   </button>
@@ -123,7 +120,48 @@
           class="elevation-1"
         >
           <template slot="items" slot-scope="props">
-            <td>{{ props.item.address }}</td>
+
+                      <!-- MAP JUST FOR WATCH DATA -->
+
+          <div class="absolute-map-container" v-if="watchMap">
+              <div class="absolute-map">
+                <GmapMap
+                  style="width: 600px; height: 300px;"
+                  :zoom="1"
+                  :center="{lat: 0, lng: 0}">
+                  <GmapMarker
+                    v-for="(marker, index) in itemAddress"
+                    :key="index"
+                    label="★"
+                    :position="marker.position"
+                  />
+                </GmapMap>
+              </div>
+              <button class="google-btn-add-place close-watchMap" @click="watchMap = !watchMap;close()">
+                    Salir
+                    <v-icon class color="grey accent-4">close</v-icon>
+                  </button>
+            </div>
+          <!-- END OF MAP FOR WATCH DATA -->
+
+            <!-- <td>{{ props.item.address }}</td> -->
+            <td>
+              <template v-if="typeof props.item.address === 'object'">
+                <button v-show="typeof props.item.address === 'object'"
+                class="google-btn-add-place"
+                @click="displayMap(props.item);watchMap = !watchMap">
+                <v-icon
+                  color="green accent-4">
+                    map
+                </v-icon>
+                Observar ubicación
+              </button>
+              </template>
+              <template v-else>
+                {{props.item.address}}
+              </template>
+              
+            </td>
             <td>{{ props.item.description }}</td>
             <td>
               <v-chip v-bind:color="estadoEntrega(props.item, 'color')" small text-color="white">
@@ -249,8 +287,12 @@ export default {
   props: ["lista"],
   data: () => ({
     showMap: false,
+    watchMap: false,
+    itemAddress: [],
     markers: [],
     place: null,
+    isCoord: true,
+    isAddress: false,
     moment: moment,
     fab: true,
     search: "",
@@ -301,12 +343,26 @@ export default {
     itemsLista: [],
     editedIndex: -1,
     editedItem: {
-      address: "",
-      description: ""
+      address: '',
+      addressee:'',
+      code:'',
+      delivered:'',
+      delivery:'',
+      description: '',
+      id:'',
+      office_department:'',
+      street_number:''
     },
     defaultItem: {
-      address: "",
-      description: ""
+      address: '',
+      addressee:'',
+      code:'',
+      delivered:'',
+      delivery:'',
+      description: '',
+      id:'',
+      office_department:'',
+      street_number:'',
     }
   }),
 
@@ -330,14 +386,22 @@ export default {
   },
 
   methods: {
+
     saveAddress() {
       if (
         this.markers.length > 0 &&
         this.markers[0].hasOwnProperty("position")
       ) {
+        
+        console.log("this.markers else >>>", this.markers[0].position);
+        this.editedItem.address = this.markers[0].position
+        
+      }else{
         console.log("this.markers >>>", this.markers[0].position);
+        this.editedItem.address = this.markers[0].position
         let position = JSON.stringify(this.markers[0].position);
         this.editedItem.address = position;
+        console.info(this.editedItem.address)
       }
     },
     setPlace(place) {
@@ -355,10 +419,7 @@ export default {
       }
     },
     setMarker(e) {
-      let position = {
-        lat: e.latLng.lat(),
-        lng: e.latLng.lng()
-      };
+      let position = {lat:e.latLng.lat(),lng:e.latLng.lng()};
       console.log("event >>>", e);
       this.place;
       this.markers = [];
@@ -378,7 +439,12 @@ export default {
         this.place = null;
       }
     },
-    initialize() {
+    displayMap(item){
+      this.editedItem = Object.assign({}, item)
+      const {lat,lng} = this.editedItem.address
+      this.itemAddress.push({position:{lat,lng}})
+    },
+    async initialize() {
       if (this.lista.items) this.itemsLista = this.lista.items;
       else this.itemsLista = [];
     },
@@ -391,8 +457,23 @@ export default {
       console.log("editeditem >>>>", this.editedItem);
 
       const {address} = this.editedItem
-      const {lat,lng} = JSON.parse(address)
-      this.markers.push({position:{lat,lng}})
+      console.info(address)
+      this.markers.push({position:{lat:address.lat,lng:address.lng}})
+
+      // if(typeof address === 'string'){
+      //   try {
+      //     const _address = JSON.parse(address)
+      //     console.info(_address)
+      //     this.editedItem.address = _address
+      //     this.markers.push({position:{lat:_address.lat,lng:_address.lng}})
+      // } catch (error) {
+      //   console.info(error)
+      // }
+      // }
+      // const newPosition = JSON.stringify(address)
+      // console.info(newPosition)
+      // this.editedItem.address = newPosition
+
       this.dialog = true;
     },
 
@@ -441,14 +522,27 @@ export default {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
         this.markers = []
-      }, 500);
+        this.itemAddress = []
+        console.info(this.editedItem)
+      }, 1000);
+      // this.editedItem = Object.assign({}, this.defaultItem);
+      //   this.editedIndex = -1;
+      //   this.markers = []
+      //   this.itemAddress = []
+      //   console.info(this.editedItem)
     },
 
     save() {
+      console.info(this.editedItem)
       if (this.editedIndex > -1) {
-        this.$axios
+
+        const {address} = this.editedItem
+        const updateAddress = JSON.stringify(address)
+        console.info(updateAddress)
+        axios
           .put("/items/" + this.editedItem.id, {
-            address: this.editedItem.address,
+            // address: this.editedItem.address,
+            address: updateAddress,
             description: this.editedItem.description,
             street_number: this.editedItem.street_number,
             office_department: this.editedItem.office_department,
@@ -460,6 +554,7 @@ export default {
           })
           .then(resp => {
             if (resp.status === 200) {
+              console.info(resp)
               Object.assign(this.itemsLista[this.editedIndex], this.editedItem);
             }
           })
@@ -467,9 +562,15 @@ export default {
             console.log(e);
           });
       } else {
+
+        const {address} = this.editedItem
+        const updateAddress = JSON.stringify(address)
+        console.info(updateAddress)
+
         axios
           .post("/items/", {
-            address: this.editedItem.address,
+            address: updateAddress,
+            //address: this.editedItem.address,
             description: this.editedItem.description,
             street_number: this.editedItem.street_number,
             office_department: this.editedItem.office_department,
@@ -481,12 +582,30 @@ export default {
           })
           .then(resp => {
             if (resp.status === 201) {
-              resp.data.address = this.editedItem.address;
+              // resp.data.address = this.editedItem.address;
               resp.data.description = this.editedItem.description;
               resp.data.street_number = this.editedItem.street_number;
               resp.data.office_department = this.editedItem.office_department;
               resp.data.addressee = this.editedItem.addressee;
               resp.data.code = this.editedItem.code;
+
+              //========== new Code ======
+           try {
+            const objetifyAddress = JSON.parse(resp.data.address)
+            console.info('objetify', objetifyAddress)
+            //this.editedItem.address = objetifyAddress
+            resp.data.address = objetifyAddress
+           } catch (error) {
+            
+           }
+              //==========================
+
+
+              // resp.data.address = this.editedItem.address;
+              // console.info(this.editedItem.address)
+               console.info(resp.data.address)
+
+
               this.itemsLista.push(resp.data);
             }
           })
@@ -495,6 +614,58 @@ export default {
           });
       }
       this.close();
+
+      // ________ OLD CODE ______
+      // if (this.editedIndex > -1) {
+      //   this.$axios
+      //     .put("/items/" + this.editedItem.id, {
+      //       address: this.editedItem.address,
+      //       description: this.editedItem.description,
+      //       street_number: this.editedItem.street_number,
+      //       office_department: this.editedItem.office_department,
+      //       addressee: this.editedItem.addressee,
+      //       code: this.editedItem.code,
+      //       delivery: {
+      //         id: this.lista.id
+      //       }
+      //     })
+      //     .then(resp => {
+      //       if (resp.status === 200) {
+      //         Object.assign(this.itemsLista[this.editedIndex], this.editedItem);
+      //       }
+      //     })
+      //     .catch(e => {
+      //       console.log(e);
+      //     });
+      // } else {
+      //   axios
+      //     .post("/items/", {
+      //       address: this.editedItem.address,
+      //       description: this.editedItem.description,
+      //       street_number: this.editedItem.street_number,
+      //       office_department: this.editedItem.office_department,
+      //       addressee: this.editedItem.addressee,
+      //       code: this.editedItem.code,
+      //       delivery: {
+      //         id: this.lista.id
+      //       }
+      //     })
+      //     .then(resp => {
+      //       if (resp.status === 201) {
+      //         resp.data.address = this.editedItem.address;
+      //         resp.data.description = this.editedItem.description;
+      //         resp.data.street_number = this.editedItem.street_number;
+      //         resp.data.office_department = this.editedItem.office_department;
+      //         resp.data.addressee = this.editedItem.addressee;
+      //         resp.data.code = this.editedItem.code;
+      //         this.itemsLista.push(resp.data);
+      //       }
+      //     })
+      //     .catch(e => {
+      //       console.log(e);
+      //     });
+      // }
+      // this.close();
     }
   }
 };

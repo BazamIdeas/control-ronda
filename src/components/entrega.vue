@@ -13,7 +13,7 @@
           <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>Listas de entrega - en terreno </v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn icon @click="initialize ()">
+          <v-btn icon @click="initialize()">
             <v-icon>autorenew</v-icon>
           </v-btn>
           <v-dialog v-model="dialog" max-width="500px">
@@ -116,7 +116,7 @@
         <v-layout justify-end>
             <v-btn flat @click.native="ventana = false">Cerrar</v-btn>
         </v-layout >
-        <bz-items v-if= "itemsLista" v-bind:lista="itemsLista"> </bz-items>
+        <bz-items v-if="itemsLista" v-bind:lista="itemsLista"> </bz-items>
       </v-card>
     </v-dialog>
   </v-layout>
@@ -229,6 +229,22 @@ var moment = require ('moment')
       getItems(item){
         this.selected = item.id
         this.itemsLista = item
+        // ------ testing change the address data type
+        console.info(item)
+        console.info(this.itemsLista)
+        
+        this.itemsLista.items.map(({address},index)=>{
+          console.info(address)
+          try {
+            const objetifyAddress = JSON.parse(address)
+            console.info(objetifyAddress)
+            this.itemsLista.items[index].address = objetifyAddress
+          } catch (error) {
+            this.itemsLista.items[index].address = address
+          }
+        })
+        console.info(this.itemsLista)
+        // ---------
         this.ventana = true
       },
 
