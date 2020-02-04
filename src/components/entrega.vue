@@ -46,7 +46,7 @@
                         ></v-select> -->
                         <v-select
                         :items="usuarios"
-                        v-model="selectUsuarios"
+                        v-model="editedItem.worker.id"
                         item-text="first_name"
                         item-value="id"
                         label="Usuario responsable"
@@ -88,7 +88,7 @@
           <td :class="{actived:selected == props.item.id}" >{{ moment(props.item.date).format('DD-MM-YYYY') }}</td>
           <td :class="{actived:selected == props.item.id}" >{{ moment(props.item.date).format('HH:mm') }}</td>
           <td :class="{actived:selected == props.item.id}" >{{ props.item.name }}</td>
-           <td :class="{actived:selected == props.item.id}" >{{ props.item.worker.first_name }}</td>
+          <td :class="{actived:selected == props.item.id}" >{{ props.item.worker.first_name }}</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
             <v-tooltip bottom>
               <v-icon  slot="activator" color="green darken-2" class="mr-2" @click="editItem(props.item)">edit</v-icon>
@@ -181,9 +181,16 @@ var moment = require ('moment')
       editedIndex: -1,
       editedItem: {
         name: '',
+        approved:'',
+        items:'',
+        worker:''
+
       },
       defaultItem: {
         name: '',
+        approved:'',
+        items:'',
+        worker:''
       }
     }),
 
@@ -224,9 +231,11 @@ var moment = require ('moment')
         this.editedIndex = this.listas.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialog = true
+        console.info(this.editedItem)
       },
 
       getItems(item){
+        console.info('get', item)
         this.selected = item.id
         this.itemsLista = item
         // ------ testing change the address data type

@@ -524,6 +524,12 @@ export default {
     },
 
     close() {
+      // this.selected = 0;
+      // this.dialog = false;
+      // setTimeout(() => {
+      //   this.editedItem = Object.assign({}, this.defaultItem);
+      //   this.editedIndex = -1;
+      // }, 1500);
       this.selected = 0;
       this.dialog = false;
       setTimeout(() => {
