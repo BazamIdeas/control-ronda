@@ -84,11 +84,17 @@
                     :key="index"
                     :position="marker.position"
                   />
-                  <!-- <GmapMarker
-                    v-if="this.place"
+                  <GmapMarker
+                    v-if="this.itemAddress"
                     label="★"
-                    :position="{lat:this.place.geometry.location.lat(),lng:this.place.geometry.location.lng()}"
-                  /> -->
+                    :position="itemAddress.position"
+                  />
+                  <GmapMarker
+                    v-for="(marker, index) in itemAddress"
+                    :key="index"
+                    label="★"
+                    :position="marker.position"
+                  />
                 </GmapMap>
                 <br />
 
@@ -459,6 +465,8 @@ export default {
       const {address} = this.editedItem
       console.info(address)
       this.markers.push({position:{lat:address.lat,lng:address.lng}})
+
+      this.itemAddress.push({position:{lat:address.lat,lng:address.lng}})
 
       // if(typeof address === 'string'){
       //   try {
