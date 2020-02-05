@@ -17,7 +17,7 @@
 
           <v-dialog v-model="dialogCsv" max-width="500px">
             <v-btn icon slot="activator">
-              <v-icon>home</v-icon>
+              <v-icon>playlist_add</v-icon>
             </v-btn>
             <v-card>
               <v-card-title>
@@ -30,13 +30,61 @@
                     <v-flex xs12>
                       <!--                       <v-text-field @change="readCsvFile()"  ref="inputFiles" type="file" label="csv"></v-text-field>
                       -->
-                      <input
+                      <!-- <input
                         type="file"
                         @change="readCsvFile"
                         id="inputFiles"
                         ref="inputFiles"
                         label="csv"
-                      />
+                      /> -->
+
+                      <!-- FLADDEV | start -->
+
+<v-container grid-list-lg>
+    <v-text-field 
+      label="Selecciona tu archivo .csv"
+      @click='onPickFile'
+      v-model='fileName'
+      prepend-icon="attach_file"
+    ></v-text-field>
+    <!-- Hidden -->
+    <input
+      type="file"
+      style="display: none"
+      ref="fileInput"
+      accept="*/*"
+      @change="onFilePicked">
+    <v-btn
+      :disabled="fileName.length < 1"
+      color="green accent-3"
+      @click.stop="onUploadSelectedFileClick"
+      :loading="loading"
+    >
+    <v-icon color='white'>cloud_upload</v-icon>
+    </v-btn>
+    
+    <!-- Kind of logs -->
+
+<template v-slot:selection="{ name }">
+      <v-chip
+        v-if="this.name"
+        color="green accent-4"
+        dark
+        label
+        small
+      >
+        {{name}} - [ {{(size/100).toFixed(2)}} Kb ]
+        <v-icon right>playlist_add_check</v-icon>
+      </v-chip>
+    </template>
+  </v-container>
+
+
+                      <!-- FLADDEV | end -->
+
+
+
+
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -224,6 +272,18 @@ export default {
     dialog: false,
     dialogCsv: false,
     fileCsv: [],
+    //files: [],
+
+    fileName: '',
+    url: '',
+    fileObject: null,
+    cardResult: '',
+    name: '',
+    size: '',
+    type: '',
+    lastModifiedDate: '',
+    loading: false,
+
     usuario: "",
     selected: 0,
     ficha: false,
@@ -337,7 +397,50 @@ export default {
           console.log(e);
         });
     },
-
+    // FLADDEV - START
+onPickFile () {
+      this.$refs.fileInput.click()
+    },
+    onFilePicked (event) {
+      const files = event.target.files
+      if (files[0] !== undefined) {
+        this.fileName = files[0].name
+        // Check validity of file
+        if (this.fileName.lastIndexOf('.') <= 0) {
+          return
+        }
+        // If valid, continue
+        const fr = new FileReader()
+        fr.readAsDataURL(files[0])
+        fr.addEventListener('load', () => {
+          this.url = fr.result
+          this.fileObject = files[0] // this is an file that can be sent to server...
+          
+        })
+      } else {
+        this.fileName = ''
+        this.fileObject = null
+        this.url = ''
+      }
+    },
+    onUploadSelectedFileClick () {
+      this.loading = true
+      
+      console.log(this.fileObject)
+      // A file is not chosen!
+      if (!this.fileObject) {
+        alert('No file!!')
+      }
+      // DO YOUR JOB HERE with fileObjectToUpload
+      // https://developer.mozilla.org/en-US/docs/Web/API/File/File
+      this.name = this.fileObject.name
+      this.size = this.fileObject.size
+      this.type = this.fileObject.type
+      this.lastModifiedDate = this.fileObject.lastModifiedDate
+      // DO YOUR JOB HERE with fileObjectToUpload
+      this.loading = false
+    },
+// FLADDEV - END
     readCsvFile() {
       this.files = this.$refs.inputFiles.files[0];
       var csv = {};
