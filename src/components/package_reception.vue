@@ -34,22 +34,32 @@
                         <!-- <v-text-field v-model="editedItem.address" label="Direccion"></v-text-field> -->
                         <p @click="showMap = !showMap" style="cursor:pointer;">
                           <v-icon
-                            :class="editedItem.address 
-                            ? 'green-accent-4'
-                            : 'brown-lighten-5'"
+                            :class="
+                              editedItem.address
+                                ? 'green-accent-4'
+                                : 'brown-lighten-5'
+                            "
                             :rules="inputRules"
-                          >where_to_vote</v-icon>
-                          {{editedItem.address 
-                          ? "Ya ha seleccionado ubicación" 
-                          : "por favor, seleccione una ubicación"}}
-                          <small
-                          style="color:tomato">{{editedItem.address.length <= 5
-                          ? "*Este campo es obligatorio"
-                          : ""}}
-                        </small>
+                            >where_to_vote</v-icon
+                          >
+                          {{
+                            editedItem.address
+                              ? "Ya ha seleccionado ubicación"
+                              : "por favor, seleccione una ubicación"
+                          }}
+                          <small style="color:tomato"
+                            >{{
+                              editedItem.address.length <= 5
+                                ? "*Este campo es obligatorio"
+                                : ""
+                            }}
+                          </small>
                         </p>
 
-                        <button class="google-btn-add-place" @click="watchMap = !watchMap">
+                        <button
+                          class="google-btn-add-place"
+                          @click="watchMap = !watchMap"
+                        >
                           <v-icon color="green accent-4">map</v-icon>
                           Observar ubicación
                         </button>
@@ -89,17 +99,16 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn 
-                  color="blue darken-1" 
-                  flat 
-                  @click.native="close"
-                  >Cancelar</v-btn>
+                <v-btn color="blue darken-1" flat @click.native="close"
+                  >Cancelar</v-btn
+                >
                 <v-btn
                   color="blue darken-1"
                   flat
                   @click.native="save(editedItem)"
                   :disabled="isDisable"
-                >Guardar</v-btn>
+                  >Guardar</v-btn
+                >
               </v-card-actions>
             </v-card>
             <div class="absolute-map-container" v-if="showMap">
@@ -114,7 +123,7 @@
                 <GmapMap
                   style="width: 600px; height: 300px;"
                   :zoom="1"
-                  :center="{lat: 0, lng: 0}"
+                  :center="{ lat: 0, lng: 0 }"
                   @click="setMarker"
                 >
                   <GmapMarker
@@ -126,7 +135,6 @@
                     v-if="this.itemAddress"
                     label="★"
                     :position="this.itemAddress"
-
                   />
                 </GmapMap>
                 <br />
@@ -134,14 +142,23 @@
                 <div style="display:flex; justify-content:center;">
                   <button
                     class="google-btn-add-place mr-4"
-                    @click="saveAddress(); showMap = !showMap"
-                    :class="{'btn-disabled': markers.length <= 0 }"
+                    @click="
+                      saveAddress();
+                      showMap = !showMap;
+                    "
+                    :class="{ 'btn-disabled': markers.length <= 0 }"
                     :disabled="markers.length <= 0"
                   >
                     guardar
                     <v-icon class color="green accent-4">save</v-icon>
                   </button>
-                  <button class="google-btn-add-place" @click="markers === [];showMap = !showMap">
+                  <button
+                    class="google-btn-add-place"
+                    @click="
+                      markers === [];
+                      showMap = !showMap;
+                    "
+                  >
                     cancelar
                     <v-icon class color="red accent-4">close</v-icon>
                   </button>
@@ -149,14 +166,15 @@
               </div>
             </div>
 
-          <!-- MAP JUST FOR WATCH DATA -->
+            <!-- MAP JUST FOR WATCH DATA -->
 
-          <div class="absolute-map-container" v-if="watchMap">
+            <div class="absolute-map-container" v-if="watchMap">
               <div class="absolute-map">
                 <GmapMap
                   style="width: 600px; height: 300px;"
                   :zoom="1"
-                  :center="{lat: 0, lng: 0}">
+                  :center="{ lat: 0, lng: 0 }"
+                >
                   <GmapMarker
                     v-if="this.itemAddress"
                     label="★"
@@ -164,15 +182,16 @@
                   />
                 </GmapMap>
               </div>
-              <button class="google-btn-add-place close-watchMap" @click="watchMap = !watchMap">
-                    Salir
-                    <v-icon class color="grey accent-4">close</v-icon>
-                  </button>
+              <button
+                class="google-btn-add-place close-watchMap"
+                @click="watchMap = !watchMap"
+              >
+                Salir
+                <v-icon class color="grey accent-4">close</v-icon>
+              </button>
             </div>
 
- 
- 
-          <!-- END OF MAP FOR WATCH DATA -->
+            <!-- END OF MAP FOR WATCH DATA -->
           </v-dialog>
         </v-toolbar>
         <v-toolbar flat color="white">
@@ -199,14 +218,24 @@
             <td
               :class="{actived:selected == props.item.id}"
             >{{ moment(props.item.date).format('HH:mm') }}</td>-->
-            <td
-              :class="{actived:selected == props.item.id}"
-            >{{ shipping_companies.find(el => el.id === props.item.shipping_company_id ).name}}</td>
-            <td
-              :class="{actived:selected == props.item.id}"
-            >{{usuarios.find(el => el.id === props.item.worker_id).first_name}}</td>
+            <td :class="{ actived: selected == props.item.id }">
+              {{
+                shipping_companies.find(
+                  el => el.id === props.item.shipping_company_id
+                ).name
+              }}
+            </td>
+            <td :class="{ actived: selected == props.item.id }">
+              {{
+                usuarios.find(el => el.id === props.item.worker_id).first_name
+              }}
+            </td>
             <td>
-              <v-chip v-bind:color="estadoEntrega(props.item, 'color')" small text-color="white">
+              <v-chip
+                v-bind:color="estadoEntrega(props.item, 'color')"
+                small
+                text-color="white"
+              >
                 <v-avatar>
                   <v-icon>{{ estadoEntrega(props.item, "icono") }}</v-icon>
                 </v-avatar>
@@ -221,7 +250,8 @@
                 color="green darken-2"
                 class="mr-2"
                 @click="selectItem(props.item)"
-              >edit</v-icon>
+                >edit</v-icon
+              >
               <span>Editar</span>
             </v-tooltip>
             <!--               <v-tooltip bottom>
@@ -234,7 +264,12 @@
                 <span>Items</span>|
             </v-tooltip>-->
             <v-tooltip bottom>
-              <v-icon slot="activator" color="red darken-2" @click="deleteItem(props.item)">delete</v-icon>
+              <v-icon
+                slot="activator"
+                color="red darken-2"
+                @click="deleteItem(props.item)"
+                >delete</v-icon
+              >
               <span>Eliminar</span>
             </v-tooltip>
           </template>
@@ -256,19 +291,14 @@
         :top="isSuccess.y === 'top'"
         :vertical="isSuccess.mode === 'vertical'"
       >
-      {{ isSuccess.text }}
-      <v-btn
-        dark
-        text
-        @click="isSuccess.snackbar = false"
-      >
-        Cerrar
-      </v-btn>
-    </v-snackbar>
+        {{ isSuccess.text }}
+        <v-btn dark text @click="isSuccess.snackbar = false">
+          Cerrar
+        </v-btn>
+      </v-snackbar>
     </v-layout>
   </v-container>
 </template>
-
 
 <script>
 var moment = require("moment");
@@ -279,14 +309,15 @@ import axios, { nodeInstance } from "../axios.js";
 export default {
   components: { BzItems },
   data: () => ({
-    isSuccess:{
-        color: '',
-        mode: '',
-        snackbar: false,
-        text: '',
-        timeout: 5000,
-        x: null,
-        y: 'top'},
+    isSuccess: {
+      color: "",
+      mode: "",
+      snackbar: false,
+      text: "",
+      timeout: 5000,
+      x: null,
+      y: "top"
+    },
     showMap: false,
     watchMap: false,
     markers: [],
@@ -304,17 +335,15 @@ export default {
     dialog: false,
     selected: 0,
     itemAddress: [],
-    inputRulesSave:[
-      v => v.length 
-    ],
+    inputRulesSave: [v => v.length],
     inputRules: [
-      (v) => {
-        if(typeof(v) ==='string'){
-          return v.length < 1 && `*Este campo no puede estar vacío`
-        }else if(typeof(v) === 'number'){
-          return v < 1 && `*Este es obligatorio`
+      v => {
+        if (typeof v === "string") {
+          return v.length < 1 && `*Este campo no puede estar vacío`;
+        } else if (typeof v === "number") {
+          return v < 1 && `*Este es obligatorio`;
         }
-        }
+      }
     ],
     isValid: false,
     headers: [
@@ -376,18 +405,20 @@ export default {
   }),
   computed: {
     isDisable() {
-      if (this.editedItem.addreesse.length <= 1
-          || this.editedItem.address.length <= 1
-          || this.editedItem.worker_id <= 1
-          || this.editedItem.shipping_company_id < 1){
+      if (
+        this.editedItem.addreesse.length <= 1 ||
+        this.editedItem.address.length <= 1 ||
+        this.editedItem.worker_id <= 1 ||
+        this.editedItem.shipping_company_id < 1
+      ) {
         return !this.isValid;
-        }
+      }
     },
     formTitle() {
       return this.editedIndex === -1
         ? "Nueva recepción de paquetes"
         : "Modificar recepción de paquetes";
-    },
+    }
   },
   watch: {
     dialog(val) {
@@ -422,7 +453,7 @@ export default {
       this.markers.push({
         position: position
       });
-      this.place = null
+      this.place = null;
     },
     usePlace(place) {
       if (this.place) {
@@ -443,7 +474,6 @@ export default {
         let position = JSON.stringify(this.markers[0].position);
         this.editedItem.address = position;
       }
-
     },
     PrintThis(e) {
       //editedItem.shipping_company_id
@@ -480,7 +510,6 @@ export default {
             this.listas = [];
             this.listas = resp.data;
             console.log("packages >>>> ", resp.data);
-
           }
         })
         .catch(e => {
@@ -520,11 +549,11 @@ export default {
         });
     },
     selectItem(item) {
-      console.info(item.id)
-      console.info(item.address)
-      const getItemAddress = JSON.parse(item.address)
-      this.itemAddress = {lat:getItemAddress.lat,lng:getItemAddress.lng}
-      console.info(this.itemAddress)
+      console.info(item.id);
+      console.info(item.address);
+      const getItemAddress = JSON.parse(item.address);
+      this.itemAddress = { lat: getItemAddress.lat, lng: getItemAddress.lng };
+      console.info(this.itemAddress);
       this.selected = item.id;
       this.editedIndex = this.listas.indexOf(item);
       this.editedItem = Object.assign({}, item);
@@ -538,27 +567,27 @@ export default {
           .then(resp => {
             if (resp.status === 200) {
               this.initialize();
-              this.close()
+              this.close();
               this.isSuccess = {
-                color: 'success',
+                color: "success",
                 snackbar: true,
-                text: 'Eliminado con éxito!',
+                text: "Eliminado con éxito!",
                 timeout: 5000,
                 x: null,
-                y: 'top'
-              }
+                y: "top"
+              };
             }
           })
           .catch(e => {
             console.error(e);
             this.isSuccess = {
-                color: 'error',
-                snackbar: true,
-                text: 'No es posible eliminar',
-                timeout: 5000,
-                x: null,
-                y: 'top'
-              }
+              color: "error",
+              snackbar: true,
+              text: "No es posible eliminar",
+              timeout: 5000,
+              x: null,
+              y: "top"
+            };
           });
       }
     },
@@ -567,13 +596,13 @@ export default {
       this.dialog = false;
       this.editedItem = Object.assign({}, this.defaultItem);
       this.editedIndex = -1;
-      this.markers = []
-      this.itemAddress = []
+      this.markers = [];
+      this.itemAddress = [];
     },
     save(item) {
       console.log("save >>>", item);
       if (item.hasOwnProperty("id")) {
-        console.info(item, 'here to edit')
+        console.info(item, "here to edit");
         nodeInstance
           .put("/package_reception/", {
             id: item.id,
@@ -586,28 +615,28 @@ export default {
             if (resp.status === 200) {
               this.initialize();
               this.isSuccess = {
-                color: 'success',
+                color: "success",
                 snackbar: true,
-                text: 'Editado con éxito!',
+                text: "Editado con éxito!",
                 timeout: 5000,
                 x: null,
-                y: 'top'
-              }
+                y: "top"
+              };
               this.close();
             }
           })
           .catch(e => {
             console.error(e);
             this.isSuccess = {
-                color: 'error',
-                snackbar: true,
-                text: 'No es posible editar',
-                timeout: 5000,
-                x: null,
-                y: 'top'
-              }
-          return
-          })
+              color: "error",
+              snackbar: true,
+              text: "No es posible editar",
+              timeout: 5000,
+              x: null,
+              y: "top"
+            };
+            return;
+          });
       } else {
         console.info(item, "here to save");
         nodeInstance
@@ -616,26 +645,26 @@ export default {
             if (resp.status === 200) {
               this.initialize();
               this.isSuccess = {
-                color: 'success',
+                color: "success",
                 snackbar: true,
-                text: 'Registrado con éxito!',
+                text: "Registrado con éxito!",
                 timeout: 5000,
                 x: null,
-                y: 'top'
-              }
+                y: "top"
+              };
               this.close();
             }
           })
           .catch(e => {
             console.error(e);
             this.isSuccess = {
-                color: 'error',
-                snackbar: true,
-                text: 'No es posible registrar',
-                timeout: 5000,
-                x: null,
-                y: 'top'
-              }
+              color: "error",
+              snackbar: true,
+              text: "No es posible registrar",
+              timeout: 5000,
+              x: null,
+              y: "top"
+            };
           });
       }
     }
@@ -644,7 +673,6 @@ export default {
 </script>
 
 <style>
-
 .actived {
   background: #f7f0b2;
 }
@@ -692,7 +720,7 @@ export default {
   color: #00c853 !important;
 }
 
-.close-watchMap{
+.close-watchMap {
   margin-top: 1em;
 }
 </style>
