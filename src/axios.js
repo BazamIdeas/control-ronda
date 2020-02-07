@@ -2,7 +2,7 @@ import axios from "axios";
 import prod from "../config/prod.env";
 import dev from "../config/dev.env";
 const env = process.env.NODE_ENV === "development" ? dev : prod;
-;
+
 var headers = {};
 const token = localStorage.getItem("bazam-token-control");
 
