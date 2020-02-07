@@ -329,7 +329,8 @@
 <script>
 import BzUsuario from "./usuario.vue";
 import papaparse from "papaparse";
-import sender from "axios";
+ 
+import { nodeInstance } from '../axios';
 export default {
   components: { BzUsuario },
   data: () => ({
@@ -556,7 +557,6 @@ export default {
       const _this = this;
       var headers = {};
       var token = localStorage.getItem("bazam-token-control");
-      var route = process.env.API_URL;
       var condos_id = localStorage.getItem("bazam-condo-id");
 
       if (token !== null && token !== undefined && token !== "") {
@@ -568,8 +568,8 @@ export default {
             header: true,
             complete: async function(results) {
               console.log("Finisheda:", results.data);
-              sender
-                .post(route + "/residentes/importar", results.data, {
+              nodeInstance
+                .post("/residentes/importar", results.data, {
                   headers: {
                     Authorization: "Bearer " + token,
                     condos_id
