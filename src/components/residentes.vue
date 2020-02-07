@@ -87,7 +87,7 @@
                               small
                               class="animation-grow"
                             >
-                              {{ name }} - [ {{ (size / 100).toFixed(2) }} Kb ]
+                              {{ name.substring(0,28) }} - [ {{ (size / 100).toFixed(2) }} Kb ]
                             </v-chip>
                             
                           </template>
@@ -589,6 +589,7 @@ export default {
                       y: "top"
                     };
                   }
+                  _this.initialize()
                 })
                 .catch(err => {
                   console.log("the error >>>>", err);
