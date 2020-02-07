@@ -10,12 +10,12 @@ import "vuetify/dist/vuetify.min.css";
 import config from "../config/dev.env";
 import * as VueGoogleMaps from "vue2-google-maps";
 
-console.log(config.GOOGLE_API)
+//console.log(config.GOOGLE_API)
 const load = {
   key: `${config.GOOGLE_API}`,
   libraries: "places"
 }
-console.log(load)
+//console.log(load)
 Vue.use(VueGoogleMaps, {
   load: load,
   installComponents: true

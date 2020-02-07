@@ -17,7 +17,7 @@
 
           <v-dialog v-model="dialogCsv" max-width="500px">
             <v-btn icon slot="activator">
-              <v-icon>home</v-icon>
+              <v-icon>playlist_add</v-icon>
             </v-btn>
             <v-card>
               <v-card-title>
@@ -30,13 +30,72 @@
                     <v-flex xs12>
                       <!--                       <v-text-field @change="readCsvFile()"  ref="inputFiles" type="file" label="csv"></v-text-field>
                       -->
-                      <input
+                      <!-- <input
                         type="file"
                         @change="readCsvFile"
                         id="inputFiles"
                         ref="inputFiles"
                         label="csv"
-                      />
+                      /> -->
+
+                      <!-- FLADDEV | start -->
+
+                      <v-container grid-list-lg>
+                        <v-text-field
+                          label="Selecciona tu archivo .csv"
+                          @click="onPickFile"
+                          v-model="fileName"
+                          prepend-icon="attach_file"
+                        ></v-text-field>
+                        <!-- Hidden -->
+                        <input
+                          type="file"
+                          style="display: none"
+                          ref="fileInput"
+                          accept=".csv"
+                          @change="onFilePicked"
+                          :rules="fileRules"
+                          id="fileInput"
+                        />
+                        <v-btn
+                          :disabled="fileName.length < 1"
+                          color="green accent-3"
+                          @click="onUploadSelectedFileClick"
+                        >
+                          <v-icon
+                            color="white"
+                            v-if="this.isReady">
+                              playlist_add_check
+                          </v-icon>
+                          <v-progress-circular
+                            v-if="loading"
+                            :rotate="360"
+                            :size="28"
+                            :width="4"
+                            :value="value"
+                            color="white"
+                            class="v-loader"
+                          >
+                            {{ value }}
+                          </v-progress-circular>
+                          <template v-slot:selection="{ name }">
+                            <v-chip
+                              v-show="this.name"
+                              color="green accent-4"
+                              dark
+                              label
+                              small
+                              class="animation-grow"
+                            >
+                              {{ name.substring(0,28) }} - [ {{ (size / 100).toFixed(2) }} Kb ]
+                            </v-chip>
+                            
+                          </template>
+                          <v-icon color="white">cloud_upload</v-icon>
+                        </v-btn>
+                      </v-container>
+
+                      <!-- FLADDEV | end -->
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -44,13 +103,27 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" flat @click.native="closeDialogCsv">Cancelar</v-btn>
-                <v-btn color="blue darken-1" flat @click.native="save">Guardar</v-btn>
+                <v-btn color="blue darken-1" flat @click.native="closeDialogCsv"
+                  >Cancelar</v-btn
+                >
+                <v-btn
+                  color="blue darken-1"
+                  flat
+                  @click.native="
+                    save;
+                    readCsvFile();
+                    closeDialogCsv();
+                  "
+                  :disabled="this.isReady == false"
+                  >Guardar</v-btn
+                >
               </v-card-actions>
             </v-card>
           </v-dialog>
 
           <!--  RESIDENTS DIALOG END-->
+
+          
 
           <v-dialog v-model="dialog" max-width="500px">
             <v-btn icon slot="activator">
@@ -72,7 +145,11 @@
                       ></v-text-field>
                     </v-flex>
                     <v-flex xs6>
-                      <v-text-field v-model="editedItem.rut" label="RUT" :rules="[rules.required]"></v-text-field>
+                      <v-text-field
+                        v-model="editedItem.rut"
+                        label="RUT"
+                        :rules="[rules.required]"
+                      ></v-text-field>
                     </v-flex>
                     <v-flex xs6>
                       <v-text-field
@@ -110,7 +187,10 @@
                       ></v-text-field>
                     </v-flex>
                     <v-flex xs6>
-                      <v-switch label="Comité" v-model="editedItem.committee"></v-switch>
+                      <v-switch
+                        label="Comité"
+                        v-model="editedItem.committee"
+                      ></v-switch>
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -118,13 +198,16 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" flat @click.native="close">Cancelar</v-btn>
+                <v-btn color="blue darken-1" flat @click.native="close"
+                  >Cancelar</v-btn
+                >
                 <v-btn
                   color="blue darken-1"
                   flat
                   @click.native="save"
                   v-if="editedItem.password"
-                >Guardar</v-btn>
+                  >Guardar</v-btn
+                >
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -153,10 +236,16 @@
             <td>{{ props.item.departament }}</td>
             <td>{{ props.item.percentage }}%</td>
             <td class="justify-center px-0">
-              <v-switch v-model="props.item.approved" @change="changeStatus(props.item)"></v-switch>
+              <v-switch
+                v-model="props.item.approved"
+                @change="changeStatus(props.item)"
+              ></v-switch>
             </td>
             <td class="justify-center px-0">
-              <v-switch v-model="props.item.committee" @change="changeStatus(props.item)"></v-switch>
+              <v-switch
+                v-model="props.item.committee"
+                @change="changeStatus(props.item)"
+              ></v-switch>
             </td>
             <td class="justify-center px-0">
               <!-- <v-tooltip bottom>
@@ -169,7 +258,8 @@
                   color="green darken-2"
                   class="mr-2"
                   @click="editItem(props.item)"
-                >edit</v-icon>
+                  >edit</v-icon
+                >
                 <span>Editar</span>
               </v-tooltip>
               <!-- <v-tooltip bottom>
@@ -177,7 +267,12 @@
               <span>Permisos</span>
               </v-tooltip>-->
               <v-tooltip bottom>
-                <v-icon slot="activator" color="red darken-2" @click="deleteItem(props.item)">delete</v-icon>
+                <v-icon
+                  slot="activator"
+                  color="red darken-2"
+                  @click="deleteItem(props.item)"
+                  >delete</v-icon
+                >
                 <span>Eliminar</span>
               </v-tooltip>
             </td>
@@ -207,10 +302,29 @@
         <bz-usuario v-if= "usuario" v-bind:usuario="usuario"> </bz-usuario>
       </v-card>
       </v-dialog>-->
+
+      <!-- FLADDEV - START -->
+
+      <!-- FLADDEV - END -->
     </v-layout>
+    <v-snackbar
+              v-model="isSuccess.snackbar"
+              :bottom="isSuccess.y === 'bottom'"
+              :color="isSuccess.color"
+              :left="isSuccess.x === 'left'"
+              :multi-line="isSuccess.mode === 'multi-line'"
+              :right="isSuccess.x === 'right'"
+              :timeout="isSuccess.timeout"
+              :top="isSuccess.y === 'top'"
+              :vertical="isSuccess.mode === 'vertical'"
+            >
+              {{ isSuccess.text }}
+              <v-btn dark text @click="isSuccess.snackbar = false">
+                Cerrar
+              </v-btn>
+            </v-snackbar>
   </v-container>
 </template>
-
 
 <script>
 import BzUsuario from "./usuario.vue";
@@ -224,6 +338,33 @@ export default {
     dialog: false,
     dialogCsv: false,
     fileCsv: [],
+    files: [],
+    expand:false,
+
+    isSuccess: {
+      color: "",
+      mode: "",
+      snackbar: false,
+      text: "",
+      timeout: 5000,
+      x: null,
+      y: "top"
+    },
+
+    fileName: "",
+    url: "",
+    fileObject: null,
+    name: "",
+    size: "",
+    type: "",
+    isReady: false,
+    loading: false,
+
+    fileRules: [f => console.info(f)],
+
+    interval: {},
+    value: 0,
+
     usuario: "",
     selected: 0,
     ficha: false,
@@ -337,38 +478,116 @@ export default {
           console.log(e);
         });
     },
+    // FLADDEV - START
+
+    onPickFile() {
+      this.$refs.fileInput.click();
+    },
+
+    onFilePicked(event) {
+      const files = event.target.files;
+      if (files[0] !== undefined) {
+        this.fileName = files[0].name;
+        // Check validity of file
+        if (this.fileName.lastIndexOf(".") <= 0) {
+          return;
+        }
+        // If valid, continue
+        const fr = new FileReader();
+        fr.readAsDataURL(files[0]);
+        fr.addEventListener("load", () => {
+          this.url = fr.result;
+          this.fileObject = files[0]; // this is an file that can be sent to server...
+          console.info(this.fileObject);
+        });
+      } else {
+        this.fileName = "";
+        this.fileObject = null;
+        this.url = "";
+      }
+    },
+
+    onUploadSelectedFileClick() {
+      this.loading = true;
+
+      this.interval = setInterval(() => {
+        if (this.value === 100) {
+          this.loading = false;
+          this.isReady = true;
+          clearInterval(this.interval);
+          return (this.value = 0);
+        }
+        this.value += 25;
+      }, 850);
+
+      console.log(this.fileObject);
+      // A file is not chosen!
+      if (!this.fileObject) {
+        alert("No file!!");
+      }
+      // DO YOUR JOB HERE with fileObjectToUpload
+      // https://developer.mozilla.org/en-US/docs/Web/API/File/File
+      this.name = this.fileObject.name;
+      this.size = this.fileObject.size;
+      this.type = this.fileObject.type;
+      this.lastModifiedDate = this.fileObject.lastModifiedDate;
+      // DO YOUR JOB HERE with fileObjectToUpload
+      //this.loading = false;
+    },
+
+    // FLADDEV - END
 
     readCsvFile() {
-      this.files = this.$refs.inputFiles.files[0];
+      this.files = this.$refs.fileInput.files[0];
       var csv = {};
-
+      const _this = this;
       var headers = {};
       var token = localStorage.getItem("bazam-token-control");
       var route = process.env.API_URL;
-      var condos_id = localStorage.getItem('bazam-condo-id');
+      var condos_id = localStorage.getItem("bazam-condo-id");
 
       if (token !== null && token !== undefined && token !== "") {
         headers["Authorization"] = "Bearer " + token;
 
         papaparse.parse(
           this.files,
-
           {
             header: true,
             complete: async function(results) {
               console.log("Finisheda:", results.data);
               sender
-                .post(route + '/residentes/importar', results.data,{
-                    headers: {
+                .post(route + "/residentes/importar", results.data, {
+                  headers: {
                     Authorization: "Bearer " + token,
-                    condos_id  
+                    condos_id
                   }
                 })
                 .then(result => {
                   console.log("the result is =>>>>", result);
+                  if (result.status === 200) {
+                    console.info('Here is a snackbar!')
+                    console.info(_this)
+                    _this.isSuccess = {
+                      color: "success",
+                      snackbar: true,
+                      text: "Registrado con éxito!",
+                      timeout: 5000,
+                      x: null,
+                      y: "top"
+                    };
+                    _this.initialize()
+                  }
                 })
                 .catch(err => {
                   console.log("the error >>>>", err);
+                  _this.isSuccess = {
+                    color: "error",
+                    snackbar: true,
+                    text: "No es posible registrar",
+                    timeout: 5000,
+                    x: null,
+                    y: "top"
+                  };
                 });
             }
           }
@@ -376,7 +595,46 @@ export default {
       } else {
         alert("SESIÓN NO VALIDA");
       }
+
+      // this.files = this.$refs.inputFiles.files[0];
+      // var csv = {};
+
+      // var headers = {};
+      // var token = localStorage.getItem("bazam-token-control");
+      // var route = process.env.API_URL;
+      // var condos_id = localStorage.getItem('bazam-condo-id');
+
+      // if (token !== null && token !== undefined && token !== "") {
+      //   headers["Authorization"] = "Bearer " + token;
+
+      //   papaparse.parse(
+      //     this.files,
+
+      //     {
+      //       header: true,
+      //       complete: async function(results) {
+      //         console.log("Finisheda:", results.data);
+      //         sender
+      //           .post(route + '/residentes/importar', results.data,{
+      //               headers: {
+      //               Authorization: "Bearer " + token,
+      //               condos_id
+      //             }
+      //           })
+      //           .then(result => {
+      //             console.log("the result is =>>>>", result);
+      //           })
+      //           .catch(err => {
+      //             console.log("the error >>>>", err);
+      //           });
+      //       }
+      //     }
+      //   );
+      // } else {
+      //   alert("SESIÓN NO VALIDA");
+      // }
     },
+
     editItem(item) {
       this.selected = item.id;
       this.editedIndex = this.residentes.indexOf(item);
@@ -412,11 +670,17 @@ export default {
         this.editedIndex = -1;
       }, 1500);
     },
+
     closeDialogCsv() {
       this.selected = 0;
       this.dialogCsv = false;
-      document.getElementById('inputFiles').value = ''
-      
+      document.getElementById("fileInput").value = "";
+      this.fileName = "";
+      this.fileObject = null;
+      this.url = "";
+      this.name = "";
+      this.isReady = false;
+
       /*         setTimeout(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
@@ -430,8 +694,8 @@ export default {
             alert("El usuario esta en uso")         
           }
         })
-      }, */
-   
+    }, */
+
     save() {
       this.$axios
         .get("/residents/email/" + this.editedItem.email)
@@ -525,6 +789,7 @@ export default {
           console.log(e);
         });
     },
+
     aprobar(item) {
       this.$axios
         .patch("/workers/" + item.id + "/approve")
@@ -550,5 +815,9 @@ export default {
 <style>
 .actived {
   background: #f7f0b2;
+}
+.v-loader {
+  align-self: center;
+  font-size: 0.8em;
 }
 </style>
