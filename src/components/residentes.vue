@@ -87,7 +87,7 @@
                               small
                               class="animation-grow"
                             >
-                              {{ name }} - [ {{ (size / 100).toFixed(2) }} Kb ]
+                              {{ name.substring(0,28) }} - [ {{ (size / 100).toFixed(2) }} Kb ]
                             </v-chip>
                             
                           </template>
@@ -458,20 +458,6 @@ export default {
     }
   },
 
-  beforeDestroy() {
-    clearInterval(this.interval);
-  },
-
-  // mounted() {
-  //   this.interval = setInterval(() => {
-  //     if (this.value === 100) {
-  //       this.loading = false;
-  //       return (this.value = 0);
-  //     }
-  //     this.value += 25;
-  //   }, 800);
-  // },
-
   created() {
     this.initialize();
   },
@@ -498,6 +484,7 @@ export default {
     onPickFile() {
       this.$refs.fileInput.click();
     },
+
     onFilePicked(event) {
       const files = event.target.files;
       if (files[0] !== undefined) {
@@ -588,6 +575,7 @@ export default {
                       x: null,
                       y: "top"
                     };
+                    _this.initialize()
                   }
                 })
                 .catch(err => {
