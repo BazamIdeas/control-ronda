@@ -8,6 +8,8 @@ yarn-error.log*
 /config
 config
 build.zip
+dist.zip
+config.zip
 # Editor directories and files
 .idea
 .vscode
