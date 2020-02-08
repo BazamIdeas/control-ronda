@@ -8,11 +8,12 @@ import Vuetify from "vuetify";
 import store from "./store";
 import "vuetify/dist/vuetify.min.css";
 import config from "../config/dev.env";
+import env from "../config/env";
 import * as VueGoogleMaps from "vue2-google-maps";
 
 //console.log(config.GOOGLE_API)
 const load = {
-  key: `${config.GOOGLE_API}`,
+  key: env.GOOGLE_API,
   libraries: "places"
 }
 //console.log(load)
