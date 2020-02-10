@@ -12,8 +12,7 @@ var instance = axios.create({
   baseURL: env.API_BASE,
   headers: headers
 });
-console.log(env)
-
+console.log(env.API_URL);
 export const nodeInstance = axios.create({
   baseURL: env.API_URL,
   headers: headers
