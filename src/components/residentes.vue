@@ -596,7 +596,7 @@ export default {
                   _this.isSuccess = {
                     color: "error",
                     snackbar: true,
-                    text: "No es posible registrar",
+                    text: "No es posible registrar o ya existen todos los registros en la base de datos",
                     timeout: 5000,
                     x: null,
                     y: "top"
