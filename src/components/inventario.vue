@@ -1,3 +1,13 @@
+ 
+<!-- 
+resolucion de hoy
+ mejor evitarse crear otra logica de expansion panel. 
+ mejor hacer que cuando existan incidencias de los items no se muestre el boton de eventos
+ en cambio, que cuando no hayan incidencias se muestre el boton de eventos
+ asi se expanderan los 2 siempre, pero solo se visualizara el que tenga data
+
+ TODO: hacer la logica de insercion de eventos al expanded panel, agregar un loader o efecto.
+-->
 <template>
   <v-container grid-list-md mt-5>
     <v-toolbar absolute>
@@ -117,10 +127,20 @@
                 >
                   <v-icon>camera_alt</v-icon>
                 </v-chip>
+                <v-chip
+                  color="red"
+                  class="rounded-expand-button"
+                  text-color="white"
+                  small
+                  @click="GetShiftChangeEvents(props)"
+                >
+                  <v-icon>event</v-icon>
+                </v-chip>
               </td>
             </template>
             <template slot="expand" slot-scope="props">
-              <v-card flat>
+              <div>
+                              <v-card flat>
                 <v-list>
                   <v-list-tile
                     v-for="ocurrencia in props.item.occurrences"
@@ -138,7 +158,11 @@
                   </v-list-tile>
                 </v-list>
               </v-card>
+                    <v-card flat> DATA HERE</v-card>
+              </div>
             </template>
+
+
             <template slot="no-data">
               <h3>No hay registros en esta fecha</h3>
               <v-btn small color="primary" @click="initialize">Recargar</v-btn>
@@ -262,6 +286,21 @@ export default {
   },
 
   methods: {
+    GetShiftChangeEvents(props) {
+      console.log("props >>>>, ", props);
+      props.item.aly = "funciona esto";
+      props.expand2 = true
+      if (props.expanded) {
+        console.log("vino aca 1 ", props.expanded);
+        props.expanded = !props.expanded;
+        setTimeout(() => {
+          props.expanded = !props.expanded;
+        }, 700);
+      } else {
+        console.log("vino aca 2 ", props.expanded);
+        props.expanded = !props.expanded;
+      }
+    },
     initialize() {
       let peticion = {
         diario: moment(this.fecha, "DD-MM-YYYY").format("YYYY-MM-DD"),
@@ -381,5 +420,9 @@ export default {
 <style>
 .actived {
   background: #f7f0b2;
+}
+.rounded-expand-button .v-chip__content {
+  padding: 0.3rem !important;
+  cursor: pointer;
 }
 </style>

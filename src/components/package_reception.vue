@@ -40,28 +40,25 @@
                                 : 'brown-lighten-5'
                             "
                             :rules="inputRules"
-                            >where_to_vote</v-icon
-                          >
+                          >where_to_vote</v-icon>
                           {{
-                            editedItem.address
-                              ? "Ya ha seleccionado ubicación"
-                              : "por favor, seleccione una ubicación"
+                          editedItem.address
+                          ? "Ya ha seleccionado ubicación"
+                          : "por favor, seleccione una ubicación"
                           }}
-                          <small style="color:tomato"
-                            >{{
-                              editedItem.address.length <= 5
-                                ? "*Este campo es obligatorio"
-                                : ""
+                          <small
+                            style="color:tomato"
+                          >
+                            {{
+                            editedItem.address.length <= 5
+                            ? "*Este campo es obligatorio"
+                            : ""
                             }}
                           </small>
                         </p>
 
-                        <button
-                          class="google-btn-add-place"
-                          @click="watchMap = !watchMap"
-                        >
-                          <v-icon color="green accent-4">map</v-icon>
-                          Observar ubicación
+                        <button class="google-btn-add-place" @click="watchMap = !watchMap">
+                          <v-icon color="green accent-4">map</v-icon>Observar ubicación
                         </button>
                       </v-flex>
                       <v-select
@@ -99,16 +96,13 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" flat @click.native="close"
-                  >Cancelar</v-btn
-                >
+                <v-btn color="blue darken-1" flat @click.native="close">Cancelar</v-btn>
                 <v-btn
                   color="blue darken-1"
                   flat
                   @click.native="save(editedItem)"
                   :disabled="isDisable"
-                  >Guardar</v-btn
-                >
+                >Guardar</v-btn>
               </v-card-actions>
             </v-card>
             <div class="absolute-map-container" v-if="showMap">
@@ -131,11 +125,7 @@
                     :key="index"
                     :position="marker.position"
                   />
-                  <GmapMarker
-                    v-if="this.itemAddress"
-                    label="★"
-                    :position="this.itemAddress"
-                  />
+                  <GmapMarker v-if="this.itemAddress" label="★" :position="this.itemAddress" />
                 </GmapMap>
                 <br />
 
@@ -175,17 +165,10 @@
                   :zoom="1"
                   :center="{ lat: 0, lng: 0 }"
                 >
-                  <GmapMarker
-                    v-if="this.itemAddress"
-                    label="★"
-                    :position="itemAddress"
-                  />
+                  <GmapMarker v-if="this.itemAddress" label="★" :position="itemAddress" />
                 </GmapMap>
               </div>
-              <button
-                class="google-btn-add-place close-watchMap"
-                @click="watchMap = !watchMap"
-              >
+              <button class="google-btn-add-place close-watchMap" @click="watchMap = !watchMap">
                 Salir
                 <v-icon class color="grey accent-4">close</v-icon>
               </button>
@@ -220,22 +203,18 @@
             >{{ moment(props.item.date).format('HH:mm') }}</td>-->
             <td :class="{ actived: selected == props.item.id }">
               {{
-                shipping_companies.find(
-                  el => el.id === props.item.shipping_company_id
-                ).name
+              shipping_companies.find(
+              el => el.id === props.item.shipping_company_id
+              ).name
               }}
             </td>
             <td :class="{ actived: selected == props.item.id }">
               {{
-                usuarios.find(el => el.id === props.item.worker_id).first_name
-              }}
-            </td>
+                getName(props.item.worker_id)
+              }} 
+             </td>
             <td>
-              <v-chip
-                v-bind:color="estadoEntrega(props.item, 'color')"
-                small
-                text-color="white"
-              >
+              <v-chip v-bind:color="estadoEntrega(props.item, 'color')" small text-color="white">
                 <v-avatar>
                   <v-icon>{{ estadoEntrega(props.item, "icono") }}</v-icon>
                 </v-avatar>
@@ -250,8 +229,7 @@
                 color="green darken-2"
                 class="mr-2"
                 @click="selectItem(props.item)"
-                >edit</v-icon
-              >
+              >edit</v-icon>
               <span>Editar</span>
             </v-tooltip>
             <!--               <v-tooltip bottom>
@@ -264,12 +242,7 @@
                 <span>Items</span>|
             </v-tooltip>-->
             <v-tooltip bottom>
-              <v-icon
-                slot="activator"
-                color="red darken-2"
-                @click="deleteItem(props.item)"
-                >delete</v-icon
-              >
+              <v-icon slot="activator" color="red darken-2" @click="deleteItem(props.item)">delete</v-icon>
               <span>Eliminar</span>
             </v-tooltip>
           </template>
@@ -292,9 +265,7 @@
         :vertical="isSuccess.mode === 'vertical'"
       >
         {{ isSuccess.text }}
-        <v-btn dark text @click="isSuccess.snackbar = false">
-          Cerrar
-        </v-btn>
+        <v-btn dark text @click="isSuccess.snackbar = false">Cerrar</v-btn>
       </v-snackbar>
     </v-layout>
   </v-container>
@@ -429,6 +400,11 @@ export default {
     this.initialize();
   },
   methods: {
+    getName(id){
+      let user =  this.usuarios.find(el => el.id === id)
+      //console.log(user.first_name)
+      return user || "no se pudo obtener"
+    },
     setPlace(place) {
       //console.log("place >>>", place);
       /*     this.place = place; */
@@ -481,8 +457,8 @@ export default {
     },
     async initialize() {
       await this.getUsuarios();
-      await this.getShippingCompanies();
-      await this.getPackages();
+      // await this.getShippingCompanies();
+      // await this.getPackages();
     },
     estadoEntrega(item, tipo) {
       //console.info(item,tipo)
@@ -527,6 +503,8 @@ export default {
                 workers.push(element.worker);
               });
               this.usuarios = workers;
+              console.log(this.usuarios)
+              this.getShippingCompanies();
             } else {
               this.users = [];
             }
@@ -542,6 +520,7 @@ export default {
         .then(resp => {
           if (resp.status === 200) {
             this.shipping_companies = resp.data;
+            this.getPackages();
           }
         })
         .catch(e => {
