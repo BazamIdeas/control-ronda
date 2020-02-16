@@ -117,7 +117,7 @@ resolucion de hoy
                   small
                   text-color="white"
                   v-if="props.item.occurrences"
-                  @click="props.expanded = !props.expanded"
+                  @click="GetShiftChangeEvents(props)"
                 >!</v-chip>
                 <v-chip
                   color="white"
@@ -131,6 +131,7 @@ resolucion de hoy
                   color="red"
                   class="rounded-expand-button"
                   text-color="white"
+                  v-if="!props.item.occurrences"
                   small
                   @click="GetShiftChangeEvents(props)"
                 >
@@ -140,28 +141,67 @@ resolucion de hoy
             </template>
             <template slot="expand" slot-scope="props">
               <div>
-                              <v-card flat>
-                <v-list>
-                  <v-list-tile
-                    v-for="ocurrencia in props.item.occurrences"
-                    :key="ocurrencia.id"
-                    avatar
-                  >
-                    <v-list-tile-content>
-                      <v-list-tile-title v-html="ocurrencia.objects.name"></v-list-tile-title>
-                      <v-list-tile-sub-title v-html="ocurrencia.comment"></v-list-tile-sub-title>
-                    </v-list-tile-content>
+                <v-card flat>
+                  <v-list>
+                    <v-list-tile
+                      v-for="ocurrencia in props.item.occurrences"
+                      :key="ocurrencia.id"
+                      avatar
+                    >
+                      <v-list-tile-content>
+                        <v-list-tile-title v-html="ocurrencia.objects.name"></v-list-tile-title>
+                        <v-list-tile-sub-title v-html="ocurrencia.comment"></v-list-tile-sub-title>
+                      </v-list-tile-content>
 
-                    <v-list-tile-action>
-                      <v-btn small color="primary" @click="getComentarios(ocurrencia)">Detalles</v-btn>
-                    </v-list-tile-action>
-                  </v-list-tile>
-                </v-list>
-              </v-card>
-                    <v-card flat> DATA HERE</v-card>
+                      <v-list-tile-action>
+                        <v-btn small color="primary" @click="getComentarios(ocurrencia)">Detalles</v-btn>
+                      </v-list-tile-action>
+                    </v-list-tile>
+                  </v-list>
+                </v-card>
+                <v-container fluid grid-list-md>
+                  <h1 v-if="eventsData.length > 0">Eventos del turno</h1>
+                  
+                  <v-layout row wrap>
+                    <v-flex v-for="event in eventsData" :key="event.id">
+                      <v-card>
+                        <v-img
+                          v-if="event.image_uuid"
+                          :src="filesUrl+event.image_uuid"
+                          max-height="500px"
+                        >
+                          <v-container fill-height fluid pa-2>
+                            <v-layout fill-height>
+                              <v-flex xs12 align-end flexbox>
+                                <v-chip label color="brown darken-1" text-color="white">
+                                  <v-icon left>label</v-icon>
+                                  {{ GetCategoryName(event.category_id)}}
+                                </v-chip>
+                              </v-flex>
+                            </v-layout>
+                          </v-container>
+                        </v-img>
+
+                        <v-card-title primary-title>
+                          <div>
+                            <v-chip
+                              v-if="!event.image_uuid"
+                              label
+                              color="brown darken-1"
+                              text-color="white"
+                            >
+                              <v-icon left>label</v-icon>
+                              {{ GetCategoryName(event.category_id)}}
+                            </v-chip>
+                            <h3 class="mb-0" v-text="event.comment">Kangaroo Valley Safari</h3>
+                          </div>
+                        </v-card-title>
+                      </v-card>
+                    </v-flex>
+                  </v-layout>
+                </v-container>
               </div>
             </template>
-
 
             <template slot="no-data">
               <h3>No hay registros en esta fecha</h3>
@@ -190,6 +230,7 @@ resolucion de hoy
 
 <script>
 import BzOcurrencia from "./ocurrencia.vue";
+import { nodeInstance } from "../axios";
 var moment = require("moment");
 var jsPDF = require("jspdf");
 let meses = new Array(
@@ -214,10 +255,13 @@ moment.locale("es");
 export default {
   components: { BzOcurrencia },
   data: () => ({
+    filesUrl: "http://localhost:3000/files/",
     moment: moment,
     expand: false,
     fechaActual: moment().format("DD-MM-YYYY"),
     search: "",
+    eventsData: [],
+    eventsCategories: [],
     menu: false,
     menu2: false,
     date: null,
@@ -286,20 +330,37 @@ export default {
   },
 
   methods: {
+    GetCategoryName(id = undefined) {
+      if (id) {
+        let category = this.eventsCategories.find(el => el.id == id);
+        return category.name;
+      } else {
+        return "No se pudo obtener";
+      }
+    },
     GetShiftChangeEvents(props) {
       console.log("props >>>>, ", props);
-      props.item.aly = "funciona esto";
-      props.expand2 = true
-      if (props.expanded) {
-        console.log("vino aca 1 ", props.expanded);
-        props.expanded = !props.expanded;
-        setTimeout(() => {
-          props.expanded = !props.expanded;
-        }, 700);
-      } else {
-        console.log("vino aca 2 ", props.expanded);
-        props.expanded = !props.expanded;
-      }
+      this.eventsData = [];
+      props.expanded = !props.expanded;
+      nodeInstance
+        .get("/event_category/")
+        .then(resp => {
+          if (resp.status === 200) {
+            this.eventsCategories = resp.data;
+            nodeInstance
+              .get("/shift_change/events/" + props.item.id)
+              .then(result => {
+                this.eventsData = result.data;
+                console.log(result);
+              })
+              .catch(err => {
+                console.error(err);
+              });
+          }
+        })
+        .catch(e => {
+          console.error(e);
+        });
     },
     initialize() {
       let peticion = {

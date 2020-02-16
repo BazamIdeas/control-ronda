@@ -403,7 +403,7 @@ export default {
     getName(id){
       let user =  this.usuarios.find(el => el.id === id)
       //console.log(user.first_name)
-      return user || "no se pudo obtener"
+      return user.first_name || "no se pudo obtener el nombre"
     },
     setPlace(place) {
       //console.log("place >>>", place);
