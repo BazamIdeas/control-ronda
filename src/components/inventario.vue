@@ -1,13 +1,4 @@
- 
-<!-- 
-resolucion de hoy
- mejor evitarse crear otra logica de expansion panel. 
- mejor hacer que cuando existan incidencias de los items no se muestre el boton de eventos
- en cambio, que cuando no hayan incidencias se muestre el boton de eventos
- asi se expanderan los 2 siempre, pero solo se visualizara el que tenga data
 
- TODO: hacer la logica de insercion de eventos al expanded panel, agregar un loader o efecto.
--->
 <template>
   <v-container grid-list-md mt-5>
     <v-toolbar absolute>
@@ -161,7 +152,7 @@ resolucion de hoy
                 </v-card>
                 <v-container fluid grid-list-md>
                   <h1 v-if="eventsData.length > 0">Eventos del turno</h1>
-                  
+                  <h1 v-if="eventsData.length <= 0">No se encontraron eventos</h1>
                   <v-layout row wrap>
                     <v-flex v-for="event in eventsData" :key="event.id">
                       <v-card>
@@ -231,6 +222,7 @@ resolucion de hoy
 <script>
 import BzOcurrencia from "./ocurrencia.vue";
 import { nodeInstance } from "../axios";
+import { API_URL } from "../../config/env";
 var moment = require("moment");
 var jsPDF = require("jspdf");
 let meses = new Array(
@@ -255,7 +247,7 @@ moment.locale("es");
 export default {
   components: { BzOcurrencia },
   data: () => ({
-    filesUrl: "http://localhost:3000/files/",
+    filesUrl: `${API_URL}files/`,
     moment: moment,
     expand: false,
     fechaActual: moment().format("DD-MM-YYYY"),
@@ -351,15 +343,15 @@ export default {
               .get("/shift_change/events/" + props.item.id)
               .then(result => {
                 this.eventsData = result.data;
-                console.log(result);
+                console.log("activo result");
               })
               .catch(err => {
-                console.error(err);
+                //console.error("GetShiftChangeEvents error > events ,", err);
               });
           }
         })
-        .catch(e => {
-          console.error(e);
+        .catch(err => {
+          //console.error("GetShiftChangeEvents error category events > ,", err);
         });
     },
     initialize() {
