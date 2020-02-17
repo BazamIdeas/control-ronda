@@ -252,20 +252,22 @@ export default {
       this.selected = item.id;
       this.itemsLista = item;
       // ------ testing change the address data type
-      console.info(item);
-      console.info(this.itemsLista);
 
-      this.itemsLista.items.map(({ address }, index) => {
-        console.info(address);
-        try {
-          const objetifyAddress = JSON.parse(address);
-          console.info(objetifyAddress);
-          this.itemsLista.items[index].address = objetifyAddress;
-        } catch (error) {
-          this.itemsLista.items[index].address = address;
-        }
-      });
-      console.info(this.itemsLista);
+      if (
+        this.itemsLista.hasOwnProperty("items") &&
+        this.itemsLista.items.length > 0
+      ) {
+        this.itemsLista.items.map(({ address }, index) => {
+          try {
+            const objetifyAddress = JSON.parse(address);
+            console.info(objetifyAddress);
+            this.itemsLista.items[index].address = objetifyAddress;
+          } catch (error) {
+            this.itemsLista.items[index].address = address;
+          }
+        });
+      }
+
       // ---------
       this.ventana = true;
     },
