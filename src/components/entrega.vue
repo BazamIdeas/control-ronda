@@ -30,7 +30,6 @@
                   <v-layout wrap>
                     <v-flex xs12>
                       <v-text-field v-model="editedItem.name" label="Nombre"></v-text-field>
-                      {{editedItem.name }}
                     </v-flex>
                     <v-flex xs12>
                       <!-- <v-select
