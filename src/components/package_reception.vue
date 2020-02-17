@@ -30,7 +30,7 @@
                 <v-container grid-list-md>
                   <v-layout wrap>
                     <v-flex xs12>
-                      <v-flex xs12>
+                      <v-flex xs12 v-if="!editedItem.delivered_date">
                         <!-- <v-text-field v-model="editedItem.address" label="Direccion"></v-text-field> -->
                         <p @click="showMap = !showMap" style="cursor:pointer;">
                           <v-icon
@@ -56,7 +56,8 @@
                             }}
                           </small>
                         </p>
-
+                      </v-flex>
+                      <v-flex xs12>
                         <button class="google-btn-add-place" @click="watchMap = !watchMap">
                           <v-icon color="green accent-4">map</v-icon>Observar ubicación
                         </button>
@@ -64,6 +65,7 @@
                       <v-select
                         :items="usuarios"
                         v-model="editedItem.worker_id"
+                        :disabled="editedItem.delivered_date"
                         item-text="first_name"
                         item-value="id"
                         label="Usuario responsable"
@@ -76,6 +78,7 @@
                         :items="shipping_companies"
                         item-text="name"
                         v-model="editedItem.shipping_company_id"
+                        :disabled="editedItem.delivered_date"
                         item-value="id"
                         label="Empresa de envío"
                         single-line
@@ -85,11 +88,29 @@
                     <v-flex xs12>
                       <v-text-field
                         v-model="editedItem.addreesse"
+                        :disabled="editedItem.delivered_date"
                         label="Destinatario"
                         :rules="inputRules"
                       ></v-text-field>
                     </v-flex>
-                    <v-flex xs12></v-flex>
+                    <v-flex xs12 sm6>
+                      <button
+                        class="google-btn-add-place"
+                        v-if="editedItem.received_date"
+                        @click="viewReceptionReceive = !viewReceptionReceive"
+                      >
+                        <v-icon color="green accent-4">markunread_mailbox</v-icon>Ver Recepción
+                      </button>
+                    </v-flex>
+                    <v-flex xs12 sm6>
+                      <button
+                        class="google-btn-add-place"
+                        v-if="editedItem.delivered_date"
+                        @click="viewReceptionDelivery = !viewReceptionDelivery"
+                      >
+                        <v-icon color="green accent-4">how_to_reg</v-icon>Ver Entrega
+                      </button>
+                    </v-flex>
                   </v-layout>
                 </v-container>
               </v-card-text>
@@ -102,6 +123,7 @@
                   flat
                   @click.native="save(editedItem)"
                   :disabled="isDisable"
+                  v-if="!editedItem.delivered_date"
                 >Guardar</v-btn>
               </v-card-actions>
             </v-card>
@@ -174,6 +196,71 @@
               </button>
             </div>
 
+            <div class="absolute-map-container" v-if="viewReceptionReceive">
+              <div class="absolute-map">
+                <v-layout row wrap>
+                  <v-flex>
+                    <v-card>
+                      <v-img
+                        min-width="400px"
+                        v-if="editedItem.receive_image_uuid"
+                        :src="filesUrl+editedItem.receive_image_uuid"
+                      ></v-img>
+                      <v-container fill-height fluid pa-2>
+                        <v-layout fill-height>
+                          <v-flex xs12 align-end flexbox>
+                            <v-chip label color="brown darken-1" text-color="white">
+                              <v-icon left>date_range</v-icon>
+                              {{moment(editedItem.received_date).format('DD-MM-YYYY')}}
+                            </v-chip>
+                          </v-flex>
+                        </v-layout>
+                      </v-container>
+                    </v-card>
+                  </v-flex>
+                </v-layout>
+              </div>
+              <button
+                class="google-btn-add-place close-watchMap"
+                @click="viewReceptionReceive = !viewReceptionReceive"
+              >
+                Salir
+                <v-icon class color="grey accent-4">close</v-icon>
+              </button>
+            </div>
+            <div class="absolute-map-container" v-if="viewReceptionDelivery">
+              <div class="absolute-map">
+                <v-layout row wrap>
+                  <v-flex>
+                    <v-card>
+                      <v-img
+                        min-width="400px"
+                        v-if="editedItem.image_uuid"
+                        :src="filesUrl+editedItem.image_uuid"
+                      ></v-img>
+                      <v-container fill-height fluid pa-2>
+                        <v-layout fill-height>
+                          <v-flex xs12 align-end flexbox>
+                            <v-chip label color="brown darken-1" text-color="white">
+                              <v-icon left>date_range</v-icon>
+                              {{moment(editedItem.delivered_date).format('DD-MM-YYYY')}}
+                            </v-chip>
+                          </v-flex>
+                        </v-layout>
+                      </v-container>
+                    </v-card>
+                  </v-flex>
+                </v-layout>
+              </div>
+              <button
+                class="google-btn-add-place close-watchMap"
+                @click="viewReceptionDelivery = !viewReceptionDelivery"
+              >
+                Salir
+                <v-icon class color="grey accent-4">close</v-icon>
+              </button>
+            </div>
+
             <!-- END OF MAP FOR WATCH DATA -->
           </v-dialog>
         </v-toolbar>
@@ -210,9 +297,9 @@
             </td>
             <td :class="{ actived: selected == props.item.id }">
               {{
-                getName(props.item.worker_id)
-              }} 
-             </td>
+              getName(props.item.worker_id)
+              }}
+            </td>
             <td>
               <v-chip v-bind:color="estadoEntrega(props.item, 'color')" small text-color="white">
                 <v-avatar>
@@ -226,12 +313,24 @@
             <v-tooltip bottom>
               <v-icon
                 slot="activator"
+                color="blue darken-2"
+                class="mr-2"
+                v-if="props.item.delivered_date"
+                @click="selectItem(props.item)"
+              >remove_red_eye</v-icon>
+              <span>Detalle</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <v-icon
+                slot="activator"
                 color="green darken-2"
                 class="mr-2"
+                v-if="!props.item.delivered_date"
                 @click="selectItem(props.item)"
               >edit</v-icon>
               <span>Editar</span>
             </v-tooltip>
+
             <!--               <v-tooltip bottom>
                 <v-icon
                   slot="activator"
@@ -242,7 +341,12 @@
                 <span>Items</span>|
             </v-tooltip>-->
             <v-tooltip bottom>
-              <v-icon slot="activator" color="red darken-2" @click="deleteItem(props.item)">delete</v-icon>
+              <v-icon
+                slot="activator"
+                v-if="!props.item.delivered_date"
+                color="red darken-2"
+                @click="deleteItem(props.item)"
+              >delete</v-icon>
               <span>Eliminar</span>
             </v-tooltip>
           </template>
@@ -276,10 +380,11 @@ var moment = require("moment");
 moment.locale("es");
 import BzItems from "./items.vue";
 import axios, { nodeInstance } from "../axios.js";
-
+import { API_URL } from "../../config/env";
 export default {
   components: { BzItems },
   data: () => ({
+    filesUrl: `${API_URL}files/`,
     isSuccess: {
       color: "",
       mode: "",
@@ -289,6 +394,8 @@ export default {
       x: null,
       y: "top"
     },
+    viewReceptionReceive: false,
+    viewReceptionDelivery: false,
     showMap: false,
     watchMap: false,
     markers: [],
@@ -400,10 +507,10 @@ export default {
     this.initialize();
   },
   methods: {
-    getName(id){
-      let user =  this.usuarios.find(el => el.id === id)
+    getName(id) {
+      let user = this.usuarios.find(el => el.id === id);
       //console.log(user.first_name)
-      return user.first_name || "no se pudo obtener el nombre"
+      return user.first_name || "no se pudo obtener el nombre";
     },
     setPlace(place) {
       //console.log("place >>>", place);
@@ -503,7 +610,7 @@ export default {
                 workers.push(element.worker);
               });
               this.usuarios = workers;
-              console.log(this.usuarios)
+              console.log(this.usuarios);
               this.getShippingCompanies();
             } else {
               this.users = [];
