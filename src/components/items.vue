@@ -90,8 +90,8 @@
                     :position="itemAddress.position"
                   />
                   <GmapMarker
-                    v-for="(marker, index) in itemAddress"
-                    :key="index"
+                    v-for="(marker, i) in itemAddress"
+                    :key="i"
                     label="★"
                     :position="marker.position"
                   />
@@ -538,7 +538,7 @@ export default {
         this.markers = []
         this.itemAddress = []
         console.info(this.editedItem)
-      }, 1000);
+      }, 200);
       // this.editedItem = Object.assign({}, this.defaultItem);
       //   this.editedIndex = -1;
       //   this.markers = []
