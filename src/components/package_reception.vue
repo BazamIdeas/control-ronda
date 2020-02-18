@@ -58,7 +58,11 @@
                         </p>
                       </v-flex>
                       <v-flex xs12>
-                        <button v-if="editedItem.address" class="google-btn-add-place" @click="watchMap = !watchMap">
+                        <button
+                          v-if="editedItem.address"
+                          class="google-btn-add-place"
+                          @click="watchMap = !watchMap"
+                        >
                           <v-icon color="green accent-4">map</v-icon>Observar ubicación
                         </button>
                       </v-flex>
@@ -128,7 +132,9 @@
               </v-card-actions>
             </v-card>
             <div class="absolute-map-container" v-if="showMap">
+              
               <div class="absolute-map">
+                <h1>{{ this.itemAddress.constructor === Object  }}</h1>
                 <GmapAutocomplete
                   class="google-map-autocomplete"
                   placeholder="Ingresa una dirección "
@@ -138,8 +144,8 @@
 
                 <GmapMap
                   style="width: 600px; height: 300px;"
-                  :zoom="1"
-                  :center="{ lat: 0, lng: 0 }"
+                  :zoom="this.itemAddress.constructor === Object  ? 20: 1"
+                  :center="this.itemAddress.constructor === Object  ? this.itemAddress : {lat:0, lng:0}"
                   @click="setMarker"
                 >
                   <GmapMarker
@@ -182,11 +188,7 @@
 
             <div class="absolute-map-container" v-if="watchMap">
               <div class="absolute-map">
-                <GmapMap
-                  style="width: 600px; height: 300px;"
-                  :zoom="1"
-                  :center="{ lat: 0, lng: 0 }"
-                >
+                <GmapMap style="width: 600px; height: 300px;" :zoom="20" :center="this.itemAddress">
                   <GmapMarker v-if="this.itemAddress" label="★" :position="itemAddress" />
                 </GmapMap>
               </div>
