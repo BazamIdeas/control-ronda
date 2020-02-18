@@ -89,12 +89,12 @@
                     label="★"
                     :position="itemAddress.position"
                   />
-                  <GmapMarker
+                  <!-- <GmapMarker
                     v-for="(marker, i) in itemAddress"
                     :key="i"
                     label="★"
                     :position="marker.position"
-                  />
+                  /> -->
                 </GmapMap>
                 <br />
 
@@ -136,8 +136,8 @@
                   :zoom="1"
                   :center="{lat: 0, lng: 0}">
                   <GmapMarker
-                    v-for="(marker, index) in itemAddress"
-                    :key="index"
+                    v-for="(marker, ind) in itemAddress"
+                    :key="ind"
                     label="★"
                     :position="marker.position"
                   />
@@ -434,17 +434,17 @@ export default {
       });
       console.log("event 2 >>>", position);
     },
-    usePlace(place) {
-      if (this.place) {
-        this.markers = {
-          position: {
-            lat: this.place.geometry.location.lat(),
-            lng: this.place.geometry.location.lng()
-          }
-        };
-        this.place = null;
-      }
-    },
+    // usePlace(place) {
+    //   if (this.place) {
+    //     this.markers = {
+    //       position: {
+    //         lat: this.place.geometry.location.lat(),
+    //         lng: this.place.geometry.location.lng()
+    //       }
+    //     };
+    //     this.place = null;
+    //   }
+    // },
     displayMap(item){
       this.editedItem = Object.assign({}, item)
       const {lat,lng} = this.editedItem.address
@@ -532,18 +532,18 @@ export default {
       // }, 1500);
       this.selected = 0;
       this.dialog = false;
-      setTimeout(() => {
+      setTimeout(()=>{
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
+        //this.markers = []
+        //this.itemAddress = []
+        console.info(this.editedItem)
+      }, 990);
+        //this.editedItem = Object.assign({}, this.defaultItem);
+        //this.editedIndex = -1;
         this.markers = []
         this.itemAddress = []
-        console.info(this.editedItem)
-      }, 200);
-      // this.editedItem = Object.assign({}, this.defaultItem);
-      //   this.editedIndex = -1;
-      //   this.markers = []
-      //   this.itemAddress = []
-      //   console.info(this.editedItem)
+        //console.info(this.editedItem)
     },
 
     save() {
@@ -569,7 +569,12 @@ export default {
           .then(resp => {
             if (resp.status === 200) {
               console.info(resp)
-              Object.assign(this.itemsLista[this.editedIndex], this.editedItem);
+              if(this.itemsLista[this.editedIndex] != undefined){
+                Object.assign(this.itemsLista[this.editedIndex], this.editedItem);
+                this.initialize()
+              }
+              this.initialize()
+              //Object.assign(this.itemsLista[this.editedIndex], this.editedItem);
             }
           })
           .catch(e => {
