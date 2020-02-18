@@ -58,7 +58,7 @@
                         </p>
                       </v-flex>
                       <v-flex xs12>
-                        <button class="google-btn-add-place" @click="watchMap = !watchMap">
+                        <button v-if="editedItem.address" class="google-btn-add-place" @click="watchMap = !watchMap">
                           <v-icon color="green accent-4">map</v-icon>Observar ubicación
                         </button>
                       </v-flex>
