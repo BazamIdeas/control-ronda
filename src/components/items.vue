@@ -66,7 +66,6 @@
             </v-card>
             <div class="absolute-map-container" v-if="showMap">
               <div class="absolute-map">
-                <h1>{{ itemAddress.length > 0 && itemAddress[0].hasOwnProperty("position") ? itemAddress : 'no position' }}</h1>
                 <GmapAutocomplete
                   class="google-map-autocomplete"
                   placeholder="Ingresa una dirección "
