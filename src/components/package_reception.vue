@@ -134,7 +134,6 @@
             <div class="absolute-map-container" v-if="showMap">
               
               <div class="absolute-map">
-                <h1>{{ this.itemAddress.constructor === Object  }}</h1>
                 <GmapAutocomplete
                   class="google-map-autocomplete"
                   placeholder="Ingresa una dirección "
