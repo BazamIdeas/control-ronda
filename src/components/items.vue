@@ -66,6 +66,7 @@
             </v-card>
             <div class="absolute-map-container" v-if="showMap">
               <div class="absolute-map">
+                <h1>{{ itemAddress.length > 0 && itemAddress[0].hasOwnProperty("position") ? itemAddress : 'no position' }}</h1>
                 <GmapAutocomplete
                   class="google-map-autocomplete"
                   placeholder="Ingresa una dirección "
@@ -75,26 +76,23 @@
 
                 <GmapMap
                   style="width: 600px; height: 300px;"
-                  :zoom="1"
-                  :center="{lat: 0, lng: 0}"
                   @click="setMarker"
+                  :zoom=" itemAddress.length > 0  && itemAddress[0].hasOwnProperty('position') ? 20 : 1"
+                  :center="itemAddress.length > 0  && itemAddress[0].hasOwnProperty('position') ?itemAddress[0].position: {lat: 0, lng: 0}"
                 >
+                  >
                   <GmapMarker
                     v-for="(marker, index) in markers"
                     :key="index"
                     :position="marker.position"
                   />
-                  <GmapMarker
-                    v-if="this.itemAddress"
-                    label="★"
-                    :position="itemAddress.position"
-                  />
+                  <GmapMarker v-if="this.itemAddress" label="★" :position="itemAddress.position" />
                   <!-- <GmapMarker
                     v-for="(marker, i) in itemAddress"
                     :key="i"
                     label="★"
                     :position="marker.position"
-                  /> -->
+                  />-->
                 </GmapMap>
                 <br />
 
@@ -126,15 +124,14 @@
           class="elevation-1"
         >
           <template slot="items" slot-scope="props">
+            <!-- MAP JUST FOR WATCH DATA -->
 
-                      <!-- MAP JUST FOR WATCH DATA -->
-
-          <div class="absolute-map-container" v-if="watchMap">
+            <div class="absolute-map-container" v-if="watchMap">
               <div class="absolute-map">
-                <GmapMap
-                  style="width: 600px; height: 300px;"
-                  :zoom="1"
-                  :center="{lat: 0, lng: 0}">
+                <GmapMap style="width: 600px; height: 300px;" 
+                  :zoom=" itemAddress.length > 0  && itemAddress[0].hasOwnProperty('position') ? 20 : 1"
+                  :center="itemAddress.length > 0  && itemAddress[0].hasOwnProperty('position') ?itemAddress[0].position: {lat: 0, lng: 0}"
+                >
                   <GmapMarker
                     v-for="(marker, ind) in itemAddress"
                     :key="ind"
@@ -143,30 +140,28 @@
                   />
                 </GmapMap>
               </div>
-              <button class="google-btn-add-place close-watchMap" @click="watchMap = !watchMap;close()">
-                    Salir
-                    <v-icon class color="grey accent-4">close</v-icon>
-                  </button>
+              <button
+                class="google-btn-add-place close-watchMap"
+                @click="watchMap = !watchMap;close()"
+              >
+                Salir
+                <v-icon class color="grey accent-4">close</v-icon>
+              </button>
             </div>
-          <!-- END OF MAP FOR WATCH DATA -->
+            <!-- END OF MAP FOR WATCH DATA -->
 
             <!-- <td>{{ props.item.address }}</td> -->
             <td>
               <template v-if="typeof props.item.address === 'object'">
-                <button v-show="typeof props.item.address === 'object'"
-                class="google-btn-add-place"
-                @click="displayMap(props.item);watchMap = !watchMap">
-                <v-icon
-                  color="green accent-4">
-                    map
-                </v-icon>
-                Observar ubicación
-              </button>
+                <button
+                  v-show="typeof props.item.address === 'object'"
+                  class="google-btn-add-place"
+                  @click="displayMap(props.item);watchMap = !watchMap"
+                >
+                  <v-icon color="green accent-4">map</v-icon>Observar ubicación
+                </button>
               </template>
-              <template v-else>
-                {{props.item.address}}
-              </template>
-              
+              <template v-else>{{props.item.address}}</template>
             </td>
             <td>{{ props.item.description }}</td>
             <td>
@@ -349,26 +344,26 @@ export default {
     itemsLista: [],
     editedIndex: -1,
     editedItem: {
-      address: '',
-      addressee:'',
-      code:'',
-      delivered:'',
-      delivery:'',
-      description: '',
-      id:'',
-      office_department:'',
-      street_number:''
+      address: "",
+      addressee: "",
+      code: "",
+      delivered: "",
+      delivery: "",
+      description: "",
+      id: "",
+      office_department: "",
+      street_number: ""
     },
     defaultItem: {
-      address: '',
-      addressee:'',
-      code:'',
-      delivered:'',
-      delivery:'',
-      description: '',
-      id:'',
-      office_department:'',
-      street_number:'',
+      address: "",
+      addressee: "",
+      code: "",
+      delivered: "",
+      delivery: "",
+      description: "",
+      id: "",
+      office_department: "",
+      street_number: ""
     }
   }),
 
@@ -392,22 +387,19 @@ export default {
   },
 
   methods: {
-
     saveAddress() {
       if (
         this.markers.length > 0 &&
         this.markers[0].hasOwnProperty("position")
       ) {
-        
         console.log("this.markers else >>>", this.markers[0].position);
-        this.editedItem.address = this.markers[0].position
-        
-      }else{
+        this.editedItem.address = this.markers[0].position;
+      } else {
         console.log("this.markers >>>", this.markers[0].position);
-        this.editedItem.address = this.markers[0].position
+        this.editedItem.address = this.markers[0].position;
         let position = JSON.stringify(this.markers[0].position);
         this.editedItem.address = position;
-        console.info(this.editedItem.address)
+        console.info(this.editedItem.address);
       }
     },
     setPlace(place) {
@@ -425,7 +417,7 @@ export default {
       }
     },
     setMarker(e) {
-      let position = {lat:e.latLng.lat(),lng:e.latLng.lng()};
+      let position = { lat: e.latLng.lat(), lng: e.latLng.lng() };
       console.log("event >>>", e);
       this.place;
       this.markers = [];
@@ -445,10 +437,10 @@ export default {
     //     this.place = null;
     //   }
     // },
-    displayMap(item){
-      this.editedItem = Object.assign({}, item)
-      const {lat,lng} = this.editedItem.address
-      this.itemAddress.push({position:{lat,lng}})
+    displayMap(item) {
+      this.editedItem = Object.assign({}, item);
+      const { lat, lng } = this.editedItem.address;
+      this.itemAddress.push({ position: { lat, lng } });
     },
     async initialize() {
       if (this.lista.items) this.itemsLista = this.lista.items;
@@ -458,15 +450,17 @@ export default {
     editItem(item) {
       this.selected = item.id;
       this.editedIndex = this.itemsLista.indexOf(item);
-      this.editedItem = Object.assign({}, item)
+      this.editedItem = Object.assign({}, item);
       console.log("this.itemsLista", item);
       console.log("editeditem >>>>", this.editedItem);
 
-      const {address} = this.editedItem
-      console.info(address)
-      this.markers.push({position:{lat:address.lat,lng:address.lng}})
+      const { address } = this.editedItem;
+      console.info(address);
+      this.markers.push({ position: { lat: address.lat, lng: address.lng } });
 
-      this.itemAddress.push({position:{lat:address.lat,lng:address.lng}})
+      this.itemAddress.push({
+        position: { lat: address.lat, lng: address.lng }
+      });
 
       // if(typeof address === 'string'){
       //   try {
@@ -532,27 +526,26 @@ export default {
       // }, 1500);
       this.selected = 0;
       this.dialog = false;
-      setTimeout(()=>{
+      setTimeout(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
         //this.markers = []
         //this.itemAddress = []
-        console.info(this.editedItem)
+        console.info(this.editedItem);
       }, 990);
-        //this.editedItem = Object.assign({}, this.defaultItem);
-        //this.editedIndex = -1;
-        this.markers = []
-        this.itemAddress = []
-        //console.info(this.editedItem)
+      //this.editedItem = Object.assign({}, this.defaultItem);
+      //this.editedIndex = -1;
+      this.markers = [];
+      this.itemAddress = [];
+      //console.info(this.editedItem)
     },
 
     save() {
-      console.info(this.editedItem)
+      console.info(this.editedItem);
       if (this.editedIndex > -1) {
-
-        const {address} = this.editedItem
-        const updateAddress = JSON.stringify(address)
-        console.info(updateAddress)
+        const { address } = this.editedItem;
+        const updateAddress = JSON.stringify(address);
+        console.info(updateAddress);
         axios
           .put("/items/" + this.editedItem.id, {
             // address: this.editedItem.address,
@@ -568,12 +561,15 @@ export default {
           })
           .then(resp => {
             if (resp.status === 200) {
-              console.info(resp)
-              if(this.itemsLista[this.editedIndex] != undefined){
-                Object.assign(this.itemsLista[this.editedIndex], this.editedItem);
-                this.initialize()
+              console.info(resp);
+              if (this.itemsLista[this.editedIndex] != undefined) {
+                Object.assign(
+                  this.itemsLista[this.editedIndex],
+                  this.editedItem
+                );
+                this.initialize();
               }
-              this.initialize()
+              this.initialize();
               //Object.assign(this.itemsLista[this.editedIndex], this.editedItem);
             }
           })
@@ -581,10 +577,9 @@ export default {
             console.log(e);
           });
       } else {
-
-        const {address} = this.editedItem
-        const updateAddress = JSON.stringify(address)
-        console.info(updateAddress)
+        const { address } = this.editedItem;
+        const updateAddress = JSON.stringify(address);
+        console.info(updateAddress);
 
         axios
           .post("/items/", {
@@ -609,21 +604,17 @@ export default {
               resp.data.code = this.editedItem.code;
 
               //========== new Code ======
-           try {
-            const objetifyAddress = JSON.parse(resp.data.address)
-            console.info('objetify', objetifyAddress)
-            //this.editedItem.address = objetifyAddress
-            resp.data.address = objetifyAddress
-           } catch (error) {
-            
-           }
+              try {
+                const objetifyAddress = JSON.parse(resp.data.address);
+                console.info("objetify", objetifyAddress);
+                //this.editedItem.address = objetifyAddress
+                resp.data.address = objetifyAddress;
+              } catch (error) {}
               //==========================
-
 
               // resp.data.address = this.editedItem.address;
               // console.info(this.editedItem.address)
-               console.info(resp.data.address)
-
+              console.info(resp.data.address);
 
               this.itemsLista.push(resp.data);
             }
