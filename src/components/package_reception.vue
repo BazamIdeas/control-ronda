@@ -97,6 +97,13 @@
                         :rules="inputRules"
                       ></v-text-field>
                     </v-flex>
+                    <v-flex xs12>
+                      <v-textarea
+                        v-model="editedItem.description"
+                        :rules="inputRules"
+                        label="Descripción"
+                      ></v-textarea>
+                    </v-flex>
                     <v-flex xs12 sm6>
                       <button
                         class="google-btn-add-place"
@@ -132,7 +139,6 @@
               </v-card-actions>
             </v-card>
             <div class="absolute-map-container" v-if="showMap">
-              
               <div class="absolute-map">
                 <GmapAutocomplete
                   class="google-map-autocomplete"
@@ -473,13 +479,15 @@ export default {
       shipping_company_id: "",
       worker_id: "",
       addreesse: "",
-      address: ""
+      address: "",
+      description: ""
     },
     defaultItem: {
       shipping_company_id: "",
       worker_id: "",
       addreesse: "",
-      address: ""
+      address: "",
+      description: ""
     }
   }),
   computed: {
@@ -696,6 +704,7 @@ export default {
             shipping_company_id: item.shipping_company_id,
             worker_id: item.worker_id,
             addreesse: item.addreesse,
+            description: item.description,
             address: item.address
           })
           .then(resp => {
