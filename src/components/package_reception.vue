@@ -66,7 +66,10 @@
                           <v-icon color="green accent-4">map</v-icon>Observar ubicación
                         </button>
                       </v-flex>
+                    </v-flex>
+                    <v-flex xs6>
                       <v-select
+                        sm6
                         :items="usuarios"
                         v-model="editedItem.worker_id"
                         :disabled="editedItem.delivered_date"
@@ -76,9 +79,12 @@
                         single-line
                         :rules="inputRules"
                       ></v-select>
+                      <!-- separacion -->
                     </v-flex>
-                    <v-flex xs12>
+                    <v-flex xs6>
+                      <!-- separacion -->
                       <v-select
+                        sm6
                         :items="shipping_companies"
                         item-text="name"
                         v-model="editedItem.shipping_company_id"
@@ -100,6 +106,8 @@
                     <v-flex xs12>
                       <v-textarea
                         v-model="editedItem.description"
+                         :disabled="editedItem.description"
+
                         :rules="inputRules"
                         label="Descripción"
                       ></v-textarea>
@@ -772,7 +780,9 @@ export default {
 .actived {
   background: #f7f0b2;
 }
-
+/* .v-dialog.v-dialog--active {
+    overflow-y: hidden !important;
+} */
 .absolute-map-container {
   position: absolute;
   background: #fffffb;

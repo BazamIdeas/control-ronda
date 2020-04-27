@@ -11,7 +11,7 @@
             <v-icon >plus_one</v-icon>
           </v-btn>
           
-          <v-card>
+          <v-card v-if="dialog">
             <v-card-title>
               <span class="headline">{{ formTitle }}</span>
             </v-card-title>
@@ -23,7 +23,7 @@
                     <v-text-field v-model="editedItem.worker.first_name" label="Nombre completo" :rules="[rules.required]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
-                    <v-text-field v-model="editedItem.username" label="Usuario" :rules="[rules.required]"></v-text-field>
+                    <v-text-field v-model="editedItem.username" @keyup.once="autoapitalize()"  label="Usuario" :rules="[rules.required]"></v-text-field>
                   </v-flex>
                   <v-flex xs6>
                     <v-text-field v-model="editedItem.phone" label="Telefono" :rules="[rules.required]"></v-text-field>
@@ -284,7 +284,9 @@ import BzUsuario from "./usuario.vue"
           console.log(e)
         })
       },
-
+      autoapitalize(){
+      this.editedItem.username = this.editedItem.username.toUpperCase();
+      },
       editItem (item) {
         this.selected = item.id
         this.editedIndex = this.users.indexOf(item)
