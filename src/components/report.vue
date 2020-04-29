@@ -273,7 +273,7 @@
           this.download(anio, mes)
         }
       },
-
+      
       conversorHoras (decimalTimeString) {
         var decimalTime = parseFloat(decimalTimeString);
         decimalTime = decimalTime * 60 * 60;
@@ -296,7 +296,7 @@
         }
 
         return hours+":"+minutes+":"+seconds
-      },
+      }, 
 
       download(anio, mes){
         this.$axios.get('/workers/'+this.empleado.id+'/data/'+anio+'/'+mes+'/download')
@@ -316,7 +316,7 @@
         })
         .catch(e => {
           alert('No hay reportes para esta fecha')
-          console.log(e)
+          console.error(e)
         }) 
       },
 
@@ -344,7 +344,7 @@
           return "Sin diferencial"
         }else if(r > 0 && r<60){
         return moment.duration(parseInt(r), "minutes").humanize()
-        }else if(r > 60){
+        }else if(r >= 60){
           let getMinutes = r.toString().split(".")[1]
          return moment.duration(parseInt(r), "minutes").humanize() +" "+ getMinutes+" minutos" || ""
         }
