@@ -95,6 +95,7 @@
   let m= d.getMonth()
   var moment = require ('moment')
   moment.locale('es')
+ 
     var jsPDF = require ('jspdf')
   var fileSaver = require ('file-saver')
   var xlsx = require ('xlsx')
@@ -334,9 +335,19 @@
         }
       },
       diferencial(horas){
-        let h= (parseFloat(horas) - parseFloat(this.$store.state.sesion.working_hours)).toFixed(2) 
+        var a = horas
+        var b = this.$store.state.sesion.working_hours
+        let h= (parseFloat(a) - parseFloat(b)).toFixed(2) 
         let r = h < 0 ? 0 : h
-        return r
+
+        if(r<=0){
+          return "Sin diferencial"
+        }else if(r > 0 && r<60){
+        return moment.duration(parseInt(r), "minutes").humanize()
+        }else if(r > 60){
+          let getMinutes = r.toString().split(".")[1]
+         return moment.duration(parseInt(r), "minutes").humanize() +" "+ getMinutes+" minutos" || ""
+        }
       },
 
       pdf(){
