@@ -40,7 +40,10 @@
       initMap() {
         this.map = L.map('map').setView([this.points[0].latitude, this.points[0].longitude], 18) 
         this.tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-          { maxZoom: 100 })
+          {   
+             maxNativeZoom: 19, // OSM max available zoom is at 19.
+              maxZoom: 22 
+          })
         this.tileLayer.addTo(this.map)
         
         let coord =[]
