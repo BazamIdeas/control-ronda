@@ -148,6 +148,9 @@
 
     methods: {
       initialize () {
+        this.getZones()
+      },
+      getZones(){
         axios.get('/zones/self')
         .then(resp => {
           if(resp.status === 200){
@@ -158,7 +161,6 @@
           console.log(e)
         })
       },
-
       editItem (item) {
         this.selected = item.id
         this.editedIndex = this.zones.indexOf(item)
@@ -204,6 +206,7 @@
           .then(resp => {
             if(resp.status === 200){
               Object.assign(this.zones[this.editedIndex], this.editedItem)
+                                 this.getZones()
             }
           })
           .catch(e => {
@@ -217,6 +220,7 @@
             .then(resp => {
               if(resp.status === 201){
                 this.zones.push(resp.data)
+                
               }
             })
             .catch(e => {
