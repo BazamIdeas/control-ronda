@@ -115,6 +115,7 @@
       total_horas : 0,
       mesN: moment(d).format('MM'),
       anio: moment(d).format('YYYY'),
+      hourSum:null,
 
       headers: [
         {
@@ -194,7 +195,14 @@
     },
 
     computed: {
+      calculeTotalHours(){
+         const totalDurations = durations.slice(1)
+        .reduce((prev, cur) => moment.duration(cur).add(prev),
+          moment.duration(durations[0]))
+        
+        console.log(`Total time is: ${moment.utc(totalDurations.asMilliseconds()).format("HH:mm:ss")}`)
 
+      },
       priceHour: function () {
         let vh= parseFloat(this.valor_hora)
         let percent= parseFloat(this.porcentaje)
@@ -233,7 +241,7 @@
         //console.log(m)
         this.$axios.get('/workers/'+this.empleado.id+'/data/'+y+'/'+m)
         .then(resp => {
-          if(resp.status === 200){
+           if(resp.status === 200){
             let dias = []
             this.total_horas_extras = 0
             this.total_horas = 0
@@ -241,9 +249,12 @@
             // Obteniendo todas las claves del JSON
             for (var dia in resp.data.month_data.days){
               dias.push(resp.data.month_data.days[dia])
-              this.total_horas_extras += resp.data.month_data.days[dia].extra_worked_hours
-              this.total_horas += resp.data.month_data.days[dia].total_worked_hours
+              this.total_horas_extras += Math.abs(resp.data.month_data.days[dia].extra_worked_hours)
+              this.total_horas += Math.abs(resp.data.month_data.days[dia].total_worked_hours)
+ 
+              //mark
             }
+
             this.assistances = dias
             this.jornada =  parseFloat(this.$store.state.sesion.working_hours)
             this.valor_hora =  parseFloat(this.$store.state.sesion.hour_value)
@@ -275,13 +286,18 @@
       },
       
       conversorHoras (decimalTimeString) {
-        var decimalTime = parseFloat(decimalTimeString);
+        console.log(decimalTimeString)
+         var decimalTime = parseFloat(decimalTimeString);
         decimalTime = decimalTime * 60 * 60;
         var hours = Math.floor((decimalTime / (60 * 60)));
         decimalTime = decimalTime - (hours * 60 * 60);
-        var minutes = Math.floor((decimalTime / 60));
+        var minutes = Math.floor(decimalTime / 60);
         decimalTime = decimalTime - (minutes * 60);
         var seconds = Math.round(decimalTime);
+        console.log("resp >>>> ", parseInt(hours)+":"+minutes+":"+seconds)
+        var m = moment.duration(parseInt( hours ), "minutes").humanize()
+        console.log("m >>>> ", m)
+
         if(hours < 10)
         {
           hours = "0" + hours;
@@ -398,19 +414,22 @@
           
           let ini_break = asistencia.hasOwnProperty('break') ? moment(asistencia.break.date).format('HH:mm') : '-'
           let finish_break = asistencia.hasOwnProperty('finish_break') ? moment(asistencia.finish_break.date).format('HH:mm') : '-'
-          ws_data.push([
+                console.log("tw  ",asistencia.total_worked_hours)
+        console.log(this.conversorHoras(this.total_horas))
+        ws_data.push([
             asistencia.day,
             moment(asistencia.entry.date).format('HH:mm'),
             ini_break,
             finish_break,
             moment(asistencia.exit.date).format('DD'),
             moment(asistencia.exit.date).format('HH:mm'),
-            parseFloat(asistencia.total_worked_hours).toFixed(2) ,
-            parseFloat(asistencia.extra_worked_hours).toFixed(2) ,
+            this.conversorHoras(asistencia.total_worked_hours),
+            this.diferencial(asistencia.extra_worked_hours),
             festivo
           ])
         });
-        ws_data.push(['TOTAL','','','','','',parseFloat(this.total_horas).toFixed(2),parseFloat(this.total_horas_extras).toFixed(2)])
+
+        ws_data.push(['TOTAL','','','','','',this.conversorHoras(this.total_horas),parseFloat(this.total_horas_extras).toFixed(2)])
         var ws = xlsx.utils.aoa_to_sheet(ws_data)
         wb.Sheets["Informe"] = ws
         var wbout = xlsx.write(wb, {bookType:'xlsx',  type: 'binary'})
