@@ -1,3 +1,4 @@
+<!-- eventos de modulo de rondas no confundir con eventos de entrega de turnos  -->
 <template>
 <v-container grid-list-md >
   <v-toolbar absolute>
@@ -52,10 +53,13 @@
         :headers="headers"
         :items="eventos"
         :search="search"
+        :loading="isLoading"
         rows-per-page-text= "Número de Filas"
         class="elevation-1"
         hide-actions
       >
+          <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
+
         <template slot="items" slot-scope="props">
           <td >{{ moment(props.item.date).format('DD/MM/YYYY') }} </td>
           <td >{{ moment(props.item.date).format('HH:mm') }} </td>
@@ -73,13 +77,14 @@
             </v-card>
           </template>
         <template slot="no-data">
+          <p>Sin datos para mostrar</p>
           <v-btn color="primary" @click="initialize">Recargar</v-btn>
         </template>
       </v-data-table>
       <div class="text-xs-center pt-2">
       </div>
     </v-flex>
-    <v-dialog v-model="ventanaComentarios" fullscreen hide-overlay transition="dialog-bottom-transition">
+    <v-dialog v-if="ventanaComentarios" v-model="ventanaComentarios" fullscreen hide-overlay transition="dialog-bottom-transition">
       <v-card>
         <v-layout justify-end>
             <v-btn flat @click.native="ventanaComentarios = false">Cerrar</v-btn>
@@ -111,7 +116,7 @@
       ventanaComentarios: false,
       mesN: moment(d).format('MM'),
       anio: moment(d).format('YYYY'),
-
+      isLoading:false,
       eventos: [],
       headers: [
         {
@@ -153,13 +158,18 @@
 
     methods: {
       initialize (m,y) {
+        this.isLoading = true
         axios.get('/condos/verifications/'+y+'/'+m+'?watcher-comment=true')
         .then(resp => {
           if(resp.status === 200){
             this.eventos = resp.data
+            console.log("data" + resp.data)
+                    this.isLoading = false
           }
         })
         .catch(e => {
+          this.eventos = []
+                              this.isLoading = false
           console.log(e)
         })
       },

@@ -1,4 +1,4 @@
-<template>
+<template >
 <v-container grid-list-md >
   <v-layout row wrap >
     <v-flex xs4>
@@ -73,11 +73,13 @@ export default {
 
     },
     created () {
+ 
       this.initialize()
     },
 
     methods: {
       initialize () {    
+              this.nota= ''
         if(this.verificacion.supervisor_comment)    
           this.nota = this.verificacion.supervisor_comment
       },
