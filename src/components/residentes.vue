@@ -14,7 +14,10 @@
           <v-toolbar-title>RESIDENTES</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-chip small v-on:click="aprobacionMasiva()">Aprobar todos</v-chip>
-
+                    <v-btn icon @click="initialize()">
+                            <v-spacer></v-spacer>
+            <v-icon>autorenew</v-icon>
+          </v-btn>
           <v-dialog v-model="dialogCsv" max-width="500px">
             <v-btn icon slot="activator">
               <v-icon>playlist_add</v-icon>
@@ -159,9 +162,15 @@
                       ></v-text-field>
                     </v-flex>
                     <v-flex xs6>
+                    {{searching}}
                       <v-text-field
                         v-model="editedItem.email"
                         label="Email"
+                         append-icon="policy"
+                          :loading="searching" 
+
+                         :disable="searching"
+                         @click:append="verifyEmail(editedItem.email)"
                         :rules="[rules.required, rules.email]"
                       ></v-text-field>
                     </v-flex>
@@ -341,7 +350,6 @@ export default {
     fileCsv: [],
     files: [],
     expand:false,
-
     isSuccess: {
       color: "",
       mode: "",
@@ -360,7 +368,7 @@ export default {
     type: "",
     isReady: false,
     loading: false,
-
+    searching:false,
     fileRules: [f => console.info(f)],
 
     interval: {},
@@ -478,7 +486,10 @@ export default {
 
   methods: {
     initialize() {
-      this.$axios
+     this.getSelf()
+    },
+    getSelf(){
+        this.$axios
         .get("/residents/self")
         .then(resp => {
           if (resp.status === 200) {
@@ -492,6 +503,26 @@ export default {
         .catch(e => {
           console.log(e);
         });
+    },
+        verifyEmail(v){
+/*       alert("ja " + v) */
+      this.searching = true
+      var token = localStorage.getItem("bazam-token-control");
+
+     this.$axios.post("/residents/check-email",
+                  {email:v},
+                  { headers: {
+                    Authorization: "Bearer " + token,
+                  }
+                  }).then(res =>{
+                    console.log(res)
+                          this.searching = false
+               
+                  }).catch(err =>{
+                    console.log(err)
+                          this.searching = false
+                  })
+      
     },
     // FLADDEV - START
 
