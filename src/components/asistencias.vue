@@ -34,9 +34,10 @@
         :search="search"
         :pagination.sync="pagination"
         rows-per-page-text= "Número de Filas"
-        
+                :loading="isLoading"
         class="elevation-1"
-      >
+      >                      <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
+
         <template slot="items" slot-scope="props">
           <td  >{{moment(props.item.date).format('DD/MM/YYYY') }}</td>
           <td >{{moment(props.item.date).format('HH:mm') }}</td>
@@ -85,6 +86,7 @@ var moment = require ('moment')
       isConnected: false,
       search: '',
       selected: 0,
+      isLoading:false,
       moment: moment,
       pagination: {descending: true},
       tiempoReal: [],
@@ -181,6 +183,10 @@ var moment = require ('moment')
       },
 
       initialize () {
+      this.Get()
+      },
+      Get(){
+        this.isLoading=true
         this.$axios.get('/assistances?limit=1000000000000000')
         .then(resp => {
           if(resp.status === 200){
@@ -189,9 +195,11 @@ var moment = require ('moment')
                 return a
             })
           }
+            this.isLoading=false
         })
         .catch(e => {
           console.log(e)
+          this.isLoading=false
         })
       }
     }
