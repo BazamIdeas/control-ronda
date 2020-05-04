@@ -165,13 +165,26 @@
                       <v-text-field
                         v-model="editedItem.email"
                         label="Email"
-                         :append-icon="editedItem.email.length > 0 ? 'policy' : 'report_off' "
                           :loading="searching" 
                           type="email"
                          :disable="searching"
-                         @click:append="verifyEmail(editedItem.email)"
                         :rules="[rules.required, rules.email]"
-                      ></v-text-field>
+                      >
+ 
+                      <template slot="append">
+                        <v-fade-transition leave-absolute>
+                          <v-progress-circular
+                            v-if="searching"
+                            size="24"
+                            indeterminate
+                          ></v-progress-circular>
+                                   <v-icon v-else-if="emailStatus == null"   @click="verifyEmail(editedItem.email)">policy</v-icon>
+                                  <v-icon v-else :color="emailStatus != null && emailStatus == true ? 'green' : 'red'"   @click="verifyEmail(editedItem.email)">policy</v-icon>
+
+                         </v-fade-transition>
+                      </template>
+
+                      </v-text-field>
                     </v-flex>
                     <v-flex xs6>
                       <v-text-field
@@ -372,7 +385,7 @@ export default {
     loading: false,
     isLoading:false,
     searching:false,
-
+    emailStatus:null,
     fileRules: [f => console.info(f)],
 
     interval: {},
@@ -514,6 +527,7 @@ export default {
         });
     },
         verifyEmail(v){
+          console.log("v >>>> ",v)
          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
           if(!v){
             return
@@ -524,9 +538,8 @@ export default {
 
 /*       alert("ja " + v) */
       this.searching = true
-      var token = localStorage.getItem("bazam-token-control");
-
-     this.$axios.post("/residents/check-email",
+      var token = localStorage.getItem("bazam-token-control"); 
+      this.$axios.post("/residents/check-email",
                   {email:v},
                   { headers: {
                     Authorization: "Bearer " + token,
@@ -534,12 +547,13 @@ export default {
                   }).then(res =>{
                     console.log(res)
                           this.searching = false
+                          this.emailStatus = true
                
                   }).catch(err =>{
                     console.log(err)
                           this.searching = false
+                          this.emailStatus = false
                   })
-      
     },
     // FLADDEV - START
 
