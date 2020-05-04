@@ -55,8 +55,11 @@
         :items="employees"
         :search="search"
         rows-per-page-text= "Número de Filas"
-        class="elevation-1"
+        class="elevation-1"   
+             :loading="loading1"
       >
+                            <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
+
         <template slot="items" slot-scope="props">
           <td :class="{actived:selected == props.item.id}" >{{ props.item.first_name }}</td>
           <td :class="{actived:selected == props.item.id}" >{{ props.item.rut }}</td>
@@ -88,7 +91,10 @@
         :items="sinTerminar"
         rows-per-page-text= "Número de Filas"
         class="elevation-1"
+        :loading="loading2"
       >
+   <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
+
         <template slot="items" slot-scope="props">
           <tr @click="props.expanded = !props.expanded" style="cursor:pointer">
             <td >{{ props.item.workers.first_name }}</td>
@@ -191,6 +197,8 @@
       isConnected: false,
       moment: moment,
       menu: false,
+      loading1:false,
+      loading2:false,
       menu2: false,
       date: null,
       fechaActual: moment().format('DD-MM-YYYY'),
@@ -302,17 +310,22 @@
       },
 
       initialize () {
+        this.GetSelf()
+      },
+      GetSelf(){
+        this.loading1 = true
         this.$axios.get('/workers/self')
         .then(resp => {
           if(resp.status === 200){
             this.employees = resp.data
+                    this.loading1 = false
           }
         })
         .catch(e => {
           console.log(e)
+                  this.loading1 = false
         })
       },
-
       cerrarJornada (jornada) {
         //console.log(jornada)
         this.$axios.post('/asistencias/cerrar/', { 
@@ -335,6 +348,7 @@
       },
 
       asistencias () {
+        this.loading2 = true
         this.$axios.get('/assistances?limit=1000000000000000')
         .then(resp => {
           if(resp.status === 200){
@@ -351,9 +365,13 @@
               }
             }
           }
+         this.loading2 =false
+
         })
         .catch(e => {
           console.log(e)
+                  this.loading2 = false
+
         })
       },
 

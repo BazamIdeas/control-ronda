@@ -56,7 +56,11 @@
         rows-per-page-text= "Número de Filas"
         class="elevation-1"
         hide-actions
+                      :loading="isLoading"
+
       >
+                      <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
+
         <template slot="items" slot-scope="props">
           <td :class="{actived:selected == props.item.id}" >{{ props.item.name }}</td>
           <td class="justify-center px-0" :class="{actived:selected == props.item.id}">
@@ -97,6 +101,7 @@
       fab: true,
       info: null,
       search: '',
+      isLoading:false,
       checkpoints: 0,
       dialog: false,
       selected: 0,
@@ -148,17 +153,22 @@
 
     methods: {
       initialize () {
+        this.getZones()
+      },
+      getZones(){
+        this.isLoading=true
         axios.get('/zones/self')
         .then(resp => {
           if(resp.status === 200){
             this.zones = resp.data
+            this.isLoading=false
           }
         })
         .catch(e => {
           console.log(e)
+            this.isLoading=false
         })
       },
-
       editItem (item) {
         this.selected = item.id
         this.editedIndex = this.zones.indexOf(item)
@@ -204,6 +214,7 @@
           .then(resp => {
             if(resp.status === 200){
               Object.assign(this.zones[this.editedIndex], this.editedItem)
+                                 this.getZones()
             }
           })
           .catch(e => {
@@ -217,6 +228,7 @@
             .then(resp => {
               if(resp.status === 201){
                 this.zones.push(resp.data)
+                
               }
             })
             .catch(e => {

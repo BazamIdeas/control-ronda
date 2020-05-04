@@ -66,7 +66,10 @@
                           <v-icon color="green accent-4">map</v-icon>Observar ubicación
                         </button>
                       </v-flex>
+                    </v-flex>
+                    <v-flex xs6>
                       <v-select
+                        sm6
                         :items="usuarios"
                         v-model="editedItem.worker_id"
                         :disabled="editedItem.delivered_date"
@@ -76,9 +79,12 @@
                         single-line
                         :rules="inputRules"
                       ></v-select>
+                      <!-- separacion -->
                     </v-flex>
-                    <v-flex xs12>
+                    <v-flex xs6>
+                      <!-- separacion -->
                       <v-select
+                        sm6
                         :items="shipping_companies"
                         item-text="name"
                         v-model="editedItem.shipping_company_id"
@@ -96,6 +102,15 @@
                         label="Destinatario"
                         :rules="inputRules"
                       ></v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                      <v-textarea
+                        v-model="editedItem.description"
+                         :disabled="editedItem.description"
+
+                        :rules="inputRules"
+                        label="Descripción"
+                      ></v-textarea>
                     </v-flex>
                     <v-flex xs12 sm6>
                       <button
@@ -132,7 +147,6 @@
               </v-card-actions>
             </v-card>
             <div class="absolute-map-container" v-if="showMap">
-              
               <div class="absolute-map">
                 <GmapAutocomplete
                   class="google-map-autocomplete"
@@ -473,13 +487,15 @@ export default {
       shipping_company_id: "",
       worker_id: "",
       addreesse: "",
-      address: ""
+      address: "",
+      description: ""
     },
     defaultItem: {
       shipping_company_id: "",
       worker_id: "",
       addreesse: "",
-      address: ""
+      address: "",
+      description: ""
     }
   }),
   computed: {
@@ -696,6 +712,7 @@ export default {
             shipping_company_id: item.shipping_company_id,
             worker_id: item.worker_id,
             addreesse: item.addreesse,
+            description: item.description,
             address: item.address
           })
           .then(resp => {
@@ -763,7 +780,9 @@ export default {
 .actived {
   background: #f7f0b2;
 }
-
+/* .v-dialog.v-dialog--active {
+    overflow-y: hidden !important;
+} */
 .absolute-map-container {
   position: absolute;
   background: #fffffb;

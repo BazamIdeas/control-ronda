@@ -14,7 +14,10 @@
           <v-toolbar-title>RESIDENTES</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-chip small v-on:click="aprobacionMasiva()">Aprobar todos</v-chip>
-
+                    <v-btn icon @click="initialize()">
+                            <v-spacer></v-spacer>
+            <v-icon>autorenew</v-icon>
+          </v-btn>
           <v-dialog v-model="dialogCsv" max-width="500px">
             <v-btn icon slot="activator">
               <v-icon>playlist_add</v-icon>
@@ -162,6 +165,11 @@
                       <v-text-field
                         v-model="editedItem.email"
                         label="Email"
+                         :append-icon="editedItem.email.length > 0 ? 'policy' : 'report_off' "
+                          :loading="searching" 
+                          type="email"
+                         :disable="searching"
+                         @click:append="verifyEmail(editedItem.email)"
                         :rules="[rules.required, rules.email]"
                       ></v-text-field>
                     </v-flex>
@@ -227,7 +235,10 @@
           :search="search"
           rows-per-page-text="Número de Filas"
           class="elevation-1"
+          :loading="isLoading"
         >
+                        <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
+
           <template slot="items" slot-scope="props">
             <td>{{ props.item.name }}</td>
             <td>{{ props.item.rut }}</td>
@@ -341,7 +352,6 @@ export default {
     fileCsv: [],
     files: [],
     expand:false,
-
     isSuccess: {
       color: "",
       mode: "",
@@ -360,6 +370,8 @@ export default {
     type: "",
     isReady: false,
     loading: false,
+    isLoading:false,
+    searching:false,
 
     fileRules: [f => console.info(f)],
 
@@ -478,7 +490,11 @@ export default {
 
   methods: {
     initialize() {
-      this.$axios
+     this.getSelf()
+    },
+    getSelf(){
+      this.isLoading = true
+        this.$axios
         .get("/residents/self")
         .then(resp => {
           if (resp.status === 200) {
@@ -488,10 +504,42 @@ export default {
               this.residentes = [];
             }
           }
+                this.isLoading = false
+
         })
         .catch(e => {
           console.log(e);
+                this.isLoading = false
+
         });
+    },
+        verifyEmail(v){
+         const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          if(!v){
+            return
+          }
+          if( !pattern.test(v) ){
+            return
+          }
+
+/*       alert("ja " + v) */
+      this.searching = true
+      var token = localStorage.getItem("bazam-token-control");
+
+     this.$axios.post("/residents/check-email",
+                  {email:v},
+                  { headers: {
+                    Authorization: "Bearer " + token,
+                  }
+                  }).then(res =>{
+                    console.log(res)
+                          this.searching = false
+               
+                  }).catch(err =>{
+                    console.log(err)
+                          this.searching = false
+                  })
+      
     },
     // FLADDEV - START
 
