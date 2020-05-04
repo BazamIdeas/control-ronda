@@ -76,7 +76,10 @@
         :search="search"
         rows-per-page-text= "Número de Filas"
         class="elevation-1"
+        :loading="isLoading"
       >
+                      <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
+
         <template slot="items" slot-scope="props">
           <td  >{{ props.item.worker.first_name }}</td>
           <td  >{{ props.item.username }}</td>
@@ -166,6 +169,7 @@ import BzUsuario from "./usuario.vue"
       search: '',
       UserRoutes: 0,
       dialog: false,
+      isLoading:false,
       usuario: '',
       selected: 0,
       ficha: false,
@@ -268,6 +272,10 @@ import BzUsuario from "./usuario.vue"
 
     methods: {
       initialize () {
+      this.Get()
+      },
+      Get(){
+         this.isLoading=true
         this.$axios.get('/watchers/self')
         .then(resp => {
           if(resp.status === 200){
@@ -279,9 +287,11 @@ import BzUsuario from "./usuario.vue"
             }
             
           }
+                  this.isLoading=false
         })
         .catch(e => {
           console.log(e)
+          this.isLoading=false
         })
       },
       autoapitalize(){

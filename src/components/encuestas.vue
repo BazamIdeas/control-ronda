@@ -90,8 +90,11 @@
         :search="search"
         rows-per-page-text= "Número de Filas"
         :pagination.sync="pagination"
+        :loading="isLoading"
         class="elevation-1"
       >
+                <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
+
         <template slot="items" slot-scope="props">
           <td  >{{ moment(props.item.date).format('DD-MM-YYYY') }}</td>
           <td  >{{ moment(props.item.date_end).format('DD-MM-YYYY') }}</td>
@@ -149,6 +152,7 @@ var moment = require ('moment')
       date: null,
       menu: false,
       dialog: false,
+      isLoading:false,
       pagination: {descending: true},
       detalleEncuesta: '',
       selected: 0,
@@ -244,7 +248,11 @@ var moment = require ('moment')
 
     methods: {
       initialize () {
-        this.$axios.get('/questions/self')
+    this.Get()
+      },
+      Get(){
+       this.isLoading = true
+               this.$axios.get('/questions/self')
         .then(resp => {
           if(resp.status === 200){
             if (resp.data !== null){
@@ -255,12 +263,13 @@ var moment = require ('moment')
             }
             
           }
+            this.isLoading = false
         })
         .catch(e => {
           console.log(e)
+            this.isLoading = false
         })
       },
-
       editItem (item) {
         this.selected = item.id
         this.editedIndex = this.encuestas.indexOf(item)

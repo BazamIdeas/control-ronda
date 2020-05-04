@@ -236,7 +236,10 @@
           :search="search"
           rows-per-page-text="Número de Filas"
           class="elevation-1"
+          :loading="isLoading"
         >
+                        <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
+
           <template slot="items" slot-scope="props">
             <td>{{ props.item.name }}</td>
             <td>{{ props.item.rut }}</td>
@@ -368,7 +371,9 @@ export default {
     type: "",
     isReady: false,
     loading: false,
+    isLoading:false,
     searching:false,
+
     fileRules: [f => console.info(f)],
 
     interval: {},
@@ -489,6 +494,7 @@ export default {
      this.getSelf()
     },
     getSelf(){
+      this.isLoading = true
         this.$axios
         .get("/residents/self")
         .then(resp => {
@@ -499,9 +505,13 @@ export default {
               this.residentes = [];
             }
           }
+                this.isLoading = false
+
         })
         .catch(e => {
           console.log(e);
+                this.isLoading = false
+
         });
     },
         verifyEmail(v){
