@@ -162,13 +162,12 @@
                       ></v-text-field>
                     </v-flex>
                     <v-flex xs6>
-                    {{searching}}
                       <v-text-field
                         v-model="editedItem.email"
                         label="Email"
-                         append-icon="policy"
+                         :append-icon="editedItem.email.length > 0 ? 'policy' : 'report_off' "
                           :loading="searching" 
-
+                          type="email"
                          :disable="searching"
                          @click:append="verifyEmail(editedItem.email)"
                         :rules="[rules.required, rules.email]"
@@ -515,6 +514,14 @@ export default {
         });
     },
         verifyEmail(v){
+         const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          if(!v){
+            return
+          }
+          if( !pattern.test(v) ){
+            return
+          }
+
 /*       alert("ja " + v) */
       this.searching = true
       var token = localStorage.getItem("bazam-token-control");
