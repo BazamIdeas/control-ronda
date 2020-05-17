@@ -31,9 +31,9 @@
         <span @click="deleteItem(item)">x</span>
             <v-avatar color="indigo" tile @click="download(item)">
             <v-icon dark>play_for_work</v-icon>
-            </v-avatar> 
+            </v-avatar>
           </div>
-          
+
         </v-layout>
       <v-divider></v-divider>
       </v-flex>
@@ -63,18 +63,18 @@
             Pdf
           </v-chip>
           </v-flex>
-        </v-layout>       
+        </v-layout>
       </v-flex>
       <v-layout row wrap v-if="!detalleEncuesta.committee_only">
-      
+
         <v-flex xs12 text-xs-center pl-1 pr-1 mt-3>
           <v-card>
-          <h3 mb-2>Gráfico según alicuota (%)</h3>
+          <h3 mb-2>Gráfico según alícuota (%)</h3>
           <ve-pie :data="chartData" :settings="chartSettings"></ve-pie>
           </v-card>
         </v-flex>
-        
-      
+
+
 
         <v-flex xs12 mt-4 v-if="!comite">
           <h3 >Tabla resumen</h3>
@@ -94,7 +94,7 @@
               <td>{{no}}</td>
               <td>{{si + no}}</td>
             </tr>
-            <tr><td>Total alicuota</td>
+            <tr><td>Total alícuota</td>
             <td>{{alicuotaSi}}</td>
             <td>{{alicuotaNo}}</td>
             <td>{{alicuotaNo + alicuotaSi}}</td>
@@ -133,7 +133,7 @@
           <h3 mb-2>Gráfico según número de votantes del comité</h3>
           <ve-pie :data="chartData" :settings="chartSettingsN"></ve-pie>
         </v-card>
-        
+
       </v-flex>
         <v-flex xs12 mt-4 v-if="!comite">
           <h3 style="margin-bottom: 20px;">VOTANTES</h3>
@@ -147,7 +147,7 @@
           class="elevation-1"
         >
           <template slot="items" slot-scope="props">
-            
+
             <td >{{ moment(props.item.created_at).format("DD-MM-YYYY") }}</td>
             <td >{{ props.item.residents.name }}</td>
             <td v-if="props.item.accepted"><v-chip color="green" small text-color="white">SI</v-chip></td>
@@ -201,7 +201,7 @@
           value: 'residents.rut'
         },
          {
-          text: 'Alicuota',
+          text: 'Alícuota',
           value: 'residents.percentage'
         },
         {
@@ -239,15 +239,15 @@
             sortable: false,
             value: 'comment'
           }],
-          
+
       votos: [],
 
       columns : [
-        {title: 'NOMBRE', dataKey: 'nombre'}, 
-        {title: 'RUT', dataKey: 'rut'}, 
-        {title: 'ALICUOTA', dataKey: 'alicuota'}, 
+        {title: 'NOMBRE', dataKey: 'nombre'},
+        {title: 'RUT', dataKey: 'rut'},
+        {title: 'ALÍCUOTA', dataKey: 'alicuota'},
         {title:'DEPARTAMENTO', dataKey: 'departamento'},
-        {title: 'VOTO', dataKey: 'voto'}, 
+        {title: 'VOTO', dataKey: 'voto'},
         {title: 'COMENTARIO', dataKey:'comentario'}
         ],
 
@@ -275,7 +275,7 @@
       dialog (val) {
         val || this.close()
       },
-       detalleEncuesta: function(newVal, oldVal) { 
+       detalleEncuesta: function(newVal, oldVal) {
          this.no = 0
          this.si = 0
          this.file = ''
@@ -288,7 +288,7 @@
 
     created () {
       this.initialize()
-    }, 
+    },
 
 
     methods: {
@@ -317,11 +317,11 @@
                 }
               })
               this.total = this.votos.length
-              
+
               let calculo = [{'respuesta': 'SI', 'numero': this.si, 'porcentaje': this.alicuotaSi },
                 {'respuesta': 'NO', 'numero': this.no, 'porcentaje': this.alicuotaNo },
                 {'respuesta': 'SIN VOTAR', 'numero': this.residentes - this.no - this.si, 'porcentaje': 100 - this.alicuotaNo - this.alicuotaSi }]
-                
+
               this.chartData.rows = calculo
             }
             else{
@@ -336,7 +336,7 @@
         })
         .catch(e => {
           console.log(e)
-        })  
+        })
       },
 
       handleFileUpload(){
@@ -348,8 +348,8 @@
         return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
     },
 
-    download (item) { 
-      let data = this.$store.state.conf.api+'/questions-attachments/attachment/'+item.attachment_uuid 
+    download (item) {
+      let data = this.$store.state.conf.api+'/questions-attachments/attachment/'+item.attachment_uuid
       const link = document.createElement("a")
       link.setAttribute("href", data)
       link.setAttribute("target", '_blank')
@@ -368,7 +368,7 @@
         let votos = this.votos.map( voto => {
           let votacion = voto.accepted ? 'SI' : 'NO'
           let v = {
-            'nombre': voto.residents.name, 
+            'nombre': voto.residents.name,
             'rut' : voto.residents.rut,
             'alicuota' : voto.residents.percentage,
             'departamento' : voto.residents.departament,
@@ -379,7 +379,7 @@
         })
         let resumen = [
           { titulo: 'Total votos', si : this.si, no : this.no, total : this.si + this.no},
-          { titulo: 'Total alicuota', si : this.alicuotaSi, no : this.alicuotaNo, total : this.alicuotaSi + this.alicuotaNo}
+          { titulo: 'Total alícuota', si : this.alicuotaSi, no : this.alicuotaNo, total : this.alicuotaSi + this.alicuotaNo}
         ]
         doc.autoTable(this.resumen, resumen, {margin: {top: 40}})
         doc.text('Votantes', 15, 70)
@@ -399,7 +399,7 @@
             console.log(e)
           })
       },
-    
+
       enviar(){
         this.cargando = true
         let formData = new FormData()
@@ -411,7 +411,7 @@
           headers: { "Authorization": "Bearer " + localStorage.getItem('bazam-token-control')}
         })
         .then(resp => {
-          
+
             if(resp.status === 201){
               return resp.json();
             }
@@ -428,7 +428,7 @@
         })
         .catch(e => {
           console.log(e)
-        })    
+        })
       },
     },
 

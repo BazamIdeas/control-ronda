@@ -75,7 +75,7 @@
             <td >{{ moment(props.item.exit.date).format('DD') }} </td>
             <td >{{ moment(props.item.exit.date).format('HH:mm') }} </td>
             <td >{{ conversorHoras(props.item.total_worked_hours) }} </td>
-            <td >{{ diferencial(props.item.total_worked_hours) }} </td>
+            <td >{{ diferencial(props.item.extra_worked_hours) }} </td>
             <td ><v-icon v-if= props.item.is_holiday large color="green darken-2">done</v-icon> </td>
           </template>
           <template slot="no-data">
@@ -229,6 +229,8 @@
     },
 
     created () {
+              console.log("empleado", this.props)
+
       if (this.mes_numero){
         this.mesN = this.mes_numero
       }
@@ -351,18 +353,23 @@
         }
       },
       diferencial(horas){
-        var a = horas
-        var b = this.$store.state.sesion.working_hours
-        let h= (parseFloat(a) - parseFloat(b)).toFixed(2)
-        let r = h < 0 ? 0 : h
-
-        if(r<=0){
-          return "Sin diferencial"
-        }else if(r > 0 && r<60){
-        return moment.duration(parseInt(r), "minutes").humanize()
-        }else if(r >= 60){
-          let getMinutes = r.toString().split(".")[1]
-         return moment.duration(parseInt(r), "minutes").humanize() +" "+ getMinutes+" minutos" || ""
+         var a = parseFloat(horas).toFixed(2)
+        // var b = this.$store.state.sesion.working_hours
+        // let h= (parseFloat(a) - parseFloat(b)).toFixed(2)
+        // let r = h < 0 ? 0 : h
+ // "0 seconds, 3 minutes, 2 hours"
+        console.log("a" ,a)
+       if(a == 0 || a < 0){
+          return "Sin diferencial "
+        }
+        if( a > 0 && a < 1){
+        let getMinutes =  parseInt(a.toString().split('.')[1])
+        return moment.duration( getMinutes, "minutes").humanize()
+        }else if(a > 1){
+          let splitHours = a.toString().split(".")
+          let getMinutes =  parseInt(splitHours[1])
+          let getHours = parseInt(splitHours[0])
+         return getHours + ":" + getMinutes + " horas"
         }
       },
 
