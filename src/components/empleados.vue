@@ -29,7 +29,7 @@
         <v-dialog v-model="dialog" max-width="500px">
           <v-card>
             <v-card-title>
-              <span class="headline">{{ formTitle }}</span>
+              <span class="headline">{{ formTitle }} </span>
             </v-card-title>
 
             <v-card-text>
@@ -55,7 +55,7 @@
         :items="employees"
         :search="search"
         rows-per-page-text= "Número de Filas"
-        class="elevation-1"   
+        class="elevation-1"
              :loading="loading1"
       >
                             <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
@@ -146,9 +146,9 @@
                   label="Hora de salida"
                   readonly
                   ></v-text-field>
-                  <v-time-picker 
-                  v-model="hora2" 
-                  locale="es-419" 
+                  <v-time-picker
+                  v-model="hora2"
+                  locale="es-419"
                   @input="$refs.menu.save(hora2)"
                   format="24hr"
                   scrollable>
@@ -187,7 +187,7 @@
 <script>
   import BzReport from "./report.vue"
   import BzResume from "./resume.vue"
-
+  import env from "../../config/env.js";
   var moment = require ('moment')
 
   export default {
@@ -213,8 +213,8 @@
       tiempoReal: [],
       sinTerminar: [],
       headers2:[
-        { 
-        text: 'Nombre', 
+        {
+        text: 'Nombre',
         sortable: true,
         value: 'watchers.worker.first_name',
         },
@@ -275,7 +275,7 @@
       fechaHora: function (){
         let fecha = this.date ? moment(this.date).format('YYYY-MM-DD') : moment(this.fechaActual).format('YYYY-MM-DD')
         return fecha + ' ' + this.hora2 + ':00'
-         
+
       }
     },
 
@@ -328,12 +328,12 @@
       },
       cerrarJornada (jornada) {
         //console.log(jornada)
-        this.$axios.post('/asistencias/cerrar/', { 
+        this.$axios.post('asistencias/cerrar/', {
           "date" : this.fechaHora,
           "watchers_id" : jornada.watchers.id,
           "workers_id" : jornada.workers.id,
           "work_time_id": jornada.id
-          }, {baseURL: this.$store.state.conf.api2,})
+          }, {baseURL:  env.API_URL,})
         .then(resp => {
           //console.log(resp)
           if(resp.status === 200){
@@ -400,6 +400,7 @@
         this.selected = item.id
         this.employeesReport = item
         this.ventana = true
+
       },
 
       getResume(item){

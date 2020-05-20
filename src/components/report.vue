@@ -43,7 +43,7 @@
               :close-on-content-click="false"
               v-model="menu"
               :nudge-right="40"
-              
+
               lazy
               transition="scale-transition"
               offset-y
@@ -75,7 +75,7 @@
             <td >{{ moment(props.item.exit.date).format('DD') }} </td>
             <td >{{ moment(props.item.exit.date).format('HH:mm') }} </td>
             <td >{{ conversorHoras(props.item.total_worked_hours) }} </td>
-            <td >{{ diferencial(props.item.total_worked_hours) }} </td>
+            <td >{{ diferencial(props.item.extra_worked_hours) }} </td>
             <td ><v-icon v-if= props.item.is_holiday large color="green darken-2">done</v-icon> </td>
           </template>
           <template slot="no-data">
@@ -95,7 +95,7 @@
   let m= d.getMonth()
   var moment = require ('moment')
   moment.locale('es')
- 
+
     var jsPDF = require ('jspdf')
   var fileSaver = require ('file-saver')
   var xlsx = require ('xlsx')
@@ -128,64 +128,64 @@
           value: 'last_name',
 
         },
-        { 
-          text: 'Inicio Colación', 
-          value: 'status', 
+        {
+          text: 'Inicio Colación',
+          value: 'status',
 
         },
-        { 
-          text: 'Termino Colación', 
-          value: 'name', 
+        {
+          text: 'Termino Colación',
+          value: 'name',
 
         },
-        { 
-          text: 'Dia de Salida', 
-          value: 'name', 
+        {
+          text: 'Dia de Salida',
+          value: 'name',
 
         },
-        { 
-          text: 'Hora Salida', 
-          value: 'name', 
+        {
+          text: 'Hora Salida',
+          value: 'name',
 
         },
-        { 
-          text: 'Tiempo Trabajado', 
-          value: 'name', 
+        {
+          text: 'Tiempo Trabajado',
+          value: 'name',
 
         },
-        { 
-          text: 'Diferencial', 
-          value: 'name', 
+        {
+          text: 'Diferencial',
+          value: 'name',
 
         },
-        { 
-          text: 'Festivo', 
-          value: 'name', 
+        {
+          text: 'Festivo',
+          value: 'name',
         }
       ],
       columns : [
-        {title: 'DIA', dataKey: 'dia'}, 
-        {title: 'INGRESO', dataKey: 'entrada'}, 
-        {title: 'INICIO COLACION', dataKey: 'inicio_colacion'}, 
+        {title: 'DIA', dataKey: 'dia'},
+        {title: 'INGRESO', dataKey: 'entrada'},
+        {title: 'INICIO COLACION', dataKey: 'inicio_colacion'},
         {title:'TERMINO COLACION', dataKey: 'final_colacion'},
-        {title: 'DIA SALIDA', dataKey: 'fecha_salida'}, 
-        {title: 'SALIDA', dataKey: 'salida'}, 
-        {title: 'TIEMPO TRABAJADO', dataKey:'horas'}, 
+        {title: 'DIA SALIDA', dataKey: 'fecha_salida'},
+        {title: 'SALIDA', dataKey: 'salida'},
+        {title: 'TIEMPO TRABAJADO', dataKey:'horas'},
         {title:'DIFERENCIAL', dataKey: 'diferencial'},
         {title:'FESTIVO', dataKey: 'festivo'}
         ],
       assistances: [],
     }),
 
-    watch: { 
-      empleado: function(newVal, oldVal) { 
+    watch: {
+      empleado: function(newVal, oldVal) {
         this.date = null
         if (this.mes_numero){
         this.mesN = this.mes_numero
       }
         this.initialize(this.mesN,this.anio)
       },
-      mes_numero: function(newVal, oldVal) { 
+      mes_numero: function(newVal, oldVal) {
         this.date = null
         if (this.mes_numero){
         this.mesN = this.mes_numero
@@ -199,7 +199,7 @@
          const totalDurations = durations.slice(1)
         .reduce((prev, cur) => moment.duration(cur).add(prev),
           moment.duration(durations[0]))
-        
+
         console.log(`Total time is: ${moment.utc(totalDurations.asMilliseconds()).format("HH:mm:ss")}`)
 
       },
@@ -211,7 +211,7 @@
 
       mountHour: function () {
         let priceHour= parseFloat(this.priceHour)
-        return (parseFloat(this.total_horas_extras) * parseFloat(priceHour)).toFixed(2) 
+        return (parseFloat(this.total_horas_extras) * parseFloat(priceHour)).toFixed(2)
       },
       mes: function (){
         if (this.mes_numero){
@@ -229,6 +229,8 @@
     },
 
     created () {
+              console.log("empleado", this.props)
+
       if (this.mes_numero){
         this.mesN = this.mes_numero
       }
@@ -245,13 +247,13 @@
             let dias = []
             this.total_horas_extras = 0
             this.total_horas = 0
-            
+
             // Obteniendo todas las claves del JSON
             for (var dia in resp.data.month_data.days){
               dias.push(resp.data.month_data.days[dia])
               this.total_horas_extras += Math.abs(resp.data.month_data.days[dia].extra_worked_hours)
               this.total_horas += Math.abs(resp.data.month_data.days[dia].total_worked_hours)
- 
+
               //mark
             }
 
@@ -268,7 +270,7 @@
           this.assistances = []
           alert('No hay reportes para esta fecha')
           console.log(e)
-        }) 
+        })
       },
 
       printElem() {
@@ -284,7 +286,7 @@
           this.download(anio, mes)
         }
       },
-      
+
       conversorHoras (decimalTimeString) {
         console.log(decimalTimeString)
          var decimalTime = parseFloat(decimalTimeString);
@@ -312,7 +314,7 @@
         }
 
         return hours+":"+minutes+":"+seconds
-      }, 
+      },
 
       download(anio, mes){
         this.$axios.get('/workers/'+this.empleado.id+'/data/'+anio+'/'+mes+'/download')
@@ -333,36 +335,41 @@
         .catch(e => {
           alert('No hay reportes para esta fecha')
           console.error(e)
-        }) 
+        })
       },
 
       inicio_colacion(item){
-        if (item.hasOwnProperty('break')){ 
+        if (item.hasOwnProperty('break')){
           return moment(item.break.date).format('HH:mm')
         }else{
           return '-'
         }
       },
       final_colacion(item){
-        if (item.hasOwnProperty('finish_break')){ 
+        if (item.hasOwnProperty('finish_break')){
           return moment(item.finish_break.date).format('HH:mm')
         }else{
           return '-'
         }
       },
       diferencial(horas){
-        var a = horas
-        var b = this.$store.state.sesion.working_hours
-        let h= (parseFloat(a) - parseFloat(b)).toFixed(2) 
-        let r = h < 0 ? 0 : h
-
-        if(r<=0){
-          return "Sin diferencial"
-        }else if(r > 0 && r<60){
-        return moment.duration(parseInt(r), "minutes").humanize()
-        }else if(r >= 60){
-          let getMinutes = r.toString().split(".")[1]
-         return moment.duration(parseInt(r), "minutes").humanize() +" "+ getMinutes+" minutos" || ""
+         var a = parseFloat(horas).toFixed(2)
+        // var b = this.$store.state.sesion.working_hours
+        // let h= (parseFloat(a) - parseFloat(b)).toFixed(2)
+        // let r = h < 0 ? 0 : h
+ // "0 seconds, 3 minutes, 2 hours"
+        console.log("a" ,a)
+       if(a == 0 || a < 0){
+          return "Sin diferencial "
+        }
+        if( a > 0 && a < 1){
+        let getMinutes =  parseInt(a.toString().split('.')[1])
+        return moment.duration( getMinutes, "minutes").humanize()
+        }else if(a > 1){
+          let splitHours = a.toString().split(".")
+          let getMinutes =  parseInt(splitHours[1])
+          let getHours = parseInt(splitHours[0])
+         return getHours + ":" + getMinutes + " horas"
         }
       },
 
@@ -371,10 +378,10 @@
         doc.text('Reporte mensual de asistencia', 15, 20)
         doc.setFontSize(12)
         doc.text('Mes: '+this.mes+" | Empleado: "+this.empleado.first_name, 15, 25)
-        
+
         const file = 'Reporte Mensual de asistencia: '+this.empleado.first_name +"-"+this.mes+"-"+this.anio+'.pdf'
         let tabla = []
-        
+
         this.assistances.forEach(asistencia => {
 
           let festivo = asistencia.is_holiday ? 'SI' : 'NO'
@@ -388,8 +395,8 @@
             'final_colacion' : finish_break,
             'fecha_salida' : moment(asistencia.exit.date).format('DD'),
             'salida' : moment(asistencia.exit.date).format('HH:mm'),
-            'horas': parseFloat(asistencia.total_worked_hours).toFixed(2) ,
-            'diferencial': parseFloat(asistencia.extra_worked_hours).toFixed(2) ,
+            'horas':  this.conversorHoras(asistencia.total_worked_hours),
+            'diferencial': this.diferencial(asistencia.extra_worked_hours),
             'festivo' : festivo
           })
         });
@@ -411,7 +418,7 @@
         this.assistances.forEach(asistencia => {
 
           let festivo = asistencia.is_holiday ? 'SI' : 'NO'
-          
+
           let ini_break = asistencia.hasOwnProperty('break') ? moment(asistencia.break.date).format('HH:mm') : '-'
           let finish_break = asistencia.hasOwnProperty('finish_break') ? moment(asistencia.finish_break.date).format('HH:mm') : '-'
                 console.log("tw  ",asistencia.total_worked_hours)

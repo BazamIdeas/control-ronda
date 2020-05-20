@@ -92,7 +92,7 @@
                             >
                               {{ name.substring(0,28) }} - [ {{ (size / 100).toFixed(2) }} Kb ]
                             </v-chip>
-                            
+
                           </template>
                           <v-icon color="white">cloud_upload</v-icon>
                         </v-btn>
@@ -126,7 +126,7 @@
 
           <!--  RESIDENTS DIALOG END-->
 
-          
+
 
           <v-dialog v-model="dialog" max-width="500px">
             <v-btn icon slot="activator">
@@ -165,12 +165,12 @@
                       <v-text-field
                         v-model="editedItem.email"
                         label="Email"
-                          :loading="searching" 
+                          :loading="searching"
                           type="email"
                          :disable="searching"
                         :rules="[rules.required, rules.email]"
                       >
- 
+
                       <template slot="append">
                         <v-fade-transition leave-absolute>
                           <v-progress-circular
@@ -196,7 +196,7 @@
                     <v-flex xs6>
                       <v-text-field
                         v-model.number="editedItem.percentage"
-                        label="% Alicuota"
+                        label="% Alícuota"
                         :rules="[rules.required]"
                       ></v-text-field>
                     </v-flex>
@@ -353,7 +353,7 @@
 <script>
 import BzUsuario from "./usuario.vue";
 import papaparse from "papaparse";
- 
+
 import { nodeInstance } from '../axios';
 export default {
   components: { BzUsuario },
@@ -419,7 +419,7 @@ export default {
         value: "departament"
       },
       {
-        text: "Alicuota (%)",
+        text: "Alícuota (%)",
         value: "percentage"
       },
       {
@@ -538,7 +538,7 @@ export default {
 
 /*       alert("ja " + v) */
       this.searching = true
-      var token = localStorage.getItem("bazam-token-control"); 
+      var token = localStorage.getItem("bazam-token-control");
       this.$axios.post("/residents/check-email",
                   {email:v},
                   { headers: {
@@ -548,7 +548,7 @@ export default {
                     console.log(res)
                           this.searching = false
                           this.emailStatus = true
-               
+
                   }).catch(err =>{
                     console.log(err)
                           this.searching = false
@@ -766,7 +766,7 @@ export default {
         this.$axios.get('/residents/username/'+this.editedItem.username)
         .then(resp => {
           if(resp.status === 200){
-            alert("El usuario esta en uso")         
+            alert("El usuario esta en uso")
           }
         })
     }, */
