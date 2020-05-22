@@ -374,11 +374,12 @@ export default {
       asi que se decidio calcularlo aca (total_extra_hours)
       */
 
-      let splited = horas.split(":");
+      let splited = hours.split(":");
       splited.pop();
       let joined = splited.join(".");
       // se calcula si el primer valor es 00
-      if (joined <= 0) {
+      console.log(joined);
+      if (joined - 8 < 0 ) {
         return "sin diferencial";
       }
       if (splited[0] == 0 || splited[0] == "00") {
@@ -389,16 +390,16 @@ export default {
       if (joined == 0 || joined < 0) {
         return "sin diferencial";
       }
-      let result = joined - 8;
-      return result.toString().replace(".", ":");
-
-      var a = parseFloat(horas).toFixed(2);
+      let r = joined - 8;
+      let result = parseFloat(r).toFixed(2)
+      return result.toString().replace(".", ":")
+      //var a = parseFloat(horas).toFixed(2);
       // var b = this.$store.state.sesion.working_hours
       // let h= (parseFloat(a) - parseFloat(b)).toFixed(2)
       // let r = h < 0 ? 0 : h
       // "0 seconds, 3 minutes, 2 hours"
 
-/*       if (a == 0 || a < 0) {
+      /*       if (a == 0 || a < 0) {
         return "Sin diferencial ";
       }
       if (a > 0 && a < 1) {
