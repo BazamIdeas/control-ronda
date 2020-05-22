@@ -82,6 +82,8 @@
           :search="search"
           rows-per-page-text="Número de Filas"
            class="elevation-1"
+          :pagination.sync="pagination"
+
           :loading="isLoading"
         >
                                 <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
@@ -173,6 +175,10 @@ export default {
     dialog: false,
     tipoInforme: "diario",
     selected: 0,
+     pagination: {
+      sortBy: 'zone', // The field that you're sorting by
+      descending: true
+    },
     columns: [
       { title: "ZONA", dataKey: "zona" },
       { title: "PUNTO", dataKey: "punto" },
@@ -187,19 +193,19 @@ export default {
       {
         text: "Fecha",
         align: "left",
-        sortable: false,
-        value: "name"
+        sortable: true,
+        value: "date"
       },
       {
         text: "Zona",
         align: "left",
-        sortable: false,
-        value: "name"
+        sortable: true,
+        value: "zone"
       },
       {
         text: "Punto de control",
         value: "name",
-        sortable: false,
+        sortable: true,
         align: "left"
       },
       {
@@ -245,6 +251,7 @@ export default {
   },
 
   methods: {
+
     initialize() {
       this.isLoading = true;
       this.nonRead = []
