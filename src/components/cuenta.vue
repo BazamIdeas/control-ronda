@@ -1,6 +1,6 @@
 <template>
-<v-container grid-list-md >
-<!--    <v-layout row wrap>
+  <v-container grid-list-md>
+    <!--    <v-layout row wrap>
     <v-flex xs4 >
       <v-card>
         <v-container >
@@ -106,21 +106,48 @@
         </v-container>
       </v-card>
     </v-flex>
-  </v-layout> -->
-        <v-layout>
- <v-flex xs12 md6>
-   <h1 class="dashboard-title"> Módulos Habilitados Para su Plan: </h1>
-    <br><br>
-   </v-flex>
+    </v-layout>-->
+    <v-layout row wrap justify-space-between>
+      <v-flex xs12 md8>
+        <h1 class="dashboard-title">Módulos Habilitados Para su Plan:</h1>
+        <br />
+        <br />
+        <v-layout row wrap>
+          <v-flex md4 sm4 xs12 v-for="(item,index) in infocard" :key="index">
+            <bz-infocard
+              :title="item.title"
+              :shape="item.shape"
+              :styles="item.style"
+              :url="item.url"
+              :mod="item.mod"
+            ></bz-infocard>
+            <br />
+            <br />
+          </v-flex>
         </v-layout>
-              <v-layout row wrap>
-        <v-flex md4 xs12 v-for="(item,index) in infocard" :key="index">
-          <bz-infocard :title="item.title" :shape="item.shape" :styles="item.style"></bz-infocard>
-          <br><br>
-        </v-flex>
-      </v-layout>
+      </v-flex>
+      <v-flex xs12 sm6 md4>
+        <v-layout>
+          <v-flex>
+            <v-card class="password-card">
+              <v-container>
+                <h2>Bienvenido {{nombre}}</h2>
 
-</v-container>
+                <v-layout row wrap>
+                  <v-flex xs8>
+                    <v-text-field label="Cambiar contraseña" v-model="pass"></v-text-field>
+                  </v-flex>
+                  <v-flex xs4>
+                    <button @click="changePass()">Guardar</button>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-card>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 <script>
 import BzInfocard from "@/components/micro/infocard";
@@ -137,7 +164,8 @@ export default {
           gradient: "linear-gradient(0deg, #d8801e 0%, #efc231 100%)",
           color: "orange"
         },
-        url: "/asistencias"
+        url: "/asistencias",
+        mod: "assistances_mod"
       },
       {
         title: "RONDA",
@@ -146,7 +174,8 @@ export default {
           gradient: "linear-gradient(0deg, #3b68ae 0%, #5da4e7 100%)",
           color: "blue"
         },
-        url: "/rondas"
+        url: "/rondas",
+        mod: "assistances_mod"
       },
       {
         title: "ENCUESTAS",
@@ -155,7 +184,8 @@ export default {
           gradient: "linear-gradient(0deg, #232325 0%, #5b595a 100%)",
           color: "black"
         },
-        url: "/encuestas"
+        url: "/encuestas",
+        mod: "assistances_mod"
       },
       /*       {
         title: "TURNOS",
@@ -180,7 +210,8 @@ export default {
           gradient: "linear-gradient(0deg, #ffcd07 0%, #ffae00 100%)",
           color: "yellow"
         },
-        url: "/gestion"
+        url: "/gestion",
+        mod: "assistances_mod"
       }
     ]
   }),
@@ -259,6 +290,22 @@ export default {
   box-shadow: 2px 2px 11px 1px rgba(0, 0, 0, 0.25);
   border-radius: 5%;
   text-align: center;
+}
+.password-card {
+  box-shadow: 2px 2px 11px 1px rgba(0, 0, 0, 0.25);
+   border-radius: 7px;
+
+}
+.password-card button {
+  color: white;
+  background: #4caf50;
+  font-weight: bold;
+  text-transform: capitalize;
+  padding: 0.3rem;
+  margin-top: 1rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  border-radius: 2rem;
 }
 .desabilitado {
   color: crimson;

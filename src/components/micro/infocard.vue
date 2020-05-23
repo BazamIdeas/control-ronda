@@ -13,45 +13,48 @@
   </div>
 
   <div class="power-actions">
-
     <div class="col">
       <v-switch  style="padding-top:0; margin-top:0;"
-               value input-value="true"
+              v-model="isActive"
               :color="styles.color"
                hide-details
-               @click="() => false"
+               @click.prevent
             ></v-switch>
-
     </div>
 
   <div class="col">
    <button
-    @click="goTo(url)"
+    @click="goTo()"
     :style="`background-image: ${styles.gradient}`"
     class="button" round >acceder</button>
 
   </div>
 
   </div>
-
 </div>
-
-
 </template>
+
 <script>
 export default {
   data: () => ({
     p: "hola"
   }),
-  props: ["title", "shape", "styles", "url"],
+  props: ["title", "shape", "styles", "url", "mod"],
   methods: {
     getImgUrl(pic) {
       return require("@/assets/" + pic);
     },
-    goTo(to){
-      console.log(to)
-      this.$router.push(to)
+    goTo() {
+      this.$router.push(this.url);
     }
+  },
+  computed: {
+    isActive() {
+      let result = this.$store.state.sesion[this.mod];
+      console.log(this.mod);
+      return result;
+    },
+
   }
 };
 </script>
@@ -62,8 +65,7 @@ export default {
   background-image: linear-gradient(0deg, #f2f2f2 0%, #ffffff 100%);
   border: solid 1px #e0e0e0;
   border-radius: 7px;
-  width: 18rem;
-  /* background:url('../assets/draw-bg.svg'); */
+   /* background:url('../assets/draw-bg.svg'); */
 }
 .power-actions .button {
   color: white;
