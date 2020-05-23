@@ -45,7 +45,11 @@ export default {
       return require("@/assets/" + pic);
     },
     goTo() {
-      this.$router.push(this.url);
+      if(isActive){
+        this.$router.push(this.url);
+      }else {
+        alert("Aun no ha habilitado esta caracteristica.")
+      }
     }
   },
   computed: {

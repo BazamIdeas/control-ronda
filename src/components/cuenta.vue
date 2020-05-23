@@ -175,7 +175,7 @@ export default {
           color: "blue"
         },
         url: "/rondas",
-        mod: "assistances_mod"
+        mod: "routes_mod"
       },
       {
         title: "ENCUESTAS",
@@ -185,7 +185,7 @@ export default {
           color: "black"
         },
         url: "/encuestas",
-        mod: "assistances_mod"
+        mod: "tasks_mod"
       },
       /*       {
         title: "TURNOS",
@@ -211,7 +211,7 @@ export default {
           color: "yellow"
         },
         url: "/gestion",
-        mod: "assistances_mod"
+        mod: "tasks_mod"
       }
     ]
   }),
