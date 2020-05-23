@@ -1,6 +1,6 @@
 <template>
-      <v-container fluid fill-height>
-      <v-layout align-center justify-center>
+  <v-container fluid fill-height>
+     <v-layout align-center justify-center>
           <v-flex xs12 sm8 md4 >
             <v-card class="elevation-12">
               <v-toolbar dark color="primary">
@@ -26,85 +26,47 @@
 
         </v-layout>
 
-<!--
 
-<div class="powers">
-  <div class="power-header">
-</div>
-
-  <v-row class="power-actions">
-
-    <div class="col">
-      <v-switch
-
-              v-model="ex11"
-              label="red"
-              color="red"
-              value="red"
-              hide-details
-            ></v-switch>
-
-    </div>
-
-  <div class="col">
-   <v-btn round>Rounded Button</v-btn>
-
-  </div>
-
-  </v-row>
-
-</div>
-
-
--->
-        </v-container>
-
+  </v-container>
 </template>
-<style scoped>
-.power-header {
-  height: 400px;
-  width:400px;
-  background:url('../assets/draw-bg.svg');
-  border-bottom: solid red;
-}
-.power-actions{
-  display: flex;
-  justify-content: space-around;
-}
-</style>
+
 <script>
-  import axios from '../axios.js'
-  export default {
-    data: () => ({
-      username: null,
-      pass: null,
-      drawer: null
-    }),
-    props: {
-      source: String
-    },
-    methods: {
-      login(){
-        axios.post('/supervisors/login', {
-          username : this.username,
-          password : this.pass
+import axios from "../axios.js";
+ export default {
+
+  data: () => ({
+    username: null,
+    pass: null,
+    drawer: null
+  }),
+  props: {
+    source: String
+  },
+  methods: {
+    login() {
+      axios
+        .post("/supervisors/login", {
+          username: this.username,
+          password: this.pass
         })
         .then(resp => {
-          if(resp.status === 200){
-            this.$store.commit('SET_SESION',resp.data.worker)
-            localStorage.setItem('bazam-token-control', resp.data.token)
-            localStorage.setItem('bazam-condo-id',JSON.stringify(resp.data.worker.condos.id))
-            this.$router.push('cuenta')
-          }
-          else{
-            alert("Usuario o contraseña invalida")
+          if (resp.status === 200) {
+            this.$store.commit("SET_SESION", resp.data.worker);
+            localStorage.setItem("bazam-token-control", resp.data.token);
+            localStorage.setItem(
+              "bazam-condo-id",
+              JSON.stringify(resp.data.worker.condos.id)
+            );
+            this.$router.push("cuenta");
+          } else {
+            alert("Usuario o contraseña invalida");
           }
         })
         .catch(e => {
-          alert("Usuario o contraseña invalida")
-          console.log(e)
-        })
-      }
+          alert("Usuario o contraseña invalida");
+          console.log(e);
+        });
     }
   }
+};
 </script>

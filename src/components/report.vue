@@ -373,13 +373,13 @@ export default {
       /* existe un error al calcular las horas desde el backend
       asi que se decidio calcularlo aca (total_extra_hours)
       */
-
+      let rule = this.$store.state.sesion.working_hours;
       let splited = hours.split(":");
       splited.pop();
       let joined = splited.join(".");
       // se calcula si el primer valor es 00
       console.log(joined);
-      if (joined - 8 < 0 ) {
+      if (joined - rule < 0 ) {
         return "sin diferencial";
       }
       if (splited[0] == 0 || splited[0] == "00") {
@@ -390,27 +390,9 @@ export default {
       if (joined == 0 || joined < 0) {
         return "sin diferencial";
       }
-      let r = joined - 8;
+      let r = joined - rule;
       let result = parseFloat(r).toFixed(2)
       return result.toString().replace(".", ":")
-      //var a = parseFloat(horas).toFixed(2);
-      // var b = this.$store.state.sesion.working_hours
-      // let h= (parseFloat(a) - parseFloat(b)).toFixed(2)
-      // let r = h < 0 ? 0 : h
-      // "0 seconds, 3 minutes, 2 hours"
-
-      /*       if (a == 0 || a < 0) {
-        return "Sin diferencial ";
-      }
-      if (a > 0 && a < 1) {
-        let getMinutes = parseInt(a.toString().split(".")[1]);
-        return moment.duration(getMinutes, "minutes").humanize();
-      } else if (a > 1) {
-        let splitHours = a.toString().split(".");
-        let getMinutes = parseInt(splitHours[1]);
-        let getHours = parseInt(splitHours[0]);
-        return getHours + ":" + getMinutes + " horas";
-      } */
     },
 
     pdf() {
