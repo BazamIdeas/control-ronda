@@ -185,7 +185,7 @@ export default {
           color: "black"
         },
         url: "/encuestas",
-        mod: "tasks_mod"
+        mod: "surveys_mod"
       },
       /*       {
         title: "TURNOS",

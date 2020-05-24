@@ -55,8 +55,7 @@ export default {
   computed: {
     isActive() {
       let result = this.$store.state.sesion[this.mod];
-      console.log(this.mod);
-      return result;
+       return result;
     },
 
   }
