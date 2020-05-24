@@ -1,90 +1,90 @@
 <template>
-  <v-container grid-list-md >
-  <v-layout row wrap>
-    <v-flex xs10 class="white" offset-xs1>
-      <v-card>
-        <v-toolbar color="grey" dark>
-          <v-toolbar-side-icon></v-toolbar-side-icon>
-          <v-toolbar-title>Reporte mensual de asistencia - Empleado: {{ empleado.first_name }} {{ empleado.last_name }}</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-chip @click="excel()" small>
-            <v-avatar>
-              <v-icon>arrow_downward</v-icon>
-            </v-avatar>
-            Excel
-          </v-chip>
-          <v-chip @click="pdf()" small>
-            <v-avatar>
-              <v-icon>arrow_downward</v-icon>
-            </v-avatar>
-            Pdf
-          </v-chip>
-        </v-toolbar>
-        <v-container grid-list-md >
-        <v-layout row wrap>
-          <v-flex xs12 sm6 md2>
-            <v-text-field label="Horas Jornada" v-model= jornada readonly> </v-text-field>
-          </v-flex>
-          <v-flex xs12 sm6 md2>
-            <v-text-field label="Valor Hora" v-model= valor_hora prefix="$"> </v-text-field>
-          </v-flex>
-          <v-flex xs12 sm6 md2>
-            <v-text-field label="%  Hora extra" v-model= porcentaje prefix="%"> </v-text-field>
-          </v-flex>
-          <v-flex xs12 sm6 md2>
-            <v-text-field label="Tiempo extra" v-model= priceHour prefix="$" readonly></v-text-field>
-          </v-flex>
-          <v-flex xs12 sm6 md2>
-            <v-text-field label="Pagar adicional" v-model= mountHour readonly prefix="$" color="success" ></v-text-field>
-          </v-flex>
-          <v-flex xs12 sm6 md2>
-            <v-menu
-              ref="menu"
-              :close-on-content-click="false"
-              v-model="menu"
-              :nudge-right="40"
-
-              lazy
-              transition="scale-transition"
-              offset-y
-              full-width
-              min-width="290px"
-            >
-            <v-text-field
-            slot="activator"
-            v-model="mes"
-            label="Mes"
-            readonly
-          ></v-text-field>
-          <v-date-picker v-model="date" locale="es-419" @input="$refs.menu.save(date)" type="month"></v-date-picker>
-            </v-menu>
-          </v-flex>
-        </v-layout>
-        </v-container>
-        <v-data-table
-          :headers="headers"
-          :items="assistances"
-          hide-actions
-          class="elevation-1"
-        >
-          <template slot="items" slot-scope="props">
-            <td >{{ props.item.day }} </td>
-            <td >{{ moment(props.item.entry.date).format('HH:mm') }} </td>
-            <td >{{ inicio_colacion(props.item) }} </td>
-             <td >{{ final_colacion(props.item) }} </td>
-            <td >{{ moment(props.item.exit.date).format('DD') }} </td>
-            <td >{{ moment(props.item.exit.date).format('HH:mm') }} </td>
-            <td >{{ conversorHoras(props.item.total_worked_hours) }} </td>
-            <td >{{ diferencial(conversorHoras(props.item.total_worked_hours))}} </td>
-            <td ><v-icon v-if= props.item.is_holiday large color="green darken-2">done</v-icon> </td>
-          </template>
-          <template slot="no-data">
-            <v-btn color="primary" @click="initialize">Recargar</v-btn>
-          </template>
-        </v-data-table>
-      </v-card>
-    </v-flex>
-  </v-layout>
+  <v-container grid-list-md>
+    <v-layout row wrap>
+      <v-flex xs10 class="white" offset-xs1>
+        <v-card>
+          <v-toolbar color="grey" dark>
+            <v-toolbar-side-icon></v-toolbar-side-icon>
+            <v-toolbar-title>Reporte mensual de asistencia - Empleado: {{ empleado.first_name }} {{ empleado.last_name }}</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-chip @click="excel()" small>
+              <v-avatar>
+                <v-icon>arrow_downward</v-icon>
+              </v-avatar>Excel
+            </v-chip>
+            <v-chip @click="pdf()" small>
+              <v-avatar>
+                <v-icon>arrow_downward</v-icon>
+              </v-avatar>Pdf
+            </v-chip>
+          </v-toolbar>
+          <v-container grid-list-md>
+            <v-layout row wrap>
+              <v-flex xs12 sm6 md2>
+                <v-text-field label="Horas Jornada" v-model="jornada" readonly></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6 md2>
+                <v-text-field label="Valor Hora" v-model="valor_hora" prefix="$"></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6 md2>
+                <v-text-field label="%  Hora extra" v-model="porcentaje" prefix="%"></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6 md2>
+                <v-text-field label="Tiempo extra" v-model="priceHour" prefix="$" readonly></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6 md2>
+                <v-text-field
+                  label="Pagar adicional"
+                  v-model="mountHour"
+                  readonly
+                  prefix="$"
+                  color="success"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6 md2>
+                <v-menu
+                  ref="menu"
+                  :close-on-content-click="false"
+                  v-model="menu"
+                  :nudge-right="40"
+                  lazy
+                  transition="scale-transition"
+                  offset-y
+                  full-width
+                  min-width="290px"
+                >
+                  <v-text-field slot="activator" v-model="mes" label="Mes" readonly></v-text-field>
+                  <v-date-picker
+                    v-model="date"
+                    locale="es-419"
+                    @input="$refs.menu.save(date)"
+                    type="month"
+                  ></v-date-picker>
+                </v-menu>
+              </v-flex>
+            </v-layout>
+          </v-container>
+          <v-data-table :headers="headers" :items="assistances" hide-actions class="elevation-1">
+            <template slot="items" slot-scope="props">
+              <td>{{ props.item.day }}</td>
+              <td>{{ moment(props.item.entry.date).format('HH:mm') }}</td>
+              <td>{{ inicio_colacion(props.item) }}</td>
+              <td>{{ final_colacion(props.item) }}</td>
+              <td>{{ moment(props.item.exit.date).format('DD') }}</td>
+              <td>{{ moment(props.item.exit.date).format('HH:mm') }}</td>
+              <td>{{ conversorHoras(props.item.total_worked_hours) }}</td>
+              <td>{{ diferencial(conversorHoras(props.item.total_worked_hours))}}</td>
+              <td>
+                <v-icon v-if="props.item.is_holiday" large color="green darken-2">done</v-icon>
+              </td>
+            </template>
+            <template slot="no-data">
+              <v-btn color="primary" @click="initialize">Recargar</v-btn>
+            </template>
+          </v-data-table>
+        </v-card>
+      </v-flex>
+    </v-layout>
   </v-container>
 </template>
 
@@ -379,7 +379,7 @@ export default {
       let joined = splited.join(".");
       // se calcula si el primer valor es 00
       console.log(joined);
-      if (joined - rule < 0 ) {
+      if (joined - rule < 0) {
         return "sin diferencial";
       }
       if (splited[0] == 0 || splited[0] == "00") {
@@ -391,8 +391,8 @@ export default {
         return "sin diferencial";
       }
       let r = joined - rule;
-      let result = parseFloat(r).toFixed(2)
-      return result.toString().replace(".", ":")
+      let result = parseFloat(r).toFixed(2);
+      return result.toString().replace(".", ":");
     },
 
     pdf() {
@@ -432,14 +432,16 @@ export default {
           fecha_salida: moment(asistencia.exit.date).format("DD"),
           salida: moment(asistencia.exit.date).format("HH:mm"),
           horas: this.conversorHoras(asistencia.total_worked_hours),
-          diferencial: this.diferencial(asistencia.extra_worked_hours),
+          diferencial: this.diferencial(
+            this.conversorHoras(asistencia.total_worked_hours)
+          ),
           festivo: festivo
         });
       });
       tabla.push({
         dia: "TOTAL",
-        horas: parseFloat(this.total_horas).toFixed(2),
-        diferencial: parseFloat(this.total_horas_extras).toFixed(2)
+        horas: parseFloat(this.total_horas).toFixed(2).toString().replace(".", ":"),
+        diferencial: parseFloat(this.total_horas_extras).toFixed(2).toString().replace(".", ":")
       });
       doc.autoTable(this.columns, tabla, { margin: { top: 35 } });
       doc.save(file);
@@ -485,7 +487,7 @@ export default {
           moment(asistencia.exit.date).format("DD"),
           moment(asistencia.exit.date).format("HH:mm"),
           this.conversorHoras(asistencia.total_worked_hours),
-          this.diferencial(asistencia.extra_worked_hours),
+          this.diferencial(this.conversorHoras(asistencia.total_worked_hours)),
           festivo
         ]);
       });
@@ -497,8 +499,8 @@ export default {
         "",
         "",
         "",
-        this.conversorHoras(this.total_horas),
-        parseFloat(this.total_horas_extras).toFixed(2)
+        this.conversorHoras(this.total_horas).toFixed(2).toString().replace(".", ":"),
+        parseFloat(this.total_horas_extras).toFixed(2).toString().replace(".", ":")
       ]);
       var ws = xlsx.utils.aoa_to_sheet(ws_data);
       wb.Sheets["Informe"] = ws;
