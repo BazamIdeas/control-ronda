@@ -45,7 +45,7 @@ export default {
       return require("@/assets/" + pic);
     },
     goTo() {
-      if(isActive){
+      if(this.isActive){
         this.$router.push(this.url);
       }else {
         alert("Aun no ha habilitado esta caracteristica.")
