@@ -174,7 +174,7 @@ export default {
           gradient: "linear-gradient(0deg, #3b68ae 0%, #5da4e7 100%)",
           color: "blue"
         },
-        url: "/rondas",
+        url: "/ronda",
         mod: "routes_mod"
       },
       {
