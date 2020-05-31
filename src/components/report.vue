@@ -72,8 +72,8 @@
               <td>{{ final_colacion(props.item) }}</td>
               <td>{{ moment(props.item.exit.date).format('DD') }}</td>
               <td>{{ moment(props.item.exit.date).format('HH:mm') }}</td>
-              <td>{{ conversorHoras(props.item.total_worked_hours) }}</td>
-              <td>{{ diferencial(conversorHoras(props.item.total_worked_hours))}}</td>
+              <td>{{ conversorHoras(props.item) }}</td>
+              <td>{{ "a"}}</td>
               <td>
                 <v-icon v-if="props.item.is_holiday" large color="green darken-2">done</v-icon>
               </td>
@@ -266,11 +266,14 @@ export default {
             }
 
             this.assistances = dias;
+
             this.jornada = parseFloat(this.$store.state.sesion.working_hours);
             this.valor_hora = parseFloat(this.$store.state.sesion.hour_value);
             this.porcentaje = parseFloat(
               this.$store.state.sesion.extra_hour_increase
             );
+
+            this.getTotalDiferencial();
           } else {
             alert("No hay reportes para esta fecha");
           }
@@ -294,27 +297,12 @@ export default {
       }
     },
 
-    conversorHoras(decimalTimeString) {
-      var decimalTime = parseFloat(decimalTimeString);
-      decimalTime = decimalTime * 60 * 60;
-      var hours = Math.floor(decimalTime / (60 * 60));
-      decimalTime = decimalTime - hours * 60 * 60;
-      var minutes = Math.floor(decimalTime / 60);
-      decimalTime = decimalTime - minutes * 60;
-      var seconds = Math.round(decimalTime);
-      var m = moment.duration(parseInt(hours), "minutes").humanize();
-
-      if (hours < 10) {
-        hours = "0" + hours;
-      }
-      if (minutes < 10) {
-        minutes = "0" + minutes;
-      }
-      if (seconds < 10) {
-        seconds = "0" + seconds;
-      }
-
-      return hours + ":" + minutes + ":" + seconds;
+    conversorHoras(el) {
+      var diff = moment.duration(
+        moment(el.exit.date).diff(moment(el.entry.date))
+      );
+      let res = moment.utc(diff.asMilliseconds());
+      return res.format("HH:mm [minutos]");
     },
 
     download(anio, mes) {
@@ -378,7 +366,7 @@ export default {
       splited.pop();
       let joined = splited.join(".");
       // se calcula si el primer valor es 00
-      console.log(joined);
+      //console.log(joined);
       if (joined - rule < 0) {
         return "sin diferencial";
       }
@@ -393,6 +381,27 @@ export default {
       let r = joined - rule;
       let result = parseFloat(r).toFixed(2);
       return result.toString().replace(".", ":");
+    },
+    getTotalDiferencial() {
+      /*    .reduce(
+          (prev, cur) => moment.duration(cur).add(prev),
+          moment.duration(durations[0])
+        );
+         17:52:17
+        23:16:43
+        */
+
+      this.assistances.forEach(asistencia => {
+        const startTime = moment(asistencia.exit.date);
+        const endTime = moment(asistencia.entry.date);
+
+        const hour = startTime.diff(endTime, "hours", true);
+        console.log(
+          "asistencia >>>> ",
+          moment.duration(hour, "hours").humanize()
+        );
+        console.log("asistencia >>>> ", asistencia);
+      });
     },
 
     pdf() {
@@ -440,8 +449,11 @@ export default {
       });
       tabla.push({
         dia: "TOTAL",
-        horas: parseFloat(this.total_horas).toFixed(2).toString().replace(".", ":"),
-        diferencial: parseFloat(this.total_horas_extras).toFixed(2).toString().replace(".", ":")
+        horas: parseFloat(this.total_horas)
+          .toFixed(2)
+          .toString()
+          .replace(".", ":"),
+        diferencial: getTotalDiferencial()
       });
       doc.autoTable(this.columns, tabla, { margin: { top: 35 } });
       doc.save(file);
@@ -499,8 +511,14 @@ export default {
         "",
         "",
         "",
-        this.conversorHoras(this.total_horas).toFixed(2).toString().replace(".", ":"),
-        parseFloat(this.total_horas_extras).toFixed(2).toString().replace(".", ":")
+        this.conversorHoras(this.total_horas)
+          .toFixed(2)
+          .toString()
+          .replace(".", ":"),
+        parseFloat(this.total_horas_extras)
+          .toFixed(2)
+          .toString()
+          .replace(".", ":")
       ]);
       var ws = xlsx.utils.aoa_to_sheet(ws_data);
       wb.Sheets["Informe"] = ws;
