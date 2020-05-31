@@ -73,7 +73,7 @@
               <td>{{ moment(props.item.exit.date).format('DD') }}</td>
               <td>{{ moment(props.item.exit.date).format('HH:mm') }}</td>
               <td>{{ conversorHoras(props.item) }}</td>
-              <td>{{ "a"}}</td>
+              <td>{{ diferencial(props.item)}}</td>
               <td>
                 <v-icon v-if="props.item.is_holiday" large color="green darken-2">done</v-icon>
               </td>
@@ -119,6 +119,8 @@ export default {
     moment: moment,
     menu: false,
     date: null,
+    totalDifCount: [],
+    totalHoursCount: [],
     dialog: false,
     dateNew: null,
     jornada: null,
@@ -272,8 +274,6 @@ export default {
             this.porcentaje = parseFloat(
               this.$store.state.sesion.extra_hour_increase
             );
-
-            this.getTotalDiferencial();
           } else {
             alert("No hay reportes para esta fecha");
           }
@@ -295,14 +295,6 @@ export default {
         let anio = dateNew[0];
         this.download(anio, mes);
       }
-    },
-
-    conversorHoras(el) {
-      var diff = moment.duration(
-        moment(el.exit.date).diff(moment(el.entry.date))
-      );
-      let res = moment.utc(diff.asMilliseconds());
-      return res.format("HH:mm [minutos]");
     },
 
     download(anio, mes) {
@@ -357,53 +349,98 @@ export default {
         return "-";
       }
     },
-    diferencial(hours) {
-      /* existe un error al calcular las horas desde el backend
-      asi que se decidio calcularlo aca (total_extra_hours)
-      */
-      let rule = this.$store.state.sesion.working_hours;
-      let splited = hours.split(":");
-      splited.pop();
-      let joined = splited.join(".");
-      // se calcula si el primer valor es 00
-      //console.log(joined);
-      if (joined - rule < 0) {
-        return "sin diferencial";
+    conversorHoras(el, toPrint = 0) {
+      var diff = moment.duration(
+        moment(el.exit.date).diff(moment(el.entry.date))
+      );
+      let res = moment.utc(diff.asMilliseconds());
+      if (toPrint) {
+        return diff;
       }
-      if (splited[0] == 0 || splited[0] == "00") {
-        let getMinutes = parseInt(splited[1]);
-        return `${getMinutes} minutos`;
-      }
+      return res.format("HH:mm [minutos]");
+    },
+    diferencial(el, toPrint = 0) {
+      // toPrint para saber si se llama desde
+      // las funciones de exportar reportes
+      // para devolver un formato iterable
+      // para calcular el tiempo total
 
-      if (joined == 0 || joined < 0) {
+      let rule = this.$store.state.sesion.working_hours;
+      var diff = moment.duration(
+        moment(el.exit.date).diff(moment(el.entry.date))
+      );
+      let res = moment.utc(diff.asMilliseconds());
+
+      let comparator = res.format("HH.mm").toString() - rule;
+      comparator = comparator.toFixed(2);
+      if (toPrint && comparator <= 0) {
+        return false;
+      }
+      if (toPrint) {
+        return comparator;
+      }
+      if (comparator <= 0) {
         return "sin diferencial";
       }
-      let r = joined - rule;
-      let result = parseFloat(r).toFixed(2);
-      return result.toString().replace(".", ":");
+      let str = comparator.toString().replace(".", ":") + " minutos";
+      return str;
     },
     getTotalDiferencial() {
-      /*    .reduce(
-          (prev, cur) => moment.duration(cur).add(prev),
-          moment.duration(durations[0])
-        );
-         17:52:17
-        23:16:43
-        */
+      let times = [];
+      let t = "";
+      //totalDifCount
+      for (let i = 0; i < this.assistances.length; i++) {
+        let diff = this.diferencial(this.assistances[i], true);
 
-      this.assistances.forEach(asistencia => {
-        const startTime = moment(asistencia.exit.date);
-        const endTime = moment(asistencia.entry.date);
-
-        const hour = startTime.diff(endTime, "hours", true);
-        console.log(
-          "asistencia >>>> ",
-          moment.duration(hour, "hours").humanize()
-        );
-        console.log("asistencia >>>> ", asistencia);
-      });
+        if (diff != false) {
+          times.push(diff);
+        }
+        if (i == this.assistances.length - 1) {
+          t = times.reduce((prev, cur) => parseFloat(prev) + parseFloat(cur));
+          return (
+            parseFloat(t)
+              .toFixed(2)
+              .toString()
+              .replace(".", ":") + " minutos"
+          );
+        }
+      }
+      //console.log("times > ", times);
     },
+    getTotalHours() {
+      let times = [];
+      let response = "";
+      let t = 0;
+      //totalDifCount
 
+      for (let i = 0; i < this.assistances.length; i++) {
+        let diff = this.conversorHoras(this.assistances[i], true);
+
+        if (diff != false) {
+          times.push(diff);
+        }
+        if (i === this.assistances.length - 1) {
+          for (let index = 0; index < times.length; index++) {
+            let el = times[index];
+            let hour = moment.utc(el.asMilliseconds()).format("HH:mm");
+            let replace = hour.replace(":", ".");
+            console.log(replace);
+            t = parseFloat(replace) + t;
+            if (index === times.length - 1) {
+              let split = t
+                .toFixed(2)
+                .toString()
+                .split(".");
+              let hours = split[1] > 60 ? parseInt(split[0]) + 1 : split[0];
+              let minutes = split[1] > 60 ? parseInt(split[1]) - 60 : split[1];
+              response = `${hours}:${minutes} minutos`;
+              return response;
+            }
+          }
+        }
+      }
+      //console.log("times > ", times);
+    },
     pdf() {
       var doc = new jsPDF("landscape");
       doc.text("Reporte mensual de asistencia", 15, 20);
@@ -440,20 +477,15 @@ export default {
           final_colacion: finish_break,
           fecha_salida: moment(asistencia.exit.date).format("DD"),
           salida: moment(asistencia.exit.date).format("HH:mm"),
-          horas: this.conversorHoras(asistencia.total_worked_hours),
-          diferencial: this.diferencial(
-            this.conversorHoras(asistencia.total_worked_hours)
-          ),
+          horas: this.conversorHoras(asistencia),
+          diferencial: this.diferencial(asistencia),
           festivo: festivo
         });
       });
       tabla.push({
         dia: "TOTAL",
-        horas: parseFloat(this.total_horas)
-          .toFixed(2)
-          .toString()
-          .replace(".", ":"),
-        diferencial: getTotalDiferencial()
+        horas: this.getTotalHours(),
+        diferencial: this.getTotalDiferencial()
       });
       doc.autoTable(this.columns, tabla, { margin: { top: 35 } });
       doc.save(file);
@@ -498,8 +530,8 @@ export default {
           finish_break,
           moment(asistencia.exit.date).format("DD"),
           moment(asistencia.exit.date).format("HH:mm"),
-          this.conversorHoras(asistencia.total_worked_hours),
-          this.diferencial(this.conversorHoras(asistencia.total_worked_hours)),
+          this.conversorHoras(asistencia),
+          this.diferencial(asistencia),
           festivo
         ]);
       });
@@ -511,14 +543,8 @@ export default {
         "",
         "",
         "",
-        this.conversorHoras(this.total_horas)
-          .toFixed(2)
-          .toString()
-          .replace(".", ":"),
-        parseFloat(this.total_horas_extras)
-          .toFixed(2)
-          .toString()
-          .replace(".", ":")
+        this.getTotalHours(),
+        this.getTotalDiferencial()
       ]);
       var ws = xlsx.utils.aoa_to_sheet(ws_data);
       wb.Sheets["Informe"] = ws;
