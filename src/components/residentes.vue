@@ -31,17 +31,8 @@
                 <v-container grid-list-md>
                   <v-layout wrap>
                     <v-flex xs12>
-                      <!--                       <v-text-field @change="readCsvFile()"  ref="inputFiles" type="file" label="csv"></v-text-field>
-                      -->
-                      <!-- <input
-                        type="file"
-                        @change="readCsvFile"
-                        id="inputFiles"
-                        ref="inputFiles"
-                        label="csv"
-                      /> -->
 
-                      <!-- FLADDEV | start -->
+                      <!-- upload file | start -->
 
                       <v-container grid-list-lg>
                         <v-text-field
@@ -96,9 +87,26 @@
                           </template>
                           <v-icon color="white">cloud_upload</v-icon>
                         </v-btn>
+
+                       <br><br>
+                       <p>
+                         <b> Pasos para cargar datos:</b>
+                       </p>
+                        <ul>
+                          <li>
+                            Descargue la <a target="_blank" href="https://drive.google.com/file/d/1W3RuF-WTQSmMvVSkaGo-rDjneZWB4wcS/view?usp=sharing"><b>plantilla. </b></a>
+                          </li>
+                          <li>
+                            Edite los datos concidiendo con los campos indicados.
+                          </li>
+                           <li>
+                           Exporte los datos como csv e importelo a nuestro sistema
+                          </li>
+                        </ul>
+
                       </v-container>
 
-                      <!-- FLADDEV | end -->
+                      <!-- upload file | end -->
                     </v-flex>
                   </v-layout>
                 </v-container>
