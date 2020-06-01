@@ -95,9 +95,9 @@
               <td>{{si + no}}</td>
             </tr>
             <tr><td>Total alícuota</td>
-            <td>{{ parseFloat(alicuotaSi).toFixed(2)}}</td>
-            <td>{{parseFloat(alicuotaNo).toFixed(2)}}</td>
-            <td>{{totalAlicuota}}</td>
+            <td>{{ parseFloat(alicuotaSi).toFixed(2)}}%</td>
+            <td>{{parseFloat(alicuotaNo).toFixed(2)}}%</td>
+            <td>{{totalAlicuota}}%</td>
             </tr>
           </tbody>
         </table>
@@ -114,7 +114,7 @@
           <template slot="items" slot-scope="props">
             <td >{{ props.item.residents.name }}</td>
             <td >{{ props.item.residents.rut }}</td>
-            <td >{{ props.item.residents.percentage }}</td>
+            <td >{{ props.item.residents.percentage }}%</td>
             <td >{{ props.item.residents.departament }}</td>
             <td v-if="props.item.accepted"><v-chip color="green" small text-color="white">SI</v-chip></td>
              <td v-if="!props.item.accepted"><v-chip color="red" small text-color="white">NO</v-chip></td>
