@@ -370,16 +370,19 @@
           let v = {
             'nombre': voto.residents.name,
             'rut' : voto.residents.rut,
-            'alicuota' : voto.residents.percentage,
+            'alicuota' : voto.residents.percentage+"%",
             'departamento' : voto.residents.departament,
             'voto' : votacion,
             'comentario' : voto.comment
           }
           return v
         })
+
+
+
         let resumen = [
           { titulo: 'Total votos', si : this.si, no : this.no, total : this.si + this.no},
-          { titulo: 'Total alícuota', si : this.alicuotaSi, no : this.alicuotaNo, total : this.alicuotaSi + this.alicuotaNo}
+          { titulo: 'Total alícuota', si : parseFloat(this.alicuotaSi).toFixed(2)+ "%" , no : parseFloat(this.alicuotaNo).toFixed(2)+ "%" , total : parseFloat( this.alicuotaSi + this.alicuotaNo).toFixed(2)+ "%"}
         ]
         doc.autoTable(this.resumen, resumen, {margin: {top: 40}})
         doc.text('Votantes', 15, 70)
