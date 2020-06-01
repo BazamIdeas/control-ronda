@@ -95,9 +95,9 @@
               <td>{{si + no}}</td>
             </tr>
             <tr><td>Total alícuota</td>
-            <td>{{alicuotaSi}}</td>
-            <td>{{alicuotaNo}}</td>
-            <td>{{alicuotaNo + alicuotaSi}}</td>
+            <td>{{ parseFloat(alicuotaSi).toFixed(2)}}</td>
+            <td>{{parseFloat(alicuotaNo).toFixed(2)}}</td>
+            <td>{{totalAlicuota}}</td>
             </tr>
           </tbody>
         </table>
@@ -433,6 +433,9 @@
     },
 
     computed: {
+      totalAlicuota(){
+        return parseFloat(this.alicuotaNo + this.alicuotaSi).toFixed(2)
+      },
       porcentaje (){
         return (this.si * 100)/this.total
       },
