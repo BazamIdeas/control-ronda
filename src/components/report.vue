@@ -424,8 +424,10 @@ export default {
         if (i === this.assistances.length - 1) {
           for (let index = 0; index < times.length; index++) {
             let el = times[index];
-            let hour = moment.utc(el.asMilliseconds()).format("HH:mm");
-            let replace = hour.replace(":", ".");
+            let hour = moment.duration(el.asMilliseconds(), 'milliseconds');
+
+
+            let replace = hour.format("HH:mm").replace(":",".")
             console.log(replace);
             t = parseFloat(replace) + t;
             if (index === times.length - 1) {
