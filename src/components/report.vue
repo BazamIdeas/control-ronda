@@ -107,6 +107,7 @@ let meses = new Array(
 let d = new Date();
 let m = d.getMonth();
 var moment = require("moment");
+require("moment-duration-format");
 moment.locale("es");
 
 var jsPDF = require("jspdf");
@@ -350,10 +351,11 @@ export default {
       }
     },
     conversorHoras(el, toPrint = 0) {
+
       var diff = moment.duration(
         moment(el.exit.date).diff(moment(el.entry.date))
       );
-      let res = moment.utc(diff.asMilliseconds());
+      var res = moment.duration(diff.asMilliseconds(), 'milliseconds');
       if (toPrint) {
         return diff;
       }
