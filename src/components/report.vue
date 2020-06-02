@@ -351,11 +351,10 @@ export default {
       }
     },
     conversorHoras(el, toPrint = 0) {
-
       var diff = moment.duration(
         moment(el.exit.date).diff(moment(el.entry.date))
       );
-      var res = moment.duration(diff.asMilliseconds(), 'milliseconds');
+      var res = moment.duration(diff.asMilliseconds(), "milliseconds");
       if (toPrint) {
         return diff;
       }
@@ -399,12 +398,13 @@ export default {
         }
         if (i == this.assistances.length - 1) {
           t = times.reduce((prev, cur) => parseFloat(prev) + parseFloat(cur));
-          return (
-            parseFloat(t)
-              .toFixed(2)
-              .toString()
-              .replace(".", ":") + " minutos"
-          );
+          let split = t
+            .toFixed(2)
+            .toString()
+            .split(".");
+          let hours = split[1] > 60 ? parseInt(split[0]) + 1 : split[0];
+          let minutes = split[1] > 60 ? parseInt(split[1]) - 60 : split[1];
+          return (`${hours}:${minutes} minutos`);
         }
       }
       //console.log("times > ", times);
@@ -424,10 +424,9 @@ export default {
         if (i === this.assistances.length - 1) {
           for (let index = 0; index < times.length; index++) {
             let el = times[index];
-            let hour = moment.duration(el.asMilliseconds(), 'milliseconds');
+            let hour = moment.duration(el.asMilliseconds(), "milliseconds");
 
-
-            let replace = hour.format("HH:mm").replace(":",".")
+            let replace = hour.format("HH:mm").replace(":", ".");
             console.log(replace);
             t = parseFloat(replace) + t;
             if (index === times.length - 1) {
