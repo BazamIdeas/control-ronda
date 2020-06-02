@@ -8,9 +8,9 @@
                 <v-spacer></v-spacer>
               </v-toolbar>
               <v-card-text>
-                <p>Usted no tiene habilitada esta funcionalidad, por favor contactese con servicio al cliente, enviando un email a: <a href="mailto:contacto@controlguardia.cl">contacto@controlguardia.cl</a></p>
+                <p>Usted no tiene habilitada esta funcionalidad, por favor contactese con servicio al cliente, enviando un email a: <a href="mailto:cs100biometria@gmail.com ">cs100biometria@gmail.com </a></p>
               </v-card-text>
-              
+
             </v-card>
           </v-flex>
         </v-layout>

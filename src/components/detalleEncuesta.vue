@@ -95,9 +95,9 @@
               <td>{{si + no}}</td>
             </tr>
             <tr><td>Total alícuota</td>
-            <td>{{alicuotaSi}}</td>
-            <td>{{alicuotaNo}}</td>
-            <td>{{alicuotaNo + alicuotaSi}}</td>
+            <td>{{ parseFloat(alicuotaSi).toFixed(2)}}%</td>
+            <td>{{parseFloat(alicuotaNo).toFixed(2)}}%</td>
+            <td>{{totalAlicuota}}%</td>
             </tr>
           </tbody>
         </table>
@@ -114,7 +114,7 @@
           <template slot="items" slot-scope="props">
             <td >{{ props.item.residents.name }}</td>
             <td >{{ props.item.residents.rut }}</td>
-            <td >{{ props.item.residents.percentage }}</td>
+            <td >{{ props.item.residents.percentage }}%</td>
             <td >{{ props.item.residents.departament }}</td>
             <td v-if="props.item.accepted"><v-chip color="green" small text-color="white">SI</v-chip></td>
              <td v-if="!props.item.accepted"><v-chip color="red" small text-color="white">NO</v-chip></td>
@@ -370,16 +370,19 @@
           let v = {
             'nombre': voto.residents.name,
             'rut' : voto.residents.rut,
-            'alicuota' : voto.residents.percentage,
+            'alicuota' : voto.residents.percentage+"%",
             'departamento' : voto.residents.departament,
             'voto' : votacion,
             'comentario' : voto.comment
           }
           return v
         })
+
+
+
         let resumen = [
           { titulo: 'Total votos', si : this.si, no : this.no, total : this.si + this.no},
-          { titulo: 'Total alícuota', si : this.alicuotaSi, no : this.alicuotaNo, total : this.alicuotaSi + this.alicuotaNo}
+          { titulo: 'Total alícuota', si : parseFloat(this.alicuotaSi).toFixed(2)+ "%" , no : parseFloat(this.alicuotaNo).toFixed(2)+ "%" , total : parseFloat( this.alicuotaSi + this.alicuotaNo).toFixed(2)+ "%"}
         ]
         doc.autoTable(this.resumen, resumen, {margin: {top: 40}})
         doc.text('Votantes', 15, 70)
@@ -433,6 +436,9 @@
     },
 
     computed: {
+      totalAlicuota(){
+        return parseFloat(this.alicuotaNo + this.alicuotaSi).toFixed(2)
+      },
       porcentaje (){
         return (this.si * 100)/this.total
       },

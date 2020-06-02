@@ -5,7 +5,7 @@
       <v-spacer></v-spacer>
       <v-toolbar-items v-if="sesion">
         <v-btn flat v-for="m in menu" :key="m.id" :to="m.route">{{m.name}}</v-btn>
-        
+
       </v-toolbar-items>
       <v-btn v-if="status" flat @click="salir()">SALIR</v-btn>
     </v-toolbar>-->
@@ -19,7 +19,7 @@
           </v-flex>
           <v-divider></v-divider>
           <v-list>
-            
+
             <v-list-tile v-for="item in menu" :key="item.title" :to="item.route">
               <v-list-tile-action>
                 <v-icon>{{ item.icon }}</v-icon>
@@ -50,7 +50,7 @@ export default {
         { name: "DASHBOARD", route: "cuenta", id: 6, icon: "dashboard" },
         { name: "ASISTENCIA", route: "asistencias", id: 1, icon: "assignment" },
         { name: "RONDA", route: "ronda", id: 2, icon: "autorenew" },
-        // { name: "GESTION", route: "gestion", id: 3, icon: "event" },
+        { name: "GESTION", route: "gestion", id: 3, icon: "event" },
         // { name: "ENTREGA", route: "entrega", id: 4, icon: "airport_shuttle" },
         //         {
         //   name: "RECEPCION DE PAQUETES",
