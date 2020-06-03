@@ -593,17 +593,17 @@ export default {
       var headers = {};
       var token = localStorage.getItem("bazam-token-control");
       var condos_id = localStorage.getItem("bazam-condo-id");
-      var loader;
+
       if (token !== null && token !== undefined && token !== "") {
         headers["Authorization"] = "Bearer " + token;
-
+         var loader = this.$loading.show({
+              loader: "dots"
+            });
         papaparse.parse(this.files, {
           header: true,
           complete: async function(results) {
             console.log("Finisheda:", results.data);
-            loader = this.$loading.show({
-              loader: "dots"
-            });
+
             nodeInstance
               .post("/residentes/importar", results.data, {
                 headers: {
