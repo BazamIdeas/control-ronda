@@ -10,7 +10,11 @@ import "vuetify/dist/vuetify.min.css";
 import config from "../config/dev.env";
 import env from "../config/env";
 import * as VueGoogleMaps from "vue2-google-maps";
-
+import Loading from 'vue-loading-overlay';
+// Import stylesheet
+import 'vue-loading-overlay/dist/vue-loading.css';
+// Init plugin
+Vue.use(Loading);
 //console.log(config.GOOGLE_API)
 const load = {
   key: env.GOOGLE_API,
@@ -90,4 +94,3 @@ new Vue({
   components: { App },
   template: "<App/>"
 });
- 

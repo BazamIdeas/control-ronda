@@ -14,8 +14,8 @@
           <v-toolbar-title>RESIDENTES</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-chip small v-on:click="aprobacionMasiva()">Aprobar todos</v-chip>
-                    <v-btn icon @click="initialize()">
-                            <v-spacer></v-spacer>
+          <v-btn icon @click="initialize()">
+            <v-spacer></v-spacer>
             <v-icon>autorenew</v-icon>
           </v-btn>
           <v-dialog v-model="dialogCsv" max-width="500px">
@@ -31,7 +31,6 @@
                 <v-container grid-list-md>
                   <v-layout wrap>
                     <v-flex xs12>
-
                       <!-- upload file | start -->
 
                       <v-container grid-list-lg>
@@ -56,11 +55,7 @@
                           color="green accent-3"
                           @click="onUploadSelectedFileClick"
                         >
-                          <v-icon
-                            color="white"
-                            v-if="this.isReady">
-                              playlist_add_check
-                          </v-icon>
+                          <v-icon color="white" v-if="this.isReady">playlist_add_check</v-icon>
                           <v-progress-circular
                             v-if="loading"
                             :rotate="360"
@@ -69,9 +64,7 @@
                             :value="value"
                             color="white"
                             class="v-loader"
-                          >
-                            {{ value }}
-                          </v-progress-circular>
+                          >{{ value }}</v-progress-circular>
                           <template v-slot:selection="{ name }">
                             <v-chip
                               v-show="this.name"
@@ -80,30 +73,29 @@
                               label
                               small
                               class="animation-grow"
-                            >
-                              {{ name.substring(0,28) }} - [ {{ (size / 100).toFixed(2) }} Kb ]
-                            </v-chip>
-
+                            >{{ name.substring(0,28) }} - [ {{ (size / 100).toFixed(2) }} Kb ]</v-chip>
                           </template>
                           <v-icon color="white">cloud_upload</v-icon>
                         </v-btn>
 
-                       <br><br>
-                       <p>
-                         <b> Pasos para cargar datos:</b>
-                       </p>
+                        <br />
+                        <br />
+                        <p>
+                          <b>Pasos para cargar datos:</b>
+                        </p>
                         <ul>
                           <li>
-                            Descargue la <a target="_blank" href="https://drive.google.com/file/d/1W3RuF-WTQSmMvVSkaGo-rDjneZWB4wcS/view?usp=sharing"><b>plantilla. </b></a>
+                            Descargue la
+                            <a
+                              target="_blank"
+                              href="https://drive.google.com/file/d/1W3RuF-WTQSmMvVSkaGo-rDjneZWB4wcS/view?usp=sharing"
+                            >
+                              <b>plantilla.</b>
+                            </a>
                           </li>
-                          <li>
-                            Edite los datos concidiendo con los campos indicados.
-                          </li>
-                           <li>
-                           Exporte los datos como csv e importelo a nuestro sistema
-                          </li>
+                          <li>Edite los datos concidiendo con los campos indicados.</li>
+                          <li>Exporte los datos como csv e importelo a nuestro sistema</li>
                         </ul>
-
                       </v-container>
 
                       <!-- upload file | end -->
@@ -114,9 +106,7 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" flat @click.native="closeDialogCsv"
-                  >Cancelar</v-btn
-                >
+                <v-btn color="blue darken-1" flat @click.native="closeDialogCsv">Cancelar</v-btn>
                 <v-btn
                   color="blue darken-1"
                   flat
@@ -126,15 +116,12 @@
                     closeDialogCsv();
                   "
                   :disabled="this.isReady == false"
-                  >Guardar</v-btn
-                >
+                >Guardar</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
 
           <!--  RESIDENTS DIALOG END-->
-
-
 
           <v-dialog v-model="dialog" max-width="500px">
             <v-btn icon slot="activator">
@@ -156,11 +143,7 @@
                       ></v-text-field>
                     </v-flex>
                     <v-flex xs6>
-                      <v-text-field
-                        v-model="editedItem.rut"
-                        label="RUT"
-                        :rules="[rules.required]"
-                      ></v-text-field>
+                      <v-text-field v-model="editedItem.rut" label="RUT" :rules="[rules.required]"></v-text-field>
                     </v-flex>
                     <v-flex xs6>
                       <v-text-field
@@ -173,25 +156,25 @@
                       <v-text-field
                         v-model="editedItem.email"
                         label="Email"
-                          :loading="searching"
-                          type="email"
-                         :disable="searching"
+                        :loading="searching"
+                        type="email"
+                        :disable="searching"
                         :rules="[rules.required, rules.email]"
                       >
-
-                      <template slot="append">
-                        <v-fade-transition leave-absolute>
-                          <v-progress-circular
-                            v-if="searching"
-                            size="24"
-                            indeterminate
-                          ></v-progress-circular>
-                                   <v-icon v-else-if="emailStatus == null"   @click="verifyEmail(editedItem.email)">policy</v-icon>
-                                  <v-icon v-else :color="emailStatus != null && emailStatus == true ? 'green' : 'red'"   @click="verifyEmail(editedItem.email)">policy</v-icon>
-
-                         </v-fade-transition>
-                      </template>
-
+                        <template slot="append">
+                          <v-fade-transition leave-absolute>
+                            <v-progress-circular v-if="searching" size="24" indeterminate></v-progress-circular>
+                            <v-icon
+                              v-else-if="emailStatus == null"
+                              @click="verifyEmail(editedItem.email)"
+                            >policy</v-icon>
+                            <v-icon
+                              v-else
+                              :color="emailStatus != null && emailStatus == true ? 'green' : 'red'"
+                              @click="verifyEmail(editedItem.email)"
+                            >policy</v-icon>
+                          </v-fade-transition>
+                        </template>
                       </v-text-field>
                     </v-flex>
                     <v-flex xs6>
@@ -216,10 +199,7 @@
                       ></v-text-field>
                     </v-flex>
                     <v-flex xs6>
-                      <v-switch
-                        label="Comité"
-                        v-model="editedItem.committee"
-                      ></v-switch>
+                      <v-switch label="Comité" v-model="editedItem.committee"></v-switch>
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -227,16 +207,13 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" flat @click.native="close"
-                  >Cancelar</v-btn
-                >
+                <v-btn color="blue darken-1" flat @click.native="close">Cancelar</v-btn>
                 <v-btn
                   color="blue darken-1"
                   flat
                   @click.native="save"
                   v-if="editedItem.password"
-                  >Guardar</v-btn
-                >
+                >Guardar</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -258,7 +235,7 @@
           class="elevation-1"
           :loading="isLoading"
         >
-                        <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
+          <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
 
           <template slot="items" slot-scope="props">
             <td>{{ props.item.name }}</td>
@@ -268,16 +245,10 @@
             <td>{{ props.item.departament }}</td>
             <td>{{ props.item.percentage }}%</td>
             <td class="justify-center px-0">
-              <v-switch
-                v-model="props.item.approved"
-                @change="changeStatus(props.item)"
-              ></v-switch>
+              <v-switch v-model="props.item.approved" @change="changeStatus(props.item)"></v-switch>
             </td>
             <td class="justify-center px-0">
-              <v-switch
-                v-model="props.item.committee"
-                @change="changeStatus(props.item)"
-              ></v-switch>
+              <v-switch v-model="props.item.committee" @change="changeStatus(props.item)"></v-switch>
             </td>
             <td class="justify-center px-0">
               <!-- <v-tooltip bottom>
@@ -290,8 +261,7 @@
                   color="green darken-2"
                   class="mr-2"
                   @click="editItem(props.item)"
-                  >edit</v-icon
-                >
+                >edit</v-icon>
                 <span>Editar</span>
               </v-tooltip>
               <!-- <v-tooltip bottom>
@@ -299,12 +269,7 @@
               <span>Permisos</span>
               </v-tooltip>-->
               <v-tooltip bottom>
-                <v-icon
-                  slot="activator"
-                  color="red darken-2"
-                  @click="deleteItem(props.item)"
-                  >delete</v-icon
-                >
+                <v-icon slot="activator" color="red darken-2" @click="deleteItem(props.item)">delete</v-icon>
                 <span>Eliminar</span>
               </v-tooltip>
             </td>
@@ -340,21 +305,19 @@
       <!-- FLADDEV - END -->
     </v-layout>
     <v-snackbar
-              v-model="isSuccess.snackbar"
-              :bottom="isSuccess.y === 'bottom'"
-              :color="isSuccess.color"
-              :left="isSuccess.x === 'left'"
-              :multi-line="isSuccess.mode === 'multi-line'"
-              :right="isSuccess.x === 'right'"
-              :timeout="isSuccess.timeout"
-              :top="isSuccess.y === 'top'"
-              :vertical="isSuccess.mode === 'vertical'"
-            >
-              {{ isSuccess.text }}
-              <v-btn dark text @click="isSuccess.snackbar = false">
-                Cerrar
-              </v-btn>
-            </v-snackbar>
+      v-model="isSuccess.snackbar"
+      :bottom="isSuccess.y === 'bottom'"
+      :color="isSuccess.color"
+      :left="isSuccess.x === 'left'"
+      :multi-line="isSuccess.mode === 'multi-line'"
+      :right="isSuccess.x === 'right'"
+      :timeout="isSuccess.timeout"
+      :top="isSuccess.y === 'top'"
+      :vertical="isSuccess.mode === 'vertical'"
+    >
+      {{ isSuccess.text }}
+      <v-btn dark text @click="isSuccess.snackbar = false">Cerrar</v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -362,7 +325,7 @@
 import BzUsuario from "./usuario.vue";
 import papaparse from "papaparse";
 
-import { nodeInstance } from '../axios';
+import { nodeInstance } from "../axios";
 export default {
   components: { BzUsuario },
   data: () => ({
@@ -372,7 +335,7 @@ export default {
     dialogCsv: false,
     fileCsv: [],
     files: [],
-    expand:false,
+    expand: false,
     isSuccess: {
       color: "",
       mode: "",
@@ -391,9 +354,9 @@ export default {
     type: "",
     isReady: false,
     loading: false,
-    isLoading:false,
-    searching:false,
-    emailStatus:null,
+    isLoading: false,
+    searching: false,
+    emailStatus: null,
     fileRules: [f => console.info(f)],
 
     interval: {},
@@ -491,7 +454,7 @@ export default {
     }
   },
 
-    beforeDestroy() {
+  beforeDestroy() {
     clearInterval(this.interval);
   },
 
@@ -511,11 +474,12 @@ export default {
 
   methods: {
     initialize() {
-     this.getSelf()
+      this.getSelf();
     },
-    getSelf(){
-      this.isLoading = true
-        this.$axios
+
+    getSelf() {
+      this.isLoading = true;
+      this.$axios
         .get("/residents/self")
         .then(resp => {
           if (resp.status === 200) {
@@ -525,43 +489,44 @@ export default {
               this.residentes = [];
             }
           }
-                this.isLoading = false
-
+          this.isLoading = false;
         })
         .catch(e => {
           console.log(e);
-                this.isLoading = false
-
+          this.isLoading = false;
         });
     },
-        verifyEmail(v){
-          console.log("v >>>> ",v)
-         const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-          if(!v){
-            return
-          }
-          if( !pattern.test(v) ){
-            return
-          }
-
-/*       alert("ja " + v) */
-      this.searching = true
+    verifyEmail(v) {
+      console.log("v >>>> ", v);
+      const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (!v) {
+        return;
+      }
+      if (!pattern.test(v)) {
+        return;
+      }
+      this.searching = true;
       var token = localStorage.getItem("bazam-token-control");
-      this.$axios.post("/residents/check-email",
-                  {email:v},
-                  { headers: {
-                    Authorization: "Bearer " + token,
-                  }
-                  }).then(res =>{
-                    console.log(res)
-                          this.searching = false
-                          this.emailStatus = true
-
-                  }).catch(err =>{
-                    console.log(err)
-                          this.searching = false
-                          this.emailStatus = false
-                  })
+      this.$axios
+        .post(
+          "/residents/check-email",
+          { email: v },
+          {
+            headers: {
+              Authorization: "Bearer " + token
+            }
+          }
+        )
+        .then(res => {
+          console.log(res);
+          this.searching = false;
+          this.emailStatus = true;
+        })
+        .catch(err => {
+          console.log(err);
+          this.searching = false;
+          this.emailStatus = false;
+        });
     },
     // FLADDEV - START
 
@@ -628,94 +593,57 @@ export default {
       var headers = {};
       var token = localStorage.getItem("bazam-token-control");
       var condos_id = localStorage.getItem("bazam-condo-id");
-
+      var loader;
       if (token !== null && token !== undefined && token !== "") {
         headers["Authorization"] = "Bearer " + token;
 
-        papaparse.parse(
-          this.files,
-          {
-            header: true,
-            complete: async function(results) {
-              console.log("Finisheda:", results.data);
-              nodeInstance
-                .post("/residentes/importar", results.data, {
-                  headers: {
-                    Authorization: "Bearer " + token,
-                    condos_id
-                  }
-                })
-                .then(result => {
-                  console.log("the result is =>>>>", result);
-                  if (result.status === 200) {
-                    console.info('Here is a snackbar!')
-                    console.info(_this)
-                    _this.isSuccess = {
-                      color: "success",
-                      snackbar: true,
-                      text: "Registrado con éxito!",
-                      timeout: 5000,
-                      x: null,
-                      y: "top"
-                    };
-                  }
-                  _this.initialize()
-                })
-                .catch(err => {
-                  console.log("the error >>>>", err);
+        papaparse.parse(this.files, {
+          header: true,
+          complete: async function(results) {
+            console.log("Finisheda:", results.data);
+            loader = this.$loading.show({
+              loader: "dots"
+            });
+            nodeInstance
+              .post("/residentes/importar", results.data, {
+                headers: {
+                  Authorization: "Bearer " + token,
+                  condos_id
+                }
+              })
+              .then(result => {
+                console.log("the result is =>>>>", result);
+                loader.hide();
+                if (result.status === 200) {
                   _this.isSuccess = {
-                    color: "error",
+                    color: "success",
                     snackbar: true,
-                    text: "No es posible registrar o ya existen todos los registros en la base de datos",
+                    text: "Registrado con éxito!",
                     timeout: 5000,
                     x: null,
                     y: "top"
                   };
-                });
-            }
+                }
+                _this.initialize();
+              })
+              .catch(err => {
+                loader.hide();
+                console.log("the error >>>>", err);
+                _this.isSuccess = {
+                  color: "error",
+                  snackbar: true,
+                  text:
+                    "No es posible registrar o ya existen todos los registros en la base de datos",
+                  timeout: 5000,
+                  x: null,
+                  y: "top"
+                };
+              });
           }
-        );
+        });
       } else {
         alert("SESIÓN NO VALIDA");
       }
-
-      // this.files = this.$refs.inputFiles.files[0];
-      // var csv = {};
-
-      // var headers = {};
-      // var token = localStorage.getItem("bazam-token-control");
-      // var route = process.env.API_URL;
-      // var condos_id = localStorage.getItem('bazam-condo-id');
-
-      // if (token !== null && token !== undefined && token !== "") {
-      //   headers["Authorization"] = "Bearer " + token;
-
-      //   papaparse.parse(
-      //     this.files,
-
-      //     {
-      //       header: true,
-      //       complete: async function(results) {
-      //         console.log("Finisheda:", results.data);
-      //         sender
-      //           .post(route + '/residentes/importar', results.data,{
-      //               headers: {
-      //               Authorization: "Bearer " + token,
-      //               condos_id
-      //             }
-      //           })
-      //           .then(result => {
-      //             console.log("the result is =>>>>", result);
-      //           })
-      //           .catch(err => {
-      //             console.log("the error >>>>", err);
-      //           });
-      //       }
-      //     }
-      //   );
-      // } else {
-      //   alert("SESIÓN NO VALIDA");
-      // }
     },
 
     editItem(item) {
@@ -763,22 +691,7 @@ export default {
       this.url = "";
       this.name = "";
       this.isReady = false;
-
-      /*         setTimeout(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        }, 1500) */
     },
-
-    /* userValidate () {
-        this.$axios.get('/residents/username/'+this.editedItem.username)
-        .then(resp => {
-          if(resp.status === 200){
-            alert("El usuario esta en uso")
-          }
-        })
-    }, */
-
     save() {
       this.$axios
         .get("/residents/email/" + this.editedItem.email)

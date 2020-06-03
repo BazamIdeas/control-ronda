@@ -370,8 +370,7 @@ export default {
       var diff = moment.duration(
         moment(el.exit.date).diff(moment(el.entry.date))
       );
-      let res = moment.utc(diff.asMilliseconds());
-
+      var res = moment.duration(diff.asMilliseconds(), "milliseconds");
       let comparator = res.format("HH.mm").toString() - rule;
       comparator = comparator.toFixed(2);
       if (toPrint && comparator <= 0) {
