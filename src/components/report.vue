@@ -247,6 +247,9 @@ export default {
 
   methods: {
     initialize(m, y) {
+      var loader = this.$loading.show({
+        loader: "dots"
+      });
       this.$axios
         .get("/workers/" + this.empleado.id + "/data/" + y + "/" + m)
         .then(resp => {
@@ -275,11 +278,15 @@ export default {
             this.porcentaje = parseFloat(
               this.$store.state.sesion.extra_hour_increase
             );
+
+            loader.hide()
           } else {
+          loader.hide()
             alert("No hay reportes para esta fecha");
           }
         })
         .catch(e => {
+           loader.hide()
           this.assistances = [];
           alert("No hay reportes para esta fecha");
         });
@@ -397,10 +404,8 @@ export default {
         }
         if (i == this.assistances.length - 1) {
           t = times.reduce((prev, cur) => parseFloat(prev) + parseFloat(cur));
-          let split = t
-            .toFixed(2)
-            .toString()
-            .split(".");
+          console.log("reduced", t);
+          let split = t.toString().split(".");
           let hours = split[1] > 60 ? parseInt(split[0]) + 1 : split[0];
           let minutes = split[1] > 60 ? parseInt(split[1]) - 60 : split[1];
           return `${hours}:${minutes} minutos`;
@@ -444,9 +449,9 @@ export default {
       //console.log("times > ", times);
     },
     pdf() {
-      var loader = this.$loading.show({
+      /*       var loader = this.$loading.show({
         loader: "dots"
-      });
+      }); */
       var doc = new jsPDF("landscape");
       doc.text("Reporte mensual de asistencia", 15, 20);
       doc.setFontSize(12);
@@ -492,15 +497,18 @@ export default {
         horas: this.getTotalHours(),
         diferencial: this.getTotalDiferencial()
       });
-      doc.autoTable(this.columns, tabla, { margin: { top: 35 } });
-      loader.hide()
+      doc.autoTable(this.columns, tabla, {
+        halign: "center",
+        margin: { top: 35 }
+      });
+      /*       loader.hide() */
       doc.save(file);
     },
 
     excel() {
-               var loader = this.$loading.show({
-              loader: "dots"
-            });
+      var loader = this.$loading.show({
+        loader: "dots"
+      });
       var wb = xlsx.utils.book_new();
       wb.Props = {
         Title: "Reporte mensual de asistencia"
@@ -512,8 +520,8 @@ export default {
         [
           "DIA",
           "INGRESO",
-          "INICIO COLACION",
-          "TERMINO COLACION",
+          "INICIO COLACIÓN",
+          "TERMINO COLACIÓN",
           "DIA SALIDA",
           "HORA",
           "TIEMPO TRABAJADO",
@@ -573,7 +581,7 @@ export default {
         this.anio +
         ".xlsx";
 
-        loader.hide()
+      loader.hide();
       saveAs(
         new Blob([s2ab(wbout)], { type: "application/octet-stream" }),
         file
