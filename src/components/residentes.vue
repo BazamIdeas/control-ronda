@@ -83,18 +83,22 @@
                         <p>
                           <b>Pasos para cargar datos:</b>
                         </p>
-                        <ul>
+                        <ul style="list-style: none;">
                           <li>
-                            Descargue la
+                            1. Descargue la plantilla en este
                             <a
                               target="_blank"
                               href="https://drive.google.com/file/d/1W3RuF-WTQSmMvVSkaGo-rDjneZWB4wcS/view?usp=sharing"
                             >
-                              <b>plantilla.</b>
+                              <b>enlace.</b>
                             </a>
                           </li>
-                          <li>Edite los datos concidiendo con los campos indicados.</li>
-                          <li>Exporte los datos como csv e importelo a nuestro sistema</li>
+                           <li>2. Haga una copia en drive.</li>
+                          <li>3. Ingrese los datos correspondientes segun la planilla.</li>
+                          <li>4. En el campo alícuota debe usar punto como separador, ejemplo: 0.45, 1.23 o 12.40, solamente 2 decimales.</li>
+                          <li>5. Exporte la plantilla y seleccione descargar como Valores separados por coma (.csv)</li>
+                          <li>6. Cargue el archivo al sistema</li>
+                          <li>Para usar el sistema, los residentes deben ingresar con su correo y utilizar la clave: 1234, una vez dentro deberan tomarse una fotografia para futuras autenticaciones biometricas, luego podran cambiar su clave.</li>
                         </ul>
                       </v-container>
 
@@ -596,9 +600,9 @@ export default {
 
       if (token !== null && token !== undefined && token !== "") {
         headers["Authorization"] = "Bearer " + token;
-         var loader = this.$loading.show({
-              loader: "dots"
-            });
+        var loader = this.$loading.show({
+          loader: "dots"
+        });
         papaparse.parse(this.files, {
           header: true,
           complete: async function(results) {

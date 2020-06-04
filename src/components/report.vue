@@ -403,7 +403,7 @@ export default {
             .split(".");
           let hours = split[1] > 60 ? parseInt(split[0]) + 1 : split[0];
           let minutes = split[1] > 60 ? parseInt(split[1]) - 60 : split[1];
-          return (`${hours}:${minutes} minutos`);
+          return `${hours}:${minutes} minutos`;
         }
       }
       //console.log("times > ", times);
@@ -444,6 +444,9 @@ export default {
       //console.log("times > ", times);
     },
     pdf() {
+      var loader = this.$loading.show({
+        loader: "dots"
+      });
       var doc = new jsPDF("landscape");
       doc.text("Reporte mensual de asistencia", 15, 20);
       doc.setFontSize(12);
@@ -490,10 +493,14 @@ export default {
         diferencial: this.getTotalDiferencial()
       });
       doc.autoTable(this.columns, tabla, { margin: { top: 35 } });
+      loader.hide()
       doc.save(file);
     },
 
     excel() {
+               var loader = this.$loading.show({
+              loader: "dots"
+            });
       var wb = xlsx.utils.book_new();
       wb.Props = {
         Title: "Reporte mensual de asistencia"
@@ -565,6 +572,8 @@ export default {
         "-" +
         this.anio +
         ".xlsx";
+
+        loader.hide()
       saveAs(
         new Blob([s2ab(wbout)], { type: "application/octet-stream" }),
         file
