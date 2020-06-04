@@ -108,19 +108,19 @@ var moment = require ('moment')
         {
           text: 'Hora'
         },
-        { 
-        text: 'Tipo', 
+        {
+        text: 'Tipo',
         value: 'type',
         },
-        { 
-        text: 'Nombre', 
+        {
+        text: 'Nombre',
         sortable: true,
-        value: 'watchers.worker.first_name',
+        value: 'workers.first_name',
         },
         {
-        text: 'RUT', 
+        text: 'RUT',
         sortable: true,
-        value: 'watchers.worker.rut',
+        value: 'workers.rut',
         },
         {
           text: 'Latitud',
@@ -152,10 +152,10 @@ var moment = require ('moment')
     },
 
     methods: {
-      
+
       tipo (item, tipo){
         let t = item.type.replace("-", "_")
-        
+
           let estados = {
             'entry': {color: 'green', texto: 'Entrada'},
             'break': {color: 'orange', texto: 'Inicio colación'},
