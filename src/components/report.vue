@@ -203,14 +203,6 @@ export default {
   },
 
   computed: {
-    calculeTotalHours() {
-      const totalDurations = durations
-        .slice(1)
-        .reduce(
-          (prev, cur) => moment.duration(cur).add(prev),
-          moment.duration(durations[0])
-        );
-    },
     priceHour: function() {
       let vh = parseFloat(this.valor_hora);
       let percent = parseFloat(this.porcentaje);
@@ -361,11 +353,10 @@ export default {
       var diff = moment.duration(
         moment(el.exit.date).diff(moment(el.entry.date))
       );
-      var res = moment.duration(diff.asMilliseconds(), "milliseconds");
       if (toPrint) {
         return diff;
       }
-      return res.format("HH:mm [minutos]");
+      return diff.format('HH:mm');
     },
     diferencial(el, toPrint = 0) {
       // toPrint para saber si se llama desde
@@ -377,8 +368,7 @@ export default {
       var diff = moment.duration(
         moment(el.exit.date).diff(moment(el.entry.date))
       );
-      var res = moment.duration(diff.asMilliseconds(), "milliseconds");
-      let comparator = res.format("HH.mm").toString() - rule;
+      let comparator = diff.format("HH.mm").toString() - rule;
       comparator = comparator.toFixed(2);
       if (toPrint && comparator <= 0) {
         return false;
