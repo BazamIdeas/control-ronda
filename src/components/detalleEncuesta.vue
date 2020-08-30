@@ -344,8 +344,6 @@
       },
 
       formatPrice(value) {
-/*         let val = (value/1).toFixed(0).replace('.', ',')
-        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") */
         let val = (value/1).toFixed(0)
         return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
     },
@@ -406,6 +404,7 @@
       },
 
       enviar(){
+        console.info('init send file')
         this.cargando = true
         let formData = new FormData()
         formData.append('question_id', this.detalleEncuesta.id)

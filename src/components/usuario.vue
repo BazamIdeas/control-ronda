@@ -59,7 +59,7 @@ const image2base64 = require('image-to-base64')
 export default {
   props: ['usuario'],
   data: () => ({
-    api: 'http://api.cs100.cl/v1'
+    api: 'https://api.cs100.cl/v1'
   }),
 
   methods: {
