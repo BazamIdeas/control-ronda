@@ -18,7 +18,7 @@
     "google-maps-api-loader": "^1.1.1",
     "image-to-base64": "^2.0.1",
     "jspdf": "^1.4.1",
-    "jspdf-autotable": "^2.3.5",
+    "jspdf-autotable": "^3.5.12",
     "moment": "^2.22.2",
     "moment-duration-format": "^2.3.2",
     "papaparse": "^5.1.1",
