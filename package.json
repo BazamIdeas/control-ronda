@@ -2,7 +2,7 @@
   "name": "control-ronda",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "author": "Cis <kalinca15@gmail.com>",
+  "author": "Cis <kalinca15@gmail.com>, Michel Novellino <michelnovellino.programador@gmail.com",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
@@ -14,6 +14,7 @@
     "axios": "^0.18.0",
     "dotenv-webpack": "^1.7.0",
     "echarts": "^4.2.0-rc.2",
+    "express": "^4.17.1",
     "file-saver": "^2.0.0",
     "google-maps-api-loader": "^1.1.1",
     "image-to-base64": "^2.0.1",

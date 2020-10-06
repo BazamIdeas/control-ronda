@@ -90,7 +90,7 @@
                               target="_blank"
                               href="https://drive.google.com/file/d/1W3RuF-WTQSmMvVSkaGo-rDjneZWB4wcS/view?usp=sharing"
                             >
-                              <b>enlace.</b>
+                              <b class="pl-1">enlace.</b>
                             </a>
                           </li>
                            <li>2. Haga una copia en drive.</li>

@@ -121,11 +121,7 @@
               class="elevation-1"
             >
               <template slot="items" slot-scope="props">
-                <td>
-                  {{
-                  moment(props.item.created_at ).format('DD-MM-YYYY')
-                  }}
-                </td>
+ 
                 <td>{{ props.item.residents.name }}</td>
 
                 <td>{{ props.item.residents.rut }}</td>
@@ -138,6 +134,12 @@
                   <v-chip color="red" small text-color="white">NO</v-chip>
                 </td>
                 <td>{{ props.item.comment }}</td>
+                
+                <td>
+                  {{
+                  moment(props.item.created_at ).format('DD-MM-YYYY')
+                  }}
+                </td>
               </template>
               <template slot="no-data">
                 <h3>Aún no hay votantes</h3>
@@ -165,7 +167,7 @@
               class="elevation-1"
             >
               <template slot="items" slot-scope="props">
-                <td>{{ moment(props.item.created_at).format("DD-MM-YYYY") }}</td>
+            
                 <td>{{ props.item.residents.name }}</td>
                 <td v-if="props.item.accepted">
                   <v-chip color="green" small text-color="white">SI</v-chip>
@@ -174,6 +176,7 @@
                   <v-chip color="red" small text-color="white">NO</v-chip>
                 </td>
                 <td>{{ props.item.comment }}</td>
+                    <td>{{ moment(props.item.created_at).format("DD-MM-YYYY") }}</td>
               </template>
               <template slot="no-data">
                 <h3>Aún no hay votantes</h3>
@@ -211,16 +214,12 @@ export default {
     total: 0,
     pagination: { descending: true },
     headers: [
-      {
-        text: "Fecha",
-        isDescending: true,
-        value: "created_at",
-        width: "40%",
-      },
+ 
       {
         text: "Nombre",
         isDescending: true,
         value: "residents.name",
+          width: "40%",
       },
 
       {
@@ -244,18 +243,19 @@ export default {
         text: "Comentario",
         sortable: false,
         value: "comment",
+      },      {
+        text: "Fecha",
+        isDescending: true,
+        value: "created_at",
+        width: "20%",
       },
     ],
 
     headersC: [
       {
-        text: "Fecha",
-        isDescending: true,
-        value: "created_at",
-      },
-      {
         text: "Nombre",
         value: "residents.name",
+                  width: "40%",
       },
       {
         text: "Voto",
@@ -266,6 +266,12 @@ export default {
         text: "Comentario",
         sortable: false,
         value: "comment",
+      },
+            {
+        text: "Fecha",
+        isDescending: true,
+        value: "created_at",
+                width: "20%",
       },
     ],
 
@@ -554,6 +560,9 @@ export default {
 
 .tabla tr td {
   text-align: center;
+}
+.tabla th:first-child{
+  display: none;
 }
 tr td {
   padding-right: 0 !important;
