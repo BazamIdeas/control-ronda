@@ -19,7 +19,7 @@
     "image-to-base64": "^2.0.1",
     "jspdf": "^1.4.1",
     "jspdf-autotable": "^2.3.5",
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "moment-duration-format": "^2.3.2",
     "papaparse": "^5.1.1",
     "socket.io-client": "^2.2.0",
